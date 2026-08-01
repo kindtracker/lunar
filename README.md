@@ -49,10 +49,20 @@ ctx:text(text, x, y)
 ctx:end_frame()
 ctx:target_fps(target_fps?)
 ctx:delta_time()
+
+input:init(backend, win)
+
+input:key_held(key)
+input:held(key)
+input:key_down(key)
+input:down(key)
+input:key_up(key)
+input:up(key)
 ```
 
 ### Services
 - **gfx:2d** used to make 2D graphics
+- **input** used to get input from window
 
 ### `mengine`
 - `mengine:getservice(service_name)` returns a service object.
@@ -73,16 +83,22 @@ ctx:delta_time()
 - `ctx:target_fps(target_fps?)` returns target fps and you can put target fps
 - `ctx:delta_time()` returns delta time
 
+### `input`
+- `input:init(backend, win)` initalize the input
+- `input:key_held(key)` check if key is being held
+- `input:held()` get all keys being held
+- `input:key_down(key)` check if key is down
+- `input:down()` get all keys being down
+- `input:key_up(key)` check if key is up
+- `input:up()` get all keys being up
+
 ## Contributing
 Contributing will be accepted
 
 ## Credits
-
 - **Lua** — used as Mengine's scripting language.
-
 - **SDL2** — used as Mengine's rendering backend.
 
 ## License
-
 This project is licensed under the GNU General Public License v3.0 or later.
 See the [LICENSE](LICENSE) file for details.

@@ -258,38 +258,68 @@ static int l_gfx2d_init(lua_State *L) {
   return 1;
 }
 
-// input:key_held(key);
-static int l_input_key_held(lua_State *L) {
+static mengine_input *input_check(lua_State *L) {
   lua_getfield(L, 1, "_handle");
   mengine_input *input = lua_touserdata(L, -1);
   lua_pop(L, 1);
+  if (!input) luaL_error(L, "input is not initialized");
+  return input;
+}
+
+static int input_key_state(lua_State *L, bool *state) {
+  input_check(L);
   const char *key = luaL_checkstring(L, 2);
   SDL_Scancode sc = SDL_GetScancodeFromName(key);
-  lua_pushboolean(L, input->window->key_held[sc]);
+  lua_pushboolean(L, state[sc]);
   return 1;
 }
 
-// input:held();
-static int l_input_held(lua_State *L) {
-  lua_getfield(L, 1, "_handle");
-  mengine_input *input = lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
+static int input_keys(lua_State *L, bool *state) {
   luaL_Buffer b;
   luaL_buffinit(L, &b);
   bool first = true;
   for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
-    if (input->window->key_held[i]) {
-      const char *name = SDL_GetScancodeName((SDL_Scancode)i);
-      if (!first) {
-        luaL_addchar(&b, ' ');
-      }
-      luaL_addstring(&b, name);
-      first = false;
+    if (!state[i]) {
+      continue;
     }
+    if (!first) {
+      luaL_addchar(&b, ' ');
+    }
+    luaL_addstring(&b, SDL_GetScancodeName((SDL_Scancode)i));
+    first = false;
   }
   luaL_pushresult(&b);
   return 1;
+}
+
+// input:key_held(key);
+static int l_input_key_held(lua_State *L) {
+  return input_key_state(L, input_check(L)->window->key_held);
+}
+
+// input:key_down(key);
+static int l_input_key_down(lua_State *L) {
+  return input_key_state(L, input_check(L)->window->key_down);
+}
+
+// input:key_up(key);
+static int l_input_key_up(lua_State *L) {
+  return input_key_state(L, input_check(L)->window->key_up);
+}
+
+// input:held();
+static int l_input_held(lua_State *L) {
+  return input_keys(L, input_check(L)->window->key_held);
+}
+
+// input:down();
+static int l_input_down(lua_State *L) {
+  return input_keys(L, input_check(L)->window->key_down);
+}
+
+// input:up();
+static int l_input_up(lua_State *L) {
+  return input_keys(L, input_check(L)->window->key_up);
 }
 
 static int l_input_init(lua_State *L) {
@@ -322,10 +352,21 @@ void service_input(lua_State *L) {
   lua_newtable(L);
   lua_pushcfunction(L, l_input_init);
   lua_setfield(L, -2, "init");
+
   lua_pushcfunction(L, l_input_key_held);
   lua_setfield(L, -2, "key_held");
   lua_pushcfunction(L, l_input_held);
   lua_setfield(L, -2, "held");
+  
+  lua_pushcfunction(L, l_input_key_down);
+  lua_setfield(L, -2, "key_down");
+  lua_pushcfunction(L, l_input_down);
+  lua_setfield(L, -2, "down");
+  
+  lua_pushcfunction(L, l_input_key_up);
+  lua_setfield(L, -2, "key_up");
+  lua_pushcfunction(L, l_input_up);
+  lua_setfield(L, -2, "up");
 }
 
 // local gfx = mengine:getservice("gfx:2d");
