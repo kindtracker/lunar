@@ -1,3 +1,16 @@
+/*
+ * Mengine - Lightweight Lua game engine
+ *
+ * Copyright (C) 2026 kindtracker
+ *
+ * This file is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -58,12 +71,8 @@ static int l_gfx2d_clear(lua_State *L) {
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  printf("win: %p\n", win);
-
   int a = SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 255);
-  printf("a: %d\n", a);
   a = SDL_RenderClear(win->renderer);
-  printf("b: %d\n", a);
   return 0;
 }
 
@@ -94,8 +103,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
   return 1;
 }
 
-// win:free()
-static int l_win_free(lua_State *L) {
+// win:quit()
+static int l_win_quit(lua_State *L) {
   lua_getfield(L, 1, "_handle");
   mengine_window *win = lua_touserdata(L, -1);
   if (win->texture) SDL_DestroyTexture(win->texture);
@@ -129,8 +138,8 @@ static int l_gfx2d_init(lua_State *L) {
   lua_pushcfunction(L, l_gfx2d_getcontext);
   lua_setfield(L, -2, "getcontext");
 
-  lua_pushcfunction(L, l_win_free);
-  lua_setfield(L, -2, "free");
+  lua_pushcfunction(L, l_win_quit);
+  lua_setfield(L, -2, "quit");
 
   lua_pushinteger(L, width);
   lua_setfield(L, -2, "width");
@@ -169,9 +178,7 @@ static int l_gfx2d_init(lua_State *L) {
         
   luaL_getmetatable(L, "mengine.window");
   lua_setmetatable(L, -2);
-
   lua_setfield(L, -2, "_handle");
-
   return 1;
 }
 

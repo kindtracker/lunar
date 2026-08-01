@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mengine</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown-dark.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #0d1117;
+    }
+
+    .markdown-body {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 32px;
+      background: #0d1117;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <article id="content" class="markdown-body">
+    Loading...
+  </article>
+
+  <script>
+    fetch("README.md").then(r => r.text()).then(md => {
+      document.getElementById("content").innerHTML = marked.parse(md);
+    });
+  </script>
+</body>
+</html>

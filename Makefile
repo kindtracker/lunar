@@ -19,6 +19,9 @@ clean:
 compile: $(OUT)
 	cp -R $(ASSET) $(BUILD)/.
 
+web:
+	python3 -m http.server 8080
+
 $(OUT): $(COBJ)
 	$(CC) $(CFLAGS) -o $(OUT) $(COBJ) $(LIBS)
 
