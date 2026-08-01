@@ -1,6 +1,6 @@
 CC = cc
-CFLAGS = -O2 -Wall -Wextra
-LIBS = -lm -llua -lSDL2
+CFLAGS = -O0 -Wall -Wextra
+LIBS = -lm -llua -lSDL2 -lSDL2_ttf
 
 ASSET = asset
 SRC = src
@@ -18,9 +18,6 @@ clean:
 
 compile: $(OUT)
 	cp -R $(ASSET) $(BUILD)/.
-
-run:
-	./$(OUT)
 
 $(OUT): $(COBJ)
 	$(CC) $(CFLAGS) -o $(OUT) $(COBJ) $(LIBS)
