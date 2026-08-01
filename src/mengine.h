@@ -32,13 +32,14 @@ lua_State *mengine_state;
 bool inited = false;
 
 typedef struct {
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Event event;
-    SDL_Texture *texture;
-    TTF_Font *font;
-    uint32_t frame_start;
-    int target_fps;
+  SDL_Window *window;
+  SDL_Renderer *renderer;
+  SDL_Event event;
+  SDL_Texture *texture;
+  TTF_Font *font;
+  uint32_t frame_start;
+  int target_fps;
+  int delta_time;
 } mengine_window;
 
 // ctx:text("meow", 0, 0);
@@ -48,8 +49,8 @@ static int l_gfx2d_text(lua_State *L) {
   lua_pop(L, 1);
 
   const char *text = luaL_checkstring(L, 2);
-  int x = luaL_checkinteger(L, 3);
-  int y = luaL_checkinteger(L, 4);
+  int x = luaL_checknumber(L, 3);
+  int y = luaL_checknumber(L, 4);
 
   SDL_Color color = {255, 255, 255, 255};
 
@@ -82,7 +83,6 @@ static int l_gfx2d_clear(lua_State *L) {
   return 0;
 }
 
-
 // ctx:target_fps(target_fps?) 
 static int l_gfx2d_target_fps(lua_State *L) {
   lua_getfield(L, 1, "_win");
@@ -91,6 +91,15 @@ static int l_gfx2d_target_fps(lua_State *L) {
   int target_fps = luaL_checknumber(L, 2);
   win->target_fps = target_fps;
   lua_pushnumber(L, win->target_fps);
+  return 1;
+}
+
+// ctx:delta_time()
+static int l_gfx2d_delta_time(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  lua_pushnumber(L, (float)(win->delta_time)/1000);
   return 1;
 }
 
@@ -115,6 +124,7 @@ static int l_gfx2d_end_frame(lua_State *L) {
     SDL_Delay(target_time - frame_time);
   }
   win->frame_start = SDL_GetTicks();
+  win->delta_time = frame_time;
 
   lua_pushboolean(L, false);
   return 1;
@@ -135,6 +145,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "clear");
   lua_pushcfunction(L, l_gfx2d_target_fps);
   lua_setfield(L, -2, "target_fps");
+  lua_pushcfunction(L, l_gfx2d_delta_time);
+  lua_setfield(L, -2, "delta_time");
   lua_pushcfunction(L, l_gfx2d_end_frame);
   lua_setfield(L, -2, "end_frame");
   return 1;
@@ -175,13 +187,10 @@ static int l_gfx2d_init(lua_State *L) {
 
   lua_pushcfunction(L, l_gfx2d_getcontext);
   lua_setfield(L, -2, "getcontext");
-
   lua_pushcfunction(L, l_win_quit);
   lua_setfield(L, -2, "quit");
-
   lua_pushinteger(L, width);
   lua_setfield(L, -2, "width");
-
   lua_pushinteger(L, height);
   lua_setfield(L, -2, "height");
 
@@ -216,6 +225,7 @@ static int l_gfx2d_init(lua_State *L) {
   
   win->target_fps = target_fps;
   win->frame_start = SDL_GetTicks();
+  win->delta_time = 1000/target_fps;
 
   luaL_getmetatable(L, "mengine.window");
   lua_setmetatable(L, -2);

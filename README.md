@@ -37,7 +37,7 @@ make
 ```lua
 mengine:getservice(service_name); -- example: gfx:2d
 
-gfx:init(title, width, height)
+gfx:init(title, width, height, target_fps?) -- default target fps is 60
 
 win:getcontext()
 win:quit()
@@ -47,6 +47,8 @@ win.height
 ctx:clear()
 ctx:text(text, x, y)
 ctx:end_frame()
+ctx:target_fps(target_fps?)
+ctx:delta_time()
 ```
 
 ### Services
@@ -68,6 +70,8 @@ ctx:end_frame()
 - `ctx:clear()` clear the window with #000000
 - `ctx:text(text, x, y)` draw text
 - `ctx:end_frame()` end the frame and returns if window should closed
+- `ctx:target_fps(target_fps?)` returns target fps and you can put target fps
+- `ctx:delta_time()` returns delta time
 
 ## Contributing
 Contributing will be accepted
