@@ -31,6 +31,10 @@ extern void mengine_free();
 lua_State *mengine_state;
 bool inited = false;
 
+typedef enum {
+  MENGINE_BACKEND_SDL
+} mengine_backend_t;
+
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
@@ -40,7 +44,15 @@ typedef struct {
   uint32_t frame_start;
   int target_fps;
   int delta_time;
+  bool key_down[SDL_NUM_SCANCODES];
+  bool key_held[SDL_NUM_SCANCODES];
+  bool key_up[SDL_NUM_SCANCODES];
 } mengine_window;
+
+typedef struct {
+  mengine_window *window;
+  mengine_backend_t backend;
+} mengine_input;
 
 // ctx:text("meow", 0, 0);
 static int l_gfx2d_text(lua_State *L) {
@@ -110,10 +122,19 @@ static int l_gfx2d_end_frame(lua_State *L) {
   lua_pop(L, 1);
   SDL_RenderPresent(win->renderer);
 
+  memset(win->key_down, 0, sizeof(win->key_down));
+  memset(win->key_up, 0, sizeof(win->key_up));
   while (SDL_PollEvent(&win->event)) {
     if (win->event.type == SDL_QUIT) {
       lua_pushboolean(L, true);
       return 1;
+    } else if (win->event.type == SDL_KEYDOWN) {
+      if (win->event.key.repeat) continue;
+      win->key_held[win->event.key.keysym.scancode] = true;
+      win->key_down[win->event.key.keysym.scancode] = true;
+    } else if (win->event.type == SDL_KEYUP) {
+      win->key_held[win->event.key.keysym.scancode] = false;
+      win->key_up[win->event.key.keysym.scancode] = true;
     }
   }
   
@@ -227,10 +248,67 @@ static int l_gfx2d_init(lua_State *L) {
   win->frame_start = SDL_GetTicks();
   win->delta_time = 1000/target_fps;
 
+  memset(win->key_held, 0, sizeof(win->key_held));
+  memset(win->key_down, 0, sizeof(win->key_down));
+  memset(win->key_up, 0, sizeof(win->key_up));
+
   luaL_getmetatable(L, "mengine.window");
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "_handle");
   return 1;
+}
+
+// input:key_held(key);
+static int l_input_key_held(lua_State *L) {
+  lua_getfield(L, 1, "_handle");
+  mengine_input *input = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  const char *key = luaL_checkstring(L, 2);
+  SDL_Scancode sc = SDL_GetScancodeFromName(key);
+  lua_pushboolean(L, input->window->key_held[sc]);
+  return 1;
+}
+
+// input:held();
+static int l_input_held(lua_State *L) {
+  lua_getfield(L, 1, "_handle");
+  mengine_input *input = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  luaL_Buffer b;
+  luaL_buffinit(L, &b);
+  bool first = true;
+  for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
+    if (input->window->key_held[i]) {
+      const char *name = SDL_GetScancodeName((SDL_Scancode)i);
+      if (!first) {
+        luaL_addchar(&b, ' ');
+      }
+      luaL_addstring(&b, name);
+      first = false;
+    }
+  }
+  luaL_pushresult(&b);
+  return 1;
+}
+
+static int l_input_init(lua_State *L) {
+  const char *backend = luaL_checkstring(L, 2);
+  if (strcmp(backend, "sdl") != 0) {
+    return luaL_error(L, "unknown backend: %s", backend);
+  }
+
+  lua_getfield(L, 3, "_handle");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  mengine_input *input = lua_newuserdata(L, sizeof(*input));
+  input->window = win;
+  input->backend = MENGINE_BACKEND_SDL;
+  luaL_getmetatable(L, "mengine.input");
+  lua_setmetatable(L, -2);
+  lua_setfield(L, 1, "_handle");
+  return 0;
 }
 
 void service_gfx2d(lua_State *L) {
@@ -240,12 +318,24 @@ void service_gfx2d(lua_State *L) {
   lua_setfield(L, -2, "init");
 }
 
+void service_input(lua_State *L) {
+  lua_newtable(L);
+  lua_pushcfunction(L, l_input_init);
+  lua_setfield(L, -2, "init");
+  lua_pushcfunction(L, l_input_key_held);
+  lua_setfield(L, -2, "key_held");
+  lua_pushcfunction(L, l_input_held);
+  lua_setfield(L, -2, "held");
+}
+
 // local gfx = mengine:getservice("gfx:2d");
 int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
 
   if (strcmp(name, "gfx:2d") == 0) {
     service_gfx2d(L);
+  } else if (strcmp(name, "input") == 0) {
+    service_input(L);
   } else {
     return luaL_error(L, "unknown service: '%s'", name);
   }

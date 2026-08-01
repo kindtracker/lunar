@@ -10,6 +10,7 @@
 #include "mengine.h"
 
 int main(int argc, char **argv) {
+  argc=argc;
   char *pathname = argv[1];
   if (pathname == NULL) {
     pathname = "main.lua";

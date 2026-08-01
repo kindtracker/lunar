@@ -7,7 +7,7 @@ local y = 0
 local vx = 400
 local vy = 400
 
-while true do
+while not ctx:end_frame() do
   ctx:clear()
   ctx:text("meow", x, y)
   
@@ -23,10 +23,6 @@ while true do
     vy=-vy
   elseif y < 0 then
     vy=-vy
-  end
-
-  if ctx:end_frame() then
-    break
   end
 end
 win:quit()
