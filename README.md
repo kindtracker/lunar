@@ -67,7 +67,7 @@ ctx:end_frame()
 ### `ctx`
 - `ctx:clear()` clear the window with #000000
 - `ctx:text(text, x, y)` draw text
-- `ctx:end_frame()` end the frame
+- `ctx:end_frame()` end the frame and returns if window should closed
 
 ## Contributing
 Contributing will be accepted

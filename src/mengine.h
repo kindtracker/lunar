@@ -22,6 +22,9 @@ extern const char *mengine_run(const char *pathname);
 extern void mengine_free();
 
 #ifdef MENGINE_IMPLEMENTATION
+#include <stdbool.h>
+#include <stdint.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -31,8 +34,11 @@ bool inited = false;
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Event event;
     SDL_Texture *texture;
     TTF_Font *font;
+    uint32_t frame_start;
+    int target_fps;
 } mengine_window;
 
 // ctx:text("meow", 0, 0);
@@ -71,9 +77,21 @@ static int l_gfx2d_clear(lua_State *L) {
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  int a = SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 255);
-  a = SDL_RenderClear(win->renderer);
+  SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 255);
+  SDL_RenderClear(win->renderer);
   return 0;
+}
+
+
+// ctx:target_fps(target_fps?) 
+static int l_gfx2d_target_fps(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  int target_fps = luaL_checknumber(L, 2);
+  win->target_fps = target_fps;
+  lua_pushnumber(L, win->target_fps);
+  return 1;
 }
 
 // ctx:end_frame() 
@@ -82,7 +100,24 @@ static int l_gfx2d_end_frame(lua_State *L) {
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
   SDL_RenderPresent(win->renderer);
-  return 0;
+
+  while (SDL_PollEvent(&win->event)) {
+    if (win->event.type == SDL_QUIT) {
+      lua_pushboolean(L, true);
+      return 1;
+    }
+  }
+  
+  uint32_t now = SDL_GetTicks();
+  uint32_t frame_time = now - win->frame_start;
+  uint32_t target_time = 1000 / win->target_fps;
+  if (frame_time < target_time) {
+    SDL_Delay(target_time - frame_time);
+  }
+  win->frame_start = SDL_GetTicks();
+
+  lua_pushboolean(L, false);
+  return 1;
 }
 
 // local ctx = win:getcontext()
@@ -98,6 +133,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "text");
   lua_pushcfunction(L, l_gfx2d_clear);
   lua_setfield(L, -2, "clear");
+  lua_pushcfunction(L, l_gfx2d_target_fps);
+  lua_setfield(L, -2, "target_fps");
   lua_pushcfunction(L, l_gfx2d_end_frame);
   lua_setfield(L, -2, "end_frame");
   return 1;
@@ -115,11 +152,12 @@ static int l_win_quit(lua_State *L) {
   return 0;
 }
 
-// local win = gfx:init("meow", 800, 600);
+// local win = gfx:init("meow", 800, 600, target_fps?);
 static int l_gfx2d_init(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
   int width = luaL_checkinteger(L, 3);
   int height = luaL_checkinteger(L, 4);
+  int target_fps = luaL_optinteger(L, 5, 60);
 
   if (!inited) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -175,7 +213,10 @@ static int l_gfx2d_init(lua_State *L) {
   if (!win->font) {
     return luaL_error(L, "TTF_OpenFont: %s", TTF_GetError());
   }
-        
+  
+  win->target_fps = target_fps;
+  win->frame_start = SDL_GetTicks();
+
   luaL_getmetatable(L, "mengine.window");
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "_handle");
