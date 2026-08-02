@@ -13,7 +13,6 @@ while not ctx:end_frame() do
   ctx:clear()
   ctx:color(255, 255, 255)
   ctx:text("meow", 0, 0)
-  ctx:end_frame()
 end
 win:free()
 ```
