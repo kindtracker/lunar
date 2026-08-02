@@ -779,6 +779,39 @@ void service_input(lua_State *L) {
   lua_setfield(L, -2, "mouse");
 }
 
+const char *mengine_log_get(lua_State *L) {
+  lua_getglobal(L, "string");
+  lua_getfield(L, -1, "format");
+  lua_remove(L, -2);
+  lua_insert(L, 1);
+  lua_call(L, lua_gettop(L) - 1, 1);
+  return lua_tostring(L, -1);
+}
+
+// mengine.log(format, ...)
+int l_log(lua_State *L) {
+  printf("[log] %s\n", mengine_log_get(L));
+  return 0;
+}
+
+// mengine.warn(format, ...)
+int l_warn(lua_State *L) {
+  printf("[warning] %s\n", mengine_log_get(L));
+  return 0;
+}
+
+// mengine.error(format, ...)
+int l_error(lua_State *L) {
+  printf("[error] %s\n", mengine_log_get(L));
+  return 0;
+}
+
+// mengine.fatal(format, ...)
+int l_fatal(lua_State *L) {
+  printf("[fatal] %s\n", mengine_log_get(L));
+  return 0;
+}
+
 // local gfx = mengine:getservice(service_name);
 int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
@@ -802,7 +835,16 @@ void mengine_init() {
 
   lua_pushcfunction(mengine_state, l_getservice);
   lua_setfield(mengine_state, -2, "getservice");
-  
+
+  lua_pushcfunction(mengine_state, l_log);
+  lua_setfield(mengine_state, -2, "log");
+  lua_pushcfunction(mengine_state, l_warn);
+  lua_setfield(mengine_state, -2, "warn");
+  lua_pushcfunction(mengine_state, l_error);
+  lua_setfield(mengine_state, -2, "error");
+  lua_pushcfunction(mengine_state, l_fatal);
+  lua_setfield(mengine_state, -2, "fatal");
+
   lua_setglobal(mengine_state, "mengine");
 }
 

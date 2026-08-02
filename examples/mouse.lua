@@ -7,7 +7,7 @@ input:init("sdl", win)
 while not ctx:end_frame() do
   ctx:color(192, 192, 192)
   ctx:clear()
-  
+
   local x, y, left, right, middle = input:mouse()
   local r = left and 255 or 0
   local g = right and 255 or 0

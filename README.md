@@ -38,6 +38,10 @@ make
 ### Cheatsheet
 ```lua
 mengine:getservice(service_name); -- example: gfx:2d
+mengine.log(fornat, ...)
+mengine.warn(format, ...)
+mengine.error(format, ...)
+mengine.fatal(format, ...)
 
 gfx:init(title, width, height, target_fps?) -- default target fps is 60
 
@@ -71,6 +75,7 @@ input:key_down(key)
 input:down(key)
 input:key_up(key)
 input:up(key)
+input:mouse() -- returns x, y, left, right, middle
 
 -- TODO (this api is not implemented yet)
 -- v v v v v v v v v v v v v v v v v v v
@@ -78,15 +83,9 @@ input:up(key)
 gfx:font(pathname)
 ctx:font(font)
 
-input:mouse() -- returns x, y, left, right, middle
-
 mengine.platform
 mengine:quit()
 
-mengine.log(...)
-mengine.warn(...)
-mengine.error(...)
-mengine.fatal(...)
 mengine.log_callback(func)
 ```
 
