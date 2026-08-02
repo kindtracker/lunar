@@ -827,7 +827,7 @@ int l_wait(lua_State *L) {
 
 // mengine.time(sec)
 int l_time(lua_State *L) {
-  lua_pushnumber(L, SDL_GetTicks()/1000);
+  lua_pushnumber(L, (float)(SDL_GetTicks())/1000);
   return 1;
 }
 

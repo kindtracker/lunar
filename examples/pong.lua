@@ -1,4 +1,4 @@
-local gfx = mengine:getservice("gfx");
+local gfx = mengine:getservice("gfx:2d");
 local input = mengine:getservice("input");
 local win = gfx:init("Pong", 700, 450, 60)
 local ctx = win:getcontext()
