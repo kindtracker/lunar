@@ -8,8 +8,10 @@ local gfx = mengine:getservice("gfx:2d");
 local win = gfx:init("meow", 800, 600)
 local ctx = win:getcontext()
 
-for i = 1, 60 do
+while not ctx:end_frame() do
+  ctx:color(0, 0, 0)
   ctx:clear()
+  ctx:color(255, 255, 255)
   ctx:text("meow", 0, 0)
   ctx:end_frame()
 end
