@@ -63,7 +63,7 @@ ctx:arc_fill(x, y, r, start_angle, end_angle);
 ctx:tri(x1, y1, x2, y2, x3, y3)
 ctx:tri_fill(x1, y1, x2, y2, x3, y3)
 
-input:init(backend, win)
+input:init(backend, win) -- single backend is "sdl" (SDL2)
 
 input:key_held(key)
 input:held(key)
@@ -76,8 +76,9 @@ input:up(key)
 -- v v v v v v v v v v v v v v v v v v v
 
 gfx:font(pathname)
+ctx:font(font)
 
-input:mouse() -- returns x, y
+input:mouse() -- returns x, y, left, right, middle
 
 mengine.platform
 mengine:quit()
@@ -105,22 +106,8 @@ mengine.log_callback(func)
 - `win.width` the width of window.
 - `win.height` the height of window.
 
-### `ctx`
-- `ctx:color(r, g, b, a?)` set the fill/stroke color with r,g,b,a (0-255)
-- `ctx:clear()` clear the window with #000000
-- `ctx:end_frame()` end the frame and returns if window should closed
-- `ctx:target_fps(target_fps?)` returns target fps and you can put target fps
-- `ctx:delta_time()` returns delta time
-- `ctx:text(text, x, y)` draw text
-
 ### `input`
-- `input:init(backend, win)` initalize the input
-- `input:key_held(key)` check if key is being held
-- `input:held()` get all keys being held
-- `input:key_down(key)` check if key is down
-- `input:down()` get all keys being down
-- `input:key_up(key)` check if key is up
-- `input:up()` get all keys being up
+- `input:init(backend, win)` initalize the input, single backend is "sdl" (SDL2)
 
 ## Contributing
 Contributing will be accepted

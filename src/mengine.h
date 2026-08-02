@@ -716,6 +716,19 @@ static int l_input_up(lua_State *L) {
   return input_keys(L, input_check(L)->window->key_up);
 }
 
+// input:mouse()
+static int l_input_mouse(lua_State *L) {
+  int x, y;
+  uint32_t buttons = SDL_GetMouseState(&x, &y);
+  lua_pushnumber(L, x);
+  lua_pushnumber(L, y);
+  lua_pushboolean(L, buttons & SDL_BUTTON(SDL_BUTTON_LEFT));
+  lua_pushboolean(L, buttons & SDL_BUTTON(SDL_BUTTON_RIGHT));
+  lua_pushboolean(L, buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE));
+  return 5;
+}
+
+// input:init(backend, win)
 static int l_input_init(lua_State *L) {
   const char *backend = luaL_checkstring(L, 2);
   if (strcmp(backend, "sdl") != 0) {
@@ -761,6 +774,9 @@ void service_input(lua_State *L) {
   lua_setfield(L, -2, "key_up");
   lua_pushcfunction(L, l_input_up);
   lua_setfield(L, -2, "up");
+  
+  lua_pushcfunction(L, l_input_mouse);
+  lua_setfield(L, -2, "mouse");
 }
 
 // local gfx = mengine:getservice(service_name);
