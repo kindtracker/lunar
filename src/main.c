@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   mengine_init();
   const char *err_msg = mengine_run(pathname);
   if (err_msg != NULL) {
-    printf("%s\n", err_msg);
+    printf("\033[31m[error]\033[0m %s\n", err_msg);
   }
   mengine_quit();
   return 0;
