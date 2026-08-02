@@ -790,25 +790,31 @@ const char *mengine_log_get(lua_State *L) {
 
 // mengine.log(format, ...)
 int l_log(lua_State *L) {
-  printf("[log] %s\n", mengine_log_get(L));
+  printf("\033[32m[log]\033[0m %s\n", mengine_log_get(L));
+  return 0;
+}
+
+// mengine.info(format, ...)
+int l_info(lua_State *L) {
+  printf("\033[36m[info]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.warn(format, ...)
 int l_warn(lua_State *L) {
-  printf("[warning] %s\n", mengine_log_get(L));
+  printf("\033[33m[warning]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.error(format, ...)
 int l_error(lua_State *L) {
-  printf("[error] %s\n", mengine_log_get(L));
+  printf("\033[31m[error]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.fatal(format, ...)
 int l_fatal(lua_State *L) {
-  printf("[fatal] %s\n", mengine_log_get(L));
+  printf("\033[31m[fatal]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
@@ -821,7 +827,7 @@ int l_wait(lua_State *L) {
 
 // mengine.time(sec)
 int l_time(lua_State *L) {
-  lua_pushnumber(SDL_GetTicks()/1000);
+  lua_pushnumber(L, SDL_GetTicks()/1000);
   return 1;
 }
 
@@ -830,6 +836,9 @@ int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
 
   if (strcmp(name, "gfx:2d") == 0) {
+    service_gfx2d(L);
+  } else if (strcmp(name, "gfx") == 0) {
+    printf("\033[33m[warning]\033[0m gfx is not a valid service, using gfx:2d instead\n");
     service_gfx2d(L);
   } else if (strcmp(name, "input") == 0) {
     service_input(L);
@@ -855,6 +864,8 @@ void mengine_init() {
 
   lua_pushcfunction(mengine_state, l_log);
   lua_setfield(mengine_state, -2, "log");
+  lua_pushcfunction(mengine_state, l_info);
+  lua_setfield(mengine_state, -2, "info");
   lua_pushcfunction(mengine_state, l_warn);
   lua_setfield(mengine_state, -2, "warn");
   lua_pushcfunction(mengine_state, l_error);

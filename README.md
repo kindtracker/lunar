@@ -41,6 +41,7 @@ mengine:wait(sec)
 mengine:time()
 
 mengine.log(fornat, ...)
+mengine.info(fornat, ...)
 mengine.warn(format, ...)
 mengine.error(format, ...)
 mengine.fatal(format, ...)

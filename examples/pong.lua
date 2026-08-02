@@ -1,4 +1,4 @@
-local gfx = mengine:getservice("gfx:2d");
+local gfx = mengine:getservice("gfx");
 local input = mengine:getservice("input");
 local win = gfx:init("Pong", 700, 450, 60)
 local ctx = win:getcontext()
@@ -37,6 +37,7 @@ while not ctx:end_frame() do
   if bx <= 30 then
     if by >= y and by <= y+80 then
       vx = -vx
+      mengine.log("Pong!")
     else
       if bx <= -10 then
         bx = 700/2-5
