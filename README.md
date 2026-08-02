@@ -38,6 +38,9 @@ make
 ### Cheatsheet
 ```lua
 mengine:getservice(service_name); -- example: gfx:2d
+mengine:wait(sec)
+mengine:time()
+
 mengine.log(fornat, ...)
 mengine.warn(format, ...)
 mengine.error(format, ...)

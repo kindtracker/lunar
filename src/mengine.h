@@ -812,6 +812,19 @@ int l_fatal(lua_State *L) {
   return 0;
 }
 
+// mengine.wait(sec)
+int l_wait(lua_State *L) {
+  float sec = luaL_checknumber(L, 2);
+  SDL_Delay(sec*1000);
+  return 0;
+}
+
+// mengine.time(sec)
+int l_time(lua_State *L) {
+  lua_pushnumber(SDL_GetTicks()/1000);
+  return 1;
+}
+
 // local gfx = mengine:getservice(service_name);
 int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
@@ -835,6 +848,10 @@ void mengine_init() {
 
   lua_pushcfunction(mengine_state, l_getservice);
   lua_setfield(mengine_state, -2, "getservice");
+  lua_pushcfunction(mengine_state, l_wait);
+  lua_setfield(mengine_state, -2, "wait");
+  lua_pushcfunction(mengine_state, l_time);
+  lua_setfield(mengine_state, -2, "time");
 
   lua_pushcfunction(mengine_state, l_log);
   lua_setfield(mengine_state, -2, "log");
