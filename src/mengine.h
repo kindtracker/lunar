@@ -50,6 +50,7 @@ typedef struct {
   bool key_up[SDL_NUM_SCANCODES];
 
   SDL_Color color;
+  int thick;
 } mengine_window;
 
 typedef struct {
@@ -96,6 +97,363 @@ static int l_gfx2d_text(lua_State *L) {
   SDL_RenderCopy(win->renderer, texture, NULL, &dst);
   SDL_DestroyTexture(texture);
   SDL_FreeSurface(surface);
+  return 0;
+}
+
+static int l_gfx2d_thick(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int thick = luaL_checknumber(L, 2);
+  win->thick = thick;
+  return 0;
+}
+
+// NOTE: shape api is ai-generated (it is too long and repetitive), this api is not tested
+// ctx:rect(x, y, w, h);
+static int l_gfx2d_rect(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int x = luaL_checknumber(L, 2);
+  int y = luaL_checknumber(L, 3);
+  int w = luaL_checknumber(L, 4);
+  int h = luaL_checknumber(L, 5);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  for (int i = 0; i < win->thick; i++) {
+    SDL_Rect rect = {
+      x + i,
+      y + i,
+      w - i * 2,
+      h - i * 2
+    };
+
+    if (rect.w <= 0 || rect.h <= 0) {
+      break;
+    }
+
+    SDL_RenderDrawRect(win->renderer, &rect);
+  }
+
+  return 0;
+}
+
+// ctx:rect_fill(x, y, w, h);
+static int l_gfx2d_rect_fill(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int x = luaL_checknumber(L, 2);
+  int y = luaL_checknumber(L, 3);
+  int w = luaL_checknumber(L, 4);
+  int h = luaL_checknumber(L, 5);
+
+  SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
+
+  SDL_Rect rect = {x, y, w, h};
+  SDL_RenderFillRect(win->renderer, &rect);
+  return 0;
+}
+
+// ctx:circ(x, y, r);
+static int l_gfx2d_circ(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int cx = luaL_checknumber(L, 2);
+  int cy = luaL_checknumber(L, 3);
+  int r = luaL_checknumber(L, 4);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  for (int i = 0; i < win->thick; i++) {
+    int radius = r - i;
+
+    if (radius <= 0) {
+      break;
+    }
+
+    int x = radius;
+    int y = 0;
+    int err = 0;
+
+    while (x >= y) {
+      SDL_RenderDrawPoint(win->renderer, cx + x, cy + y);
+      SDL_RenderDrawPoint(win->renderer, cx + y, cy + x);
+      SDL_RenderDrawPoint(win->renderer, cx - y, cy + x);
+      SDL_RenderDrawPoint(win->renderer, cx - x, cy + y);
+      SDL_RenderDrawPoint(win->renderer, cx - x, cy - y);
+      SDL_RenderDrawPoint(win->renderer, cx - y, cy - x);
+      SDL_RenderDrawPoint(win->renderer, cx + y, cy - x);
+      SDL_RenderDrawPoint(win->renderer, cx + x, cy - y);
+
+      y++;
+
+      if (err <= 0) {
+        err += 2 * y + 1;
+      }
+
+      if (err > 0) {
+        x--;
+        err -= 2 * x + 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+// ctx:circ_fill(x, y, r);
+static int l_gfx2d_circ_fill(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int cx = luaL_checknumber(L, 2);
+  int cy = luaL_checknumber(L, 3);
+  int r = luaL_checknumber(L, 4);
+
+  SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
+
+  for (int y = -r; y <= r; y++) {
+    int dx = sqrt(r * r - y * y);
+    SDL_RenderDrawLine(win->renderer, cx - dx, cy + y, cx + dx, cy + y);
+  }
+
+  return 0;
+}
+
+// ctx:arc(x, y, r, start_angle, end_angle);
+static int l_gfx2d_arc(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int cx = luaL_checknumber(L, 2);
+  int cy = luaL_checknumber(L, 3);
+  int r = luaL_checknumber(L, 4);
+  double start = luaL_checknumber(L, 5);
+  double end = luaL_checknumber(L, 6);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  if (end < start) {
+    double tmp = start;
+    start = end;
+    end = tmp;
+  }
+
+  for (int t = 0; t < win->thick; t++) {
+    int radius = r - t;
+    if (radius <= 0) {
+      break;
+    }
+
+    for (double a = start; a <= end; a += 1.0) {
+      double rad = a * M_PI / 180.0;
+
+      int x = cx + (int)round(cos(rad) * radius);
+      int y = cy + (int)round(sin(rad) * radius);
+
+      SDL_RenderDrawPoint(win->renderer, x, y);
+    }
+  }
+
+  return 0;
+}
+
+// ctx:arc_fill(x, y, r, start_angle, end_angle);
+static int l_gfx2d_arc_fill(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int cx = luaL_checknumber(L, 2);
+  int cy = luaL_checknumber(L, 3);
+  int r = luaL_checknumber(L, 4);
+  double start = luaL_checknumber(L, 5);
+  double end = luaL_checknumber(L, 6);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  if (end < start) {
+    double tmp = start;
+    start = end;
+    end = tmp;
+  }
+
+  for (double a = start; a < end; a += 1.0) {
+    double rad1 = a * M_PI / 180.0;
+    double rad2 = (a + 1.0) * M_PI / 180.0;
+
+    int x1 = cx + (int)round(cos(rad1) * r);
+    int y1 = cy + (int)round(sin(rad1) * r);
+
+    int x2 = cx + (int)round(cos(rad2) * r);
+    int y2 = cy + (int)round(sin(rad2) * r);
+
+    SDL_Vertex verts[3] = {
+      {
+        .position = {cx, cy},
+        .color = win->color,
+        .tex_coord = {0, 0}
+      },
+      {
+        .position = {x1, y1},
+        .color = win->color,
+        .tex_coord = {0, 0}
+      },
+      {
+        .position = {x2, y2},
+        .color = win->color,
+        .tex_coord = {0, 0}
+      }
+    };
+
+    SDL_RenderGeometry(win->renderer, NULL, verts, 3, NULL, 0);
+  }
+
+  return 0;
+}
+
+// ctx:tri(x1, y1, x2, y2, x3, y3);
+static int l_gfx2d_tri(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int x1 = luaL_checknumber(L, 2);
+  int y1 = luaL_checknumber(L, 3);
+  int x2 = luaL_checknumber(L, 4);
+  int y2 = luaL_checknumber(L, 5);
+  int x3 = luaL_checknumber(L, 6);
+  int y3 = luaL_checknumber(L, 7);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  int half = win->thick / 2;
+
+  for (int i = -half; i <= half; i++) {
+    SDL_RenderDrawLine(win->renderer, x1 + i, y1, x2 + i, y2);
+    SDL_RenderDrawLine(win->renderer, x2 + i, y2, x3 + i, y3);
+    SDL_RenderDrawLine(win->renderer, x3 + i, y3, x1 + i, y1);
+
+    SDL_RenderDrawLine(win->renderer, x1, y1 + i, x2, y2 + i);
+    SDL_RenderDrawLine(win->renderer, x2, y2 + i, x3, y3 + i);
+    SDL_RenderDrawLine(win->renderer, x3, y3 + i, x1, y1 + i);
+  }
+
+  return 0;
+}
+
+static void fill_flat_bottom(SDL_Renderer *renderer,
+  float x1, float y1,
+  float x2, float y2,
+  float x3, float y3) {
+  float invslope1 = (x2 - x1) / (y2 - y1);
+  float invslope2 = (x3 - x1) / (y3 - y1);
+
+  float curx1 = x1;
+  float curx2 = x1;
+
+  for (int y = (int)y1; y <= (int)y2; y++) {
+    SDL_RenderDrawLine(renderer, (int)curx1, y, (int)curx2, y);
+    curx1 += invslope1;
+    curx2 += invslope2;
+  }
+}
+
+static void fill_flat_top(SDL_Renderer *renderer,
+  float x1, float y1,
+  float x2, float y2,
+  float x3, float y3) {
+  float invslope1 = (x3 - x1) / (y3 - y1);
+  float invslope2 = (x3 - x2) / (y3 - y2);
+
+  float curx1 = x3;
+  float curx2 = x3;
+
+  for (int y = (int)y3; y >= (int)y1; y--) {
+    SDL_RenderDrawLine(renderer, (int)curx1, y, (int)curx2, y);
+    curx1 -= invslope1;
+    curx2 -= invslope2;
+  }
+}
+
+// ctx:tri_fill(x1, y1, x2, y2, x3, y3);
+static int l_gfx2d_tri_fill(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  float x1 = luaL_checknumber(L, 2);
+  float y1 = luaL_checknumber(L, 3);
+  float x2 = luaL_checknumber(L, 4);
+  float y2 = luaL_checknumber(L, 5);
+  float x3 = luaL_checknumber(L, 6);
+  float y3 = luaL_checknumber(L, 7);
+
+  SDL_SetRenderDrawColor(win->renderer,
+    win->color.r,
+    win->color.g,
+    win->color.b,
+    win->color.a);
+
+  if (y1 > y2) {
+    float t;
+    t = x1; x1 = x2; x2 = t;
+    t = y1; y1 = y2; y2 = t;
+  }
+
+  if (y1 > y3) {
+    float t;
+    t = x1; x1 = x3; x3 = t;
+    t = y1; y1 = y3; y3 = t;
+  }
+
+  if (y2 > y3) {
+    float t;
+    t = x2; x2 = x3; x3 = t;
+    t = y2; y2 = y3; y3 = t;
+  }
+
+  if (y2 == y3) {
+    fill_flat_bottom(win->renderer, x1, y1, x2, y2, x3, y3);
+  } else if (y1 == y2) {
+    fill_flat_top(win->renderer, x1, y1, x2, y2, x3, y3);
+  } else {
+    float x4 = x1 + ((y2 - y1) / (y3 - y1)) * (x3 - x1);
+
+    fill_flat_bottom(win->renderer, x1, y1, x2, y2, x4, y2);
+    fill_flat_top(win->renderer, x2, y2, x4, y2, x3, y3);
+  }
+
   return 0;
 }
 
@@ -188,6 +546,25 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "color");
   lua_pushcfunction(L, l_gfx2d_text);
   lua_setfield(L, -2, "text");
+
+  lua_pushcfunction(L, l_gfx2d_thick);
+  lua_setfield(L, -2, "thick");
+  lua_pushcfunction(L, l_gfx2d_rect);
+  lua_setfield(L, -2, "rect");
+  lua_pushcfunction(L, l_gfx2d_rect_fill);
+  lua_setfield(L, -2, "rect_fill");
+  lua_pushcfunction(L, l_gfx2d_circ);
+  lua_setfield(L, -2, "circ");
+  lua_pushcfunction(L, l_gfx2d_circ_fill);
+  lua_setfield(L, -2, "circ_fill");
+  lua_pushcfunction(L, l_gfx2d_arc);
+  lua_setfield(L, -2, "arc");
+  lua_pushcfunction(L, l_gfx2d_arc_fill);
+  lua_setfield(L, -2, "arc_fill");
+  lua_pushcfunction(L, l_gfx2d_tri);
+  lua_setfield(L, -2, "tri");
+  lua_pushcfunction(L, l_gfx2d_tri_fill);
+  lua_setfield(L, -2, "tri_fill");
   return 1;
 }
 
@@ -263,6 +640,7 @@ static int l_gfx2d_init(lua_State *L) {
   win->frame_start = SDL_GetTicks();
   win->delta_time = 1000/target_fps;
   win->color = (SDL_Color){0, 0, 0, 255};
+  win->thick = 1;
 
   memset(win->key_held, 0, sizeof(win->key_held));
   memset(win->key_down, 0, sizeof(win->key_down));

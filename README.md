@@ -51,6 +51,16 @@ ctx:target_fps(target_fps?)
 ctx:delta_time()
 ctx:text(text, x, y)
 
+ctx:thick(size)
+ctx:rect(x, y, w, h)
+ctx:rect_fill(x, y, w, h)
+ctx:circ(x, y, r)
+ctx:circ_fill(x, y, r)
+ctx:arc(x, y, r, start_angle, end_angle);
+ctx:arc_fill(x, y, r, start_angle, end_angle);
+ctx:tri(x1, y1, x2, y2, x3, y3)
+ctx:tri_fill(x1, y1, x2, y2, x3, y3)
+
 input:init(backend, win)
 
 input:key_held(key)
@@ -61,17 +71,20 @@ input:key_up(key)
 input:up(key)
 
 -- TODO (this api is not implemented yet)
-gfx:rect(x, y, w, h)
-gfx:rect_fill(x, y, w, h)
-gfx:circ(x, y, r)
-gfx:circ_fill(x, y, r)
-gfx:tri(x1, y1, x2, y2, x3, y3)
-gfx:tri_fill(x1, y1, x2, y2, x3, y3)
+-- v v v v v v v v v v v v v v v v v v v
+
 gfx:font(pathname)
 
 input:mouse() -- returns x, y
 
 mengine.platform
+mengine:quit()
+
+mengine.log(...)
+mengine.warn(...)
+mengine.error(...)
+mengine.fatal(...)
+mengine.log_callback(func)
 ```
 
 ### Services
