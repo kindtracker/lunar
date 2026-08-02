@@ -41,12 +41,15 @@ typedef struct {
   SDL_Event event;
   SDL_Texture *texture;
   TTF_Font *font;
+
   uint32_t frame_start;
   int target_fps;
   int delta_time;
   bool key_down[SDL_NUM_SCANCODES];
   bool key_held[SDL_NUM_SCANCODES];
   bool key_up[SDL_NUM_SCANCODES];
+
+  SDL_Color color;
 } mengine_window;
 
 typedef struct {
@@ -54,7 +57,21 @@ typedef struct {
   mengine_backend_t backend;
 } mengine_input;
 
-// ctx:text("meow", 0, 0);
+// ctx:color(r, g, b, a?);
+static int l_gfx2d_color(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int r = luaL_checknumber(L, 2);
+  int g = luaL_checknumber(L, 3);
+  int b = luaL_checknumber(L, 4);
+  int a = luaL_optnumber(L, 5, 255);
+  win->color = (SDL_Color){r, g, b, a};
+  return 0;
+}
+
+// ctx:text(text, x, y);
 static int l_gfx2d_text(lua_State *L) {
   lua_getfield(L, 1, "_win");
   mengine_window *win = lua_touserdata(L, -1);
@@ -64,9 +81,7 @@ static int l_gfx2d_text(lua_State *L) {
   int x = luaL_checknumber(L, 3);
   int y = luaL_checknumber(L, 4);
 
-  SDL_Color color = {255, 255, 255, 255};
-
-  SDL_Surface *surface = TTF_RenderUTF8_Blended(win->font, text, color);
+  SDL_Surface *surface = TTF_RenderUTF8_Blended(win->font, text, win->color);
   if (!surface) {
     return luaL_error(L, "TTF_RenderUTF8_Blended: %s", TTF_GetError());
   }
@@ -90,7 +105,7 @@ static int l_gfx2d_clear(lua_State *L) {
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
   SDL_RenderClear(win->renderer);
   return 0;
 }
@@ -160,8 +175,6 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_newtable(L);
   lua_pushlightuserdata(L, win);
   lua_setfield(L, -2, "_win");
-  lua_pushcfunction(L, l_gfx2d_text);
-  lua_setfield(L, -2, "text");
   lua_pushcfunction(L, l_gfx2d_clear);
   lua_setfield(L, -2, "clear");
   lua_pushcfunction(L, l_gfx2d_target_fps);
@@ -170,6 +183,11 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "delta_time");
   lua_pushcfunction(L, l_gfx2d_end_frame);
   lua_setfield(L, -2, "end_frame");
+
+  lua_pushcfunction(L, l_gfx2d_color);
+  lua_setfield(L, -2, "color");
+  lua_pushcfunction(L, l_gfx2d_text);
+  lua_setfield(L, -2, "text");
   return 1;
 }
 
@@ -224,14 +242,12 @@ static int l_gfx2d_init(lua_State *L) {
     height,
     SDL_WINDOW_SHOWN
   );
-
   if (!win->window) {
     return luaL_error(L, "SDL_CreateWindow: %s", SDL_GetError());
   }
 
   win->renderer = SDL_CreateRenderer(win->window, -1,
     SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
   if (!win->renderer) {
     return luaL_error(L, "SDL_CreateRenderer: %s", SDL_GetError());
   }
@@ -239,7 +255,6 @@ static int l_gfx2d_init(lua_State *L) {
   win->texture = NULL;
 
   win->font = TTF_OpenFont("/usr/share/fonts/TTF/DejaVuSans.ttf", 24);
-
   if (!win->font) {
     return luaL_error(L, "TTF_OpenFont: %s", TTF_GetError());
   }
@@ -247,6 +262,7 @@ static int l_gfx2d_init(lua_State *L) {
   win->target_fps = target_fps;
   win->frame_start = SDL_GetTicks();
   win->delta_time = 1000/target_fps;
+  win->color = (SDL_Color){0, 0, 0, 255};
 
   memset(win->key_held, 0, sizeof(win->key_held));
   memset(win->key_down, 0, sizeof(win->key_down));
@@ -369,7 +385,7 @@ void service_input(lua_State *L) {
   lua_setfield(L, -2, "up");
 }
 
-// local gfx = mengine:getservice("gfx:2d");
+// local gfx = mengine:getservice(service_name);
 int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
 

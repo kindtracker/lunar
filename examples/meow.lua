@@ -7,10 +7,16 @@ local y = 0
 local vx = 400
 local vy = 400
 
+local r = 0
+
 while not ctx:end_frame() do
+  ctx:color(0, 0, 0)
   ctx:clear()
+  ctx:color(r, 0, 0)
   ctx:text("meow", x, y)
   
+  r = r + 16
+
   local dt = ctx:delta_time()
   x=x+vx*dt
   y=y+vy*dt

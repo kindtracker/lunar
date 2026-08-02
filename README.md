@@ -44,11 +44,12 @@ win:quit()
 win.width
 win.height
 
+ctx:color(r, g, b, a?) -- default alpha is 255
 ctx:clear()
-ctx:text(text, x, y)
 ctx:end_frame()
 ctx:target_fps(target_fps?)
 ctx:delta_time()
+ctx:text(text, x, y)
 
 input:init(backend, win)
 
@@ -58,6 +59,19 @@ input:key_down(key)
 input:down(key)
 input:key_up(key)
 input:up(key)
+
+-- TODO (this api is not implemented yet)
+gfx:rect(x, y, w, h)
+gfx:rect_fill(x, y, w, h)
+gfx:circ(x, y, r)
+gfx:circ_fill(x, y, r)
+gfx:tri(x1, y1, x2, y2, x3, y3)
+gfx:tri_fill(x1, y1, x2, y2, x3, y3)
+gfx:font(pathname)
+
+input:mouse() -- returns x, y
+
+mengine.platform
 ```
 
 ### Services
@@ -77,11 +91,12 @@ input:up(key)
 - `win.height` the height of window.
 
 ### `ctx`
+- `ctx:color(r, g, b, a?)` set the fill/stroke color with r,g,b,a (0-255)
 - `ctx:clear()` clear the window with #000000
-- `ctx:text(text, x, y)` draw text
 - `ctx:end_frame()` end the frame and returns if window should closed
 - `ctx:target_fps(target_fps?)` returns target fps and you can put target fps
 - `ctx:delta_time()` returns delta time
+- `ctx:text(text, x, y)` draw text
 
 ### `input`
 - `input:init(backend, win)` initalize the input
