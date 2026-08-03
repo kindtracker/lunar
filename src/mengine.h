@@ -27,6 +27,7 @@ extern void mengine_free();
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
 lua_State *mengine_state;
 bool inited = false;
@@ -50,13 +51,19 @@ typedef struct {
   bool key_up[SDL_NUM_SCANCODES];
 
   SDL_Color color;
-  int thick;
+  int line_width;
 } mengine_window;
 
 typedef struct {
   mengine_window *window;
   mengine_backend_t backend;
 } mengine_input;
+
+typedef struct {
+  SDL_Texture *texture;
+  int width;
+  int height;
+} mengine_image;
 
 // ctx:color(r, g, b, a?);
 static int l_gfx2d_color(lua_State *L) {
@@ -100,13 +107,43 @@ static int l_gfx2d_text(lua_State *L) {
   return 0;
 }
 
-static int l_gfx2d_thick(lua_State *L) {
+// ctx:image(image, x, y, w?, h?)
+static int l_gfx2d_image(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  luaL_checktype(L, 2, LUA_TTABLE);
+
+  lua_getfield(L, 2, "image");
+  SDL_Texture *texture = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "width");
+  int width = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "height");
+  int height = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+
+  int x = luaL_checkinteger(L, 3);
+  int y = luaL_checkinteger(L, 4);
+  int w = luaL_optinteger(L, 5, width);
+  int h = luaL_optinteger(L, 6, height);
+
+  SDL_Rect dst = {x, y, w, h};
+  SDL_RenderCopy(win->renderer, texture, NULL, &dst);
+  return 0;
+}
+
+static int l_gfx2d_line_width(lua_State *L) {
   lua_getfield(L, 1, "_win");
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int thick = luaL_checknumber(L, 2);
-  win->thick = thick;
+  win->line_width = thick;
   return 0;
 }
 
@@ -128,7 +165,7 @@ static int l_gfx2d_rect(lua_State *L) {
     win->color.b,
     win->color.a);
 
-  for (int i = 0; i < win->thick; i++) {
+  for (int i = 0; i < win->line_width; i++) {
     SDL_Rect rect = {
       x + i,
       y + i,
@@ -180,7 +217,7 @@ static int l_gfx2d_circ(lua_State *L) {
     win->color.b,
     win->color.a);
 
-  for (int i = 0; i < win->thick; i++) {
+  for (int i = 0; i < win->line_width; i++) {
     int radius = r - i;
 
     if (radius <= 0) {
@@ -261,7 +298,7 @@ static int l_gfx2d_arc(lua_State *L) {
     end = tmp;
   }
 
-  for (int t = 0; t < win->thick; t++) {
+  for (int t = 0; t < win->line_width; t++) {
     int radius = r - t;
     if (radius <= 0) {
       break;
@@ -357,7 +394,7 @@ static int l_gfx2d_tri(lua_State *L) {
     win->color.b,
     win->color.a);
 
-  int half = win->thick / 2;
+  int half = win->line_width / 2;
 
   for (int i = -half; i <= half; i++) {
     SDL_RenderDrawLine(win->renderer, x1 + i, y1, x2 + i, y2);
@@ -546,9 +583,11 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "color");
   lua_pushcfunction(L, l_gfx2d_text);
   lua_setfield(L, -2, "text");
+  lua_pushcfunction(L, l_gfx2d_image);
+  lua_setfield(L, -2, "image");
 
-  lua_pushcfunction(L, l_gfx2d_thick);
-  lua_setfield(L, -2, "thick");
+  lua_pushcfunction(L, l_gfx2d_line_width);
+  lua_setfield(L, -2, "line_width");
   lua_pushcfunction(L, l_gfx2d_rect);
   lua_setfield(L, -2, "rect");
   lua_pushcfunction(L, l_gfx2d_rect_fill);
@@ -640,7 +679,7 @@ static int l_gfx2d_init(lua_State *L) {
   win->frame_start = SDL_GetTicks();
   win->delta_time = 1000/target_fps;
   win->color = (SDL_Color){0, 0, 0, 255};
-  win->thick = 1;
+  win->line_width = 1;
 
   memset(win->key_held, 0, sizeof(win->key_held));
   memset(win->key_down, 0, sizeof(win->key_down));
@@ -757,6 +796,7 @@ void service_gfx2d(lua_State *L) {
 
 void service_input(lua_State *L) {
   lua_newtable(L);
+
   lua_pushcfunction(L, l_input_init);
   lua_setfield(L, -2, "init");
 
@@ -777,6 +817,50 @@ void service_input(lua_State *L) {
   
   lua_pushcfunction(L, l_input_mouse);
   lua_setfield(L, -2, "mouse");
+}
+
+// assets:image(path)
+int l_assets_image(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  const char *path = luaL_checkstring(L, 2);
+
+  SDL_Surface *surface = IMG_Load(path);
+  if (!surface) {
+    luaL_error(L, "couldnt find image: %s", path);
+  }
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(win->renderer, surface);
+  
+  lua_newtable(L); 
+  lua_pushnumber(L, surface->w);
+  lua_setfield(L, -2, "width");
+  lua_pushnumber(L, surface->h);
+  lua_setfield(L, -2, "height");
+  lua_pushlightuserdata(L, texture);
+  lua_setfield(L, -2, "image");
+  SDL_FreeSurface(surface);
+  return 1;
+}
+
+static int l_assets_init(lua_State *L) {
+  const char *backend = luaL_checkstring(L, 2);
+  if (strcmp(backend, "sdl") != 0) {
+    return luaL_error(L, "unknown backend: %s", backend);
+  }
+
+  lua_getfield(L, 3, "_handle");
+  lua_setfield(L, 1, "_win");
+  return 0;
+}
+
+void service_assets(lua_State *L) {
+  lua_newtable(L);
+
+  lua_pushcfunction(L, l_assets_init);
+  lua_setfield(L, -2, "init");
+  lua_pushcfunction(L, l_assets_image);
+  lua_setfield(L, -2, "image");
 }
 
 const char *mengine_log_get(lua_State *L) {
@@ -842,6 +926,8 @@ int l_getservice(lua_State *L) {
     service_gfx2d(L);
   } else if (strcmp(name, "input") == 0) {
     service_input(L);
+  } else if (strcmp(name, "assets") == 0) {
+    service_assets(L);
   } else {
     return luaL_error(L, "unknown service: '%s'", name);
   }

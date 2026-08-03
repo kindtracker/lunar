@@ -1,10 +1,10 @@
 # Mengine
 
-Mengine is a lightweight engine that uses Lua for scripting.
+Mengine is a lightweight engine for building 2D applications (or headless) and games with Lua and is distributed as a single-header C library.
 
 ## Example
 ```lua
-local gfx = mengine:getservice("gfx:2d");
+local gfx = mengine:getservice("gfx:2d")
 local win = gfx:init("meow", 800, 600)
 local ctx = win:getcontext()
 
@@ -24,6 +24,7 @@ win:free()
 - Lua 5.5
 - SDL2
 - SDL2_ttf
+- SDL2_image
 
 ## Installation
 ```sh
@@ -36,12 +37,14 @@ make
 ## Lua API
 ### Cheatsheet
 ```lua
-mengine:getservice(service_name); -- example: gfx:2d
+ -- the only supported backend is "sdl" (SDL2) for now
+
+mengine:getservice(service_name) -- example: gfx:2d
 mengine:wait(sec)
 mengine:time()
 
-mengine.log(fornat, ...)
-mengine.info(fornat, ...)
+mengine.log(format, ...)
+mengine.info(format, ...)
 mengine.warn(format, ...)
 mengine.error(format, ...)
 mengine.fatal(format, ...)
@@ -58,19 +61,21 @@ ctx:clear()
 ctx:end_frame()
 ctx:target_fps(target_fps?)
 ctx:delta_time()
-ctx:text(text, x, y)
 
-ctx:thick(size)
+ctx:text(text, x, y)
+ctx:image(image, x, y, w?, h?) -- if w or h is not set, it will use original size
+
+ctx:line_width(size)
 ctx:rect(x, y, w, h)
 ctx:rect_fill(x, y, w, h)
 ctx:circ(x, y, r)
 ctx:circ_fill(x, y, r)
-ctx:arc(x, y, r, start_angle, end_angle);
-ctx:arc_fill(x, y, r, start_angle, end_angle);
+ctx:arc(x, y, r, start_angle, end_angle)
+ctx:arc_fill(x, y, r, start_angle, end_angle)
 ctx:tri(x1, y1, x2, y2, x3, y3)
 ctx:tri_fill(x1, y1, x2, y2, x3, y3)
 
-input:init(backend, win) -- single backend is "sdl" (SDL2)
+input:init(backend, win)
 
 input:key_held(key)
 input:held(key)
@@ -80,21 +85,27 @@ input:key_up(key)
 input:up(key)
 input:mouse() -- returns x, y, left, right, middle
 
--- TODO (this api is not implemented yet)
+assets:init(backend, win)
+assets:image(path)
+
+-- Planned APIs (not implemented yet)
 -- v v v v v v v v v v v v v v v v v v v
 
-gfx:font(pathname)
-ctx:font(font)
+assets:font(path)
+assets:sound(path)
+assets:music(path)
 
-mengine.platform
-mengine:quit()
+ctx:font(font)
+ctx:line(x1, y1, x2, y2)
 
 mengine.log_callback(func)
+
 ```
 
 ### Services
 - **gfx:2d** used to make 2D graphics
 - **input** used to get input from window
+- **assets** used to load assets (not fully implemented)
 
 ### `mengine`
 - `mengine:getservice(service_name)` returns a service object.
@@ -112,11 +123,11 @@ mengine.log_callback(func)
 - `input:init(backend, win)` initalize the input, single backend is "sdl" (SDL2)
 
 ## Contributing
-Contributing will be accepted
+Contributions are welcome.
 
 ## Credits
 - **Lua** — used as Mengine's scripting language.
-- **SDL2** — used as Mengine's rendering backend.
+- **SDL2, SDL2_image, SDL2_ttf** — used as Mengine's rendering backend.
 
 ## License
 This project is licensed under the GNU General Public License v3.0 or later.
