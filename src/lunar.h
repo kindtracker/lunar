@@ -1,5 +1,5 @@
 /*
- * Mengine - Lightweight Lua game engine
+ * Lunar - Lightweight Lua game engine
  *
  * Copyright (C) 2026 kindtracker
  *
@@ -15,13 +15,13 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-extern lua_State *mengine_state;
+extern lua_State *lunar_state;
 
-extern void mengine_init();
-extern const char *mengine_run(const char *pathname);
-extern void mengine_free();
+extern void lunar_init();
+extern const char *lunar_run(const char *pathname);
+extern void lunar_free();
 
-#ifdef MENGINE_IMPLEMENTATION
+#ifdef LUNAR_IMPLEMENTATION
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -29,12 +29,12 @@ extern void mengine_free();
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-lua_State *mengine_state;
+lua_State *lunar_state;
 bool inited = false;
 
 typedef enum {
-  MENGINE_BACKEND_SDL
-} mengine_backend_t;
+  lunar_BACKEND_SDL
+} lunar_backend_t;
 
 typedef struct {
   SDL_Window *window;
@@ -52,23 +52,23 @@ typedef struct {
 
   SDL_Color color;
   int line_width;
-} mengine_window;
+} lunar_window;
 
 typedef struct {
-  mengine_window *window;
-  mengine_backend_t backend;
-} mengine_input;
+  lunar_window *window;
+  lunar_backend_t backend;
+} lunar_input;
 
 typedef struct {
   SDL_Texture *texture;
   int width;
   int height;
-} mengine_image;
+} lunar_image;
 
 // ctx:color(r, g, b, a?);
 static int l_gfx2d_color(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int r = luaL_checknumber(L, 2);
@@ -82,7 +82,7 @@ static int l_gfx2d_color(lua_State *L) {
 // ctx:text(text, x, y);
 static int l_gfx2d_text(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   const char *text = luaL_checkstring(L, 2);
@@ -110,7 +110,7 @@ static int l_gfx2d_text(lua_State *L) {
 // ctx:image(image, x, y, w?, h?)
 static int l_gfx2d_image(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   luaL_checktype(L, 2, LUA_TTABLE);
@@ -140,7 +140,7 @@ static int l_gfx2d_image(lua_State *L) {
 // ctx:image_part(image, sx, sy, sw, sh, dx, dy, dw?, dh?)
 static int l_gfx2d_image_part(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   luaL_checktype(L, 2, LUA_TTABLE);
@@ -166,7 +166,7 @@ static int l_gfx2d_image_part(lua_State *L) {
 
 static int l_gfx2d_line_width(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int thick = luaL_checknumber(L, 2);
@@ -178,7 +178,7 @@ static int l_gfx2d_line_width(lua_State *L) {
 // ctx:rect(x, y, w, h);
 static int l_gfx2d_rect(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int x = luaL_checknumber(L, 2);
@@ -213,7 +213,7 @@ static int l_gfx2d_rect(lua_State *L) {
 // ctx:rect_fill(x, y, w, h);
 static int l_gfx2d_rect_fill(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int x = luaL_checknumber(L, 2);
@@ -231,7 +231,7 @@ static int l_gfx2d_rect_fill(lua_State *L) {
 // ctx:circ(x, y, r);
 static int l_gfx2d_circ(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int cx = luaL_checknumber(L, 2);
@@ -284,7 +284,7 @@ static int l_gfx2d_circ(lua_State *L) {
 // ctx:circ_fill(x, y, r);
 static int l_gfx2d_circ_fill(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int cx = luaL_checknumber(L, 2);
@@ -304,7 +304,7 @@ static int l_gfx2d_circ_fill(lua_State *L) {
 // ctx:arc(x, y, r, start_angle, end_angle);
 static int l_gfx2d_arc(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int cx = luaL_checknumber(L, 2);
@@ -347,7 +347,7 @@ static int l_gfx2d_arc(lua_State *L) {
 // ctx:arc_fill(x, y, r, start_angle, end_angle);
 static int l_gfx2d_arc_fill(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int cx = luaL_checknumber(L, 2);
@@ -405,7 +405,7 @@ static int l_gfx2d_arc_fill(lua_State *L) {
 // ctx:tri(x1, y1, x2, y2, x3, y3);
 static int l_gfx2d_tri(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   int x1 = luaL_checknumber(L, 2);
@@ -473,7 +473,7 @@ static void fill_flat_top(SDL_Renderer *renderer,
 // ctx:tri_fill(x1, y1, x2, y2, x3, y3);
 static int l_gfx2d_tri_fill(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   float x1 = luaL_checknumber(L, 2);
@@ -524,7 +524,7 @@ static int l_gfx2d_tri_fill(lua_State *L) {
 // ctx:clear();
 static int l_gfx2d_clear(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
@@ -535,7 +535,7 @@ static int l_gfx2d_clear(lua_State *L) {
 // ctx:target_fps(target_fps?) 
 static int l_gfx2d_target_fps(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
   int target_fps = luaL_checknumber(L, 2);
   win->target_fps = target_fps;
@@ -546,7 +546,7 @@ static int l_gfx2d_target_fps(lua_State *L) {
 // ctx:delta_time()
 static int l_gfx2d_delta_time(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
   lua_pushnumber(L, (float)(win->delta_time)/1000);
   return 1;
@@ -555,7 +555,7 @@ static int l_gfx2d_delta_time(lua_State *L) {
 // ctx:end_frame() 
 static int l_gfx2d_end_frame(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
   SDL_RenderPresent(win->renderer);
 
@@ -591,7 +591,7 @@ static int l_gfx2d_end_frame(lua_State *L) {
 // local ctx = win:getcontext()
 static int l_gfx2d_getcontext(lua_State *L) {
   lua_getfield(L, 1, "_handle");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
   lua_newtable(L);
@@ -639,7 +639,7 @@ static int l_gfx2d_getcontext(lua_State *L) {
 // win:quit()
 static int l_win_quit(lua_State *L) {
   lua_getfield(L, 1, "_handle");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   if (win->texture) SDL_DestroyTexture(win->texture);
   if (win->renderer) SDL_DestroyRenderer(win->renderer);
   if (win->window) SDL_DestroyWindow(win->window);
@@ -678,7 +678,7 @@ static int l_gfx2d_init(lua_State *L) {
   lua_pushinteger(L, height);
   lua_setfield(L, -2, "height");
 
-  mengine_window *win = lua_newuserdata(L, sizeof(*win));
+  lunar_window *win = lua_newuserdata(L, sizeof(*win));
   win->window = SDL_CreateWindow(
     name,
     SDL_WINDOWPOS_CENTERED,
@@ -714,15 +714,15 @@ static int l_gfx2d_init(lua_State *L) {
   memset(win->key_down, 0, sizeof(win->key_down));
   memset(win->key_up, 0, sizeof(win->key_up));
 
-  luaL_getmetatable(L, "mengine.window");
+  luaL_getmetatable(L, "lunar.window");
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "_handle");
   return 1;
 }
 
-static mengine_input *input_check(lua_State *L) {
+static lunar_input *input_check(lua_State *L) {
   lua_getfield(L, 1, "_handle");
-  mengine_input *input = lua_touserdata(L, -1);
+  lunar_input *input = lua_touserdata(L, -1);
   lua_pop(L, 1);
   if (!input) luaL_error(L, "input is not initialized");
   return input;
@@ -804,13 +804,13 @@ static int l_input_init(lua_State *L) {
   }
 
   lua_getfield(L, 3, "_handle");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  mengine_input *input = lua_newuserdata(L, sizeof(*input));
+  lunar_input *input = lua_newuserdata(L, sizeof(*input));
   input->window = win;
-  input->backend = MENGINE_BACKEND_SDL;
-  luaL_getmetatable(L, "mengine.input");
+  input->backend = lunar_BACKEND_SDL;
+  luaL_getmetatable(L, "lunar.input");
   lua_setmetatable(L, -2);
   lua_setfield(L, 1, "_handle");
   return 0;
@@ -851,7 +851,7 @@ static void service_input(lua_State *L) {
 // assets:image(path)
 static int l_assets_image(lua_State *L) {
   lua_getfield(L, 1, "_win");
-  mengine_window *win = lua_touserdata(L, -1);
+  lunar_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
   const char *path = luaL_checkstring(L, 2);
 
@@ -892,7 +892,7 @@ static void service_assets(lua_State *L) {
   lua_setfield(L, -2, "image");
 }
 
-static const char *mengine_log_get(lua_State *L) {
+static const char *lunar_log_get(lua_State *L) {
   lua_getglobal(L, "string");
   lua_getfield(L, -1, "format");
   lua_remove(L, -2);
@@ -901,50 +901,50 @@ static const char *mengine_log_get(lua_State *L) {
   return lua_tostring(L, -1);
 }
 
-// mengine.log(format, ...)
+// lunar.log(format, ...)
 static int l_log(lua_State *L) {
-  printf("\033[32m[log]\033[0m %s\n", mengine_log_get(L));
+  printf("\033[32m[log]\033[0m %s\n", lunar_log_get(L));
   return 0;
 }
 
-// mengine.info(format, ...)
+// lunar.info(format, ...)
 static int l_info(lua_State *L) {
-  printf("\033[36m[info]\033[0m %s\n", mengine_log_get(L));
+  printf("\033[36m[info]\033[0m %s\n", lunar_log_get(L));
   return 0;
 }
 
-// mengine.warn(format, ...)
+// lunar.warn(format, ...)
 static int l_warn(lua_State *L) {
-  printf("\033[33m[warning]\033[0m %s\n", mengine_log_get(L));
+  printf("\033[33m[warning]\033[0m %s\n", lunar_log_get(L));
   return 0;
 }
 
-// mengine.error(format, ...)
+// lunar.error(format, ...)
 static int l_error(lua_State *L) {
-  printf("\033[31m[error]\033[0m %s\n", mengine_log_get(L));
+  printf("\033[31m[error]\033[0m %s\n", lunar_log_get(L));
   return 0;
 }
 
-// mengine.fatal(format, ...)
+// lunar.fatal(format, ...)
 static int l_fatal(lua_State *L) {
-  printf("\033[31m[fatal]\033[0m %s\n", mengine_log_get(L));
+  printf("\033[31m[fatal]\033[0m %s\n", lunar_log_get(L));
   return 0;
 }
 
-// mengine.wait(sec)
+// lunar.wait(sec)
 static int l_wait(lua_State *L) {
   float sec = luaL_checknumber(L, 2);
   SDL_Delay(sec*1000);
   return 0;
 }
 
-// mengine.time(sec)
+// lunar.time(sec)
 static int l_time(lua_State *L) {
   lua_pushnumber(L, (float)(SDL_GetTicks())/1000);
   return 1;
 }
 
-// local gfx = mengine:getservice(service_name);
+// local gfx = lunar:getservice(service_name);
 static int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
 
@@ -964,47 +964,47 @@ static int l_getservice(lua_State *L) {
   return 1;
 }
 
-void mengine_init() {
-  mengine_state = luaL_newstate();
-  luaL_openlibs(mengine_state);
+void lunar_init() {
+  lunar_state = luaL_newstate();
+  luaL_openlibs(lunar_state);
 
-  lua_newtable(mengine_state);
+  lua_newtable(lunar_state);
 
-  lua_pushcfunction(mengine_state, l_getservice);
-  lua_setfield(mengine_state, -2, "getservice");
-  lua_pushcfunction(mengine_state, l_wait);
-  lua_setfield(mengine_state, -2, "wait");
-  lua_pushcfunction(mengine_state, l_time);
-  lua_setfield(mengine_state, -2, "time");
+  lua_pushcfunction(lunar_state, l_getservice);
+  lua_setfield(lunar_state, -2, "getservice");
+  lua_pushcfunction(lunar_state, l_wait);
+  lua_setfield(lunar_state, -2, "wait");
+  lua_pushcfunction(lunar_state, l_time);
+  lua_setfield(lunar_state, -2, "time");
 
-  lua_pushcfunction(mengine_state, l_log);
-  lua_setfield(mengine_state, -2, "log");
-  lua_pushcfunction(mengine_state, l_info);
-  lua_setfield(mengine_state, -2, "info");
-  lua_pushcfunction(mengine_state, l_warn);
-  lua_setfield(mengine_state, -2, "warn");
-  lua_pushcfunction(mengine_state, l_error);
-  lua_setfield(mengine_state, -2, "error");
-  lua_pushcfunction(mengine_state, l_fatal);
-  lua_setfield(mengine_state, -2, "fatal");
+  lua_pushcfunction(lunar_state, l_log);
+  lua_setfield(lunar_state, -2, "log");
+  lua_pushcfunction(lunar_state, l_info);
+  lua_setfield(lunar_state, -2, "info");
+  lua_pushcfunction(lunar_state, l_warn);
+  lua_setfield(lunar_state, -2, "warn");
+  lua_pushcfunction(lunar_state, l_error);
+  lua_setfield(lunar_state, -2, "error");
+  lua_pushcfunction(lunar_state, l_fatal);
+  lua_setfield(lunar_state, -2, "fatal");
 
-  lua_setglobal(mengine_state, "mengine");
+  lua_setglobal(lunar_state, "lunar");
 }
 
-void mengine_quit() {
-  lua_close(mengine_state);
+void lunar_quit() {
+  lua_close(lunar_state);
   TTF_Quit();
   SDL_Quit();
 }
 
-const char *mengine_run(const char *pathname) {
-  int status = luaL_loadfile(mengine_state, pathname);
+const char *lunar_run(const char *pathname) {
+  int status = luaL_loadfile(lunar_state, pathname);
   if (status == LUA_OK) {
-    status = lua_pcall(mengine_state, 0, LUA_MULTRET, 0);
+    status = lua_pcall(lunar_state, 0, LUA_MULTRET, 0);
   }
   if (status != LUA_OK) {
-    const char *err_msg = lua_tostring(mengine_state, -1);
-    lua_pop(mengine_state, 1);
+    const char *err_msg = lua_tostring(lunar_state, -1);
+    lua_pop(lunar_state, 1);
     return err_msg;
   }
   return NULL;

@@ -6,8 +6,8 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-#define MENGINE_IMPLEMENTATION
-#include "mengine.h"
+#define LUNAR_IMPLEMENTATION
+#include "lunar.h"
 
 int main(int argc, char **argv) {
   argc=argc;
@@ -16,11 +16,11 @@ int main(int argc, char **argv) {
     pathname = "main.lua";
   }
 
-  mengine_init();
-  const char *err_msg = mengine_run(pathname);
+  lunar_init();
+  const char *err_msg = lunar_run(pathname);
   if (err_msg != NULL) {
     printf("\033[31m[error]\033[0m %s\n", err_msg);
   }
-  mengine_quit();
+  lunar_quit();
   return 0;
 }

@@ -1,5 +1,5 @@
-local gfx = mengine:getservice("gfx:2d")
-local input = mengine:getservice("input")
+local gfx = lunar:getservice("gfx:2d")
+local input = lunar:getservice("input")
 local win = gfx:init("Pong", 700, 450, 60)
 local ctx = win:getcontext()
 input:init("sdl", win)
@@ -37,7 +37,7 @@ while not ctx:end_frame() do
   if bx <= 30 then
     if by >= y and by <= y+80 then
       vx = -vx
-      mengine.log("Pong!")
+      lunar.log("Pong!")
     else
       if bx <= -10 then
         bx = 700/2-5

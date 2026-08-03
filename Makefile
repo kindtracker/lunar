@@ -5,7 +5,7 @@ LIBS = -lm -llua -lSDL2 -lSDL2_ttf -lSDL2_image
 ASSET = asset
 SRC = src
 BUILD = build
-OUT = $(BUILD)/mengine
+OUT = $(BUILD)/lunar
 
 CSRC = $(shell find $(SRC) -type f -name '*.c')
 COBJ = $(patsubst %.c,$(BUILD)/%.o,$(CSRC))

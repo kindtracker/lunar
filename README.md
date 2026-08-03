@@ -1,10 +1,10 @@
-# Mengine
+# Lunar Engine
 
-Mengine is a lightweight engine for building 2D applications (or headless) and games with Lua and is distributed as a single-header C library.
+Lunar is a lightweight 2D engine for building applications, headless programs, and games with Lua. It is distributed as a single-header C library.
 
 ## Example
 ```lua
-local gfx = mengine:getservice("gfx:2d")
+local gfx = lunar:getservice("gfx:2d")
 local win = gfx:init("meow", 800, 600)
 local ctx = win:getcontext()
 
@@ -28,10 +28,10 @@ win:free()
 
 ## Installation
 ```sh
-git clone https://github.com/kindtracker/mengine
-cd mengine
+git clone https://github.com/kindtracker/lunar
+cd lunar
 make
-# add the mengine executable (build/mengine) to your PATH
+# add the lunar executable (build/lunar) to your PATH
 ```
 
 ## Lua API
@@ -39,15 +39,15 @@ make
 ```lua
  -- the only supported backend is "sdl" (SDL2) for now
 
-mengine:getservice(service_name) -- example: gfx:2d
-mengine:wait(sec)
-mengine:time()
+lunar:getservice(service_name) -- example: gfx:2d
+lunar:wait(sec)
+lunar:time()
 
-mengine.log(format, ...)
-mengine.info(format, ...)
-mengine.warn(format, ...)
-mengine.error(format, ...)
-mengine.fatal(format, ...)
+lunar.log(format, ...)
+lunar.info(format, ...)
+lunar.warn(format, ...)
+lunar.error(format, ...)
+lunar.fatal(format, ...)
 
 gfx:init(title, width, height, target_fps?) -- default target fps is 60
 
@@ -101,7 +101,7 @@ assets:music(path)
 ctx:font(font)
 ctx:line(x1, y1, x2, y2)
 
-mengine.log_callback(func)
+lunar.log_callback(func)
 
 ```
 
@@ -110,8 +110,8 @@ mengine.log_callback(func)
 - **input** used to get input from window
 - **assets** used to load assets (not fully implemented)
 
-### `mengine`
-- `mengine:getservice(service_name)` returns a service object.
+### `lunar`
+- `lunar:getservice(service_name)` returns a service object.
 
 ### `gfx`
 - `gfx:init(title, width, height)` creates a window and returns an object (called "win").
@@ -129,8 +129,8 @@ mengine.log_callback(func)
 Contributions are welcome.
 
 ## Credits
-- **Lua** — used as Mengine's scripting language.
-- **SDL2, SDL2_image, SDL2_ttf** — used as Mengine's rendering backend.
+- **Lua** — used as lunar's scripting language.
+- **SDL2, SDL2_image, SDL2_ttf** — used as lunar's rendering backend.
 
 ## License
 This project is licensed under the GNU General Public License v3.0 or later.

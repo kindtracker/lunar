@@ -1,5 +1,5 @@
-local gfx = mengine:getservice("gfx:2d")
-local input = mengine:getservice("input")
+local gfx = lunar:getservice("gfx:2d")
+local input = lunar:getservice("input")
 local win = gfx:init("Pong", 700, 450, 60)
 local ctx = win:getcontext()
 input:init("sdl", win)
