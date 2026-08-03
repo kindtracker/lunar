@@ -1,5 +1,3 @@
--- This is a pseudo program yet
-
 local gfx = mengine:getservice("gfx:2d")
 local assets = mengine:getservice("assets")
 local input = mengine:getservice("input")

@@ -64,6 +64,9 @@ ctx:delta_time()
 
 ctx:text(text, x, y)
 ctx:image(image, x, y, w?, h?) -- if w or h is not set, it will use original size
+ctx:image_part(tiles,
+    sx, sy, sw, sh,
+    dx, dy, dw?, dh?) -- s: source d: destination
 
 ctx:line_width(size)
 ctx:rect(x, y, w, h)

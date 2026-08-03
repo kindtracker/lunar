@@ -137,6 +137,33 @@ static int l_gfx2d_image(lua_State *L) {
   return 0;
 }
 
+// ctx:image_part(image, sx, sy, sw, sh, dx, dy, dw?, dh?)
+static int l_gfx2d_image_part(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  mengine_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  luaL_checktype(L, 2, LUA_TTABLE);
+
+  lua_getfield(L, 2, "image");
+  SDL_Texture *texture = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int sx = luaL_checkinteger(L, 3);
+  int sy = luaL_checkinteger(L, 4);
+  int sw = luaL_checkinteger(L, 5);
+  int sh = luaL_checkinteger(L, 6);
+  int dx = luaL_checkinteger(L, 7);
+  int dy = luaL_checkinteger(L, 8);
+  int dw = luaL_optinteger(L, 9, sw);
+  int dh = luaL_optinteger(L, 10, sh);
+
+  SDL_Rect src = { sx, sy, sw, sh };
+  SDL_Rect dst = { dx, dy, dw, dh };
+  SDL_RenderCopy(win->renderer, texture, &src, &dst);
+  return 0;
+}
+
 static int l_gfx2d_line_width(lua_State *L) {
   lua_getfield(L, 1, "_win");
   mengine_window *win = lua_touserdata(L, -1);
@@ -585,6 +612,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
   lua_setfield(L, -2, "text");
   lua_pushcfunction(L, l_gfx2d_image);
   lua_setfield(L, -2, "image");
+  lua_pushcfunction(L, l_gfx2d_image_part);
+  lua_setfield(L, -2, "image_part");
 
   lua_pushcfunction(L, l_gfx2d_line_width);
   lua_setfield(L, -2, "line_width");
@@ -787,14 +816,14 @@ static int l_input_init(lua_State *L) {
   return 0;
 }
 
-void service_gfx2d(lua_State *L) {
+static void service_gfx2d(lua_State *L) {
   lua_newtable(L);
   
   lua_pushcfunction(L, l_gfx2d_init);
   lua_setfield(L, -2, "init");
 }
 
-void service_input(lua_State *L) {
+static void service_input(lua_State *L) {
   lua_newtable(L);
 
   lua_pushcfunction(L, l_input_init);
@@ -820,7 +849,7 @@ void service_input(lua_State *L) {
 }
 
 // assets:image(path)
-int l_assets_image(lua_State *L) {
+static int l_assets_image(lua_State *L) {
   lua_getfield(L, 1, "_win");
   mengine_window *win = lua_touserdata(L, -1);
   lua_pop(L, 1);
@@ -854,7 +883,7 @@ static int l_assets_init(lua_State *L) {
   return 0;
 }
 
-void service_assets(lua_State *L) {
+static void service_assets(lua_State *L) {
   lua_newtable(L);
 
   lua_pushcfunction(L, l_assets_init);
@@ -863,7 +892,7 @@ void service_assets(lua_State *L) {
   lua_setfield(L, -2, "image");
 }
 
-const char *mengine_log_get(lua_State *L) {
+static const char *mengine_log_get(lua_State *L) {
   lua_getglobal(L, "string");
   lua_getfield(L, -1, "format");
   lua_remove(L, -2);
@@ -873,50 +902,50 @@ const char *mengine_log_get(lua_State *L) {
 }
 
 // mengine.log(format, ...)
-int l_log(lua_State *L) {
+static int l_log(lua_State *L) {
   printf("\033[32m[log]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.info(format, ...)
-int l_info(lua_State *L) {
+static int l_info(lua_State *L) {
   printf("\033[36m[info]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.warn(format, ...)
-int l_warn(lua_State *L) {
+static int l_warn(lua_State *L) {
   printf("\033[33m[warning]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.error(format, ...)
-int l_error(lua_State *L) {
+static int l_error(lua_State *L) {
   printf("\033[31m[error]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.fatal(format, ...)
-int l_fatal(lua_State *L) {
+static int l_fatal(lua_State *L) {
   printf("\033[31m[fatal]\033[0m %s\n", mengine_log_get(L));
   return 0;
 }
 
 // mengine.wait(sec)
-int l_wait(lua_State *L) {
+static int l_wait(lua_State *L) {
   float sec = luaL_checknumber(L, 2);
   SDL_Delay(sec*1000);
   return 0;
 }
 
 // mengine.time(sec)
-int l_time(lua_State *L) {
+static int l_time(lua_State *L) {
   lua_pushnumber(L, (float)(SDL_GetTicks())/1000);
   return 1;
 }
 
 // local gfx = mengine:getservice(service_name);
-int l_getservice(lua_State *L) {
+static int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
 
   if (strcmp(name, "gfx:2d") == 0) {
