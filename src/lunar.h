@@ -1,5 +1,5 @@
 /*
- * Lunar - Lightweight Lua game engine
+ * Lunar - Lightweight Lua engine
  *
  * Copyright (C) 2026 kindtracker
  *
@@ -171,6 +171,35 @@ static int l_gfx2d_line_width(lua_State *L) {
 
   int thick = luaL_checknumber(L, 2);
   win->line_width = thick;
+  return 0;
+}
+
+static int l_gfx2d_line(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  lunar_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int x1 = luaL_checknumber(L, 2);
+  int y1 = luaL_checknumber(L, 3);
+  int x2 = luaL_checknumber(L, 4);
+  int y2 = luaL_checknumber(L, 5);
+
+  if (win->line_width == 1) {
+    SDL_RenderDrawLine(win->renderer, x1, y1, x2, y2);
+    return 0;
+  }
+  float dx = (float)(x2 - x1);
+  float dy = (float)(y2 - y1);
+  float len = sqrtf(dx * dx + dy * dy);
+  if (len == 0.0f) {
+    return 0;
+  }
+  float nx = -dy / len;
+  float ny =  dx / len;
+  float half = (win->line_width - 1) / 2.0f;
+  for (float i = -half; i <= half; i += 1.0f) {
+    SDL_RenderDrawLine(win->renderer, (int)roundf(x1 + nx * i), (int)roundf(y1 + ny * i), (int)roundf(x2 + nx * i), (int)roundf(y2 + ny * i));
+  }
   return 0;
 }
 
@@ -617,6 +646,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
 
   lua_pushcfunction(L, l_gfx2d_line_width);
   lua_setfield(L, -2, "line_width");
+  lua_pushcfunction(L, l_gfx2d_line);
+  lua_setfield(L, -2, "line");
   lua_pushcfunction(L, l_gfx2d_rect);
   lua_setfield(L, -2, "rect");
   lua_pushcfunction(L, l_gfx2d_rect_fill);
