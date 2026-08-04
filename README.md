@@ -69,6 +69,8 @@ ctx:image_part(tiles,
     dx, dy, dw?, dh?) -- s: source d: destination
 
 ctx:line_width(size)
+ctx:pixel(x, y)
+ctx:line(x1, y1, x2, y2)
 ctx:rect(x, y, w, h)
 ctx:rect_fill(x, y, w, h)
 ctx:circ(x, y, r)
@@ -99,7 +101,6 @@ assets:sound(path)
 assets:music(path)
 
 ctx:font(font)
-ctx:line(x1, y1, x2, y2)
 
 lunar.log_callback(func)
 

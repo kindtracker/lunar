@@ -174,6 +174,21 @@ static int l_gfx2d_line_width(lua_State *L) {
   return 0;
 }
 
+// ctx:px(x, y);
+static int l_gfx2d_pixel(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  lunar_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  int x = luaL_checknumber(L, 2);
+  int y = luaL_checknumber(L, 3);
+
+  SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
+  SDL_RenderDrawPoint(win->renderer, x, y);
+  return 0;
+}
+
+// ctx:line(x2, y2, x2, y2);
 static int l_gfx2d_line(lua_State *L) {
   lua_getfield(L, 1, "_win");
   lunar_window *win = lua_touserdata(L, -1);
@@ -184,6 +199,7 @@ static int l_gfx2d_line(lua_State *L) {
   int x2 = luaL_checknumber(L, 4);
   int y2 = luaL_checknumber(L, 5);
 
+  SDL_SetRenderDrawColor(win->renderer, win->color.r, win->color.g, win->color.b, win->color.a);
   if (win->line_width == 1) {
     SDL_RenderDrawLine(win->renderer, x1, y1, x2, y2);
     return 0;
@@ -646,6 +662,8 @@ static int l_gfx2d_getcontext(lua_State *L) {
 
   lua_pushcfunction(L, l_gfx2d_line_width);
   lua_setfield(L, -2, "line_width");
+  lua_pushcfunction(L, l_gfx2d_pixel);
+  lua_setfield(L, -2, "pixel");
   lua_pushcfunction(L, l_gfx2d_line);
   lua_setfield(L, -2, "line");
   lua_pushcfunction(L, l_gfx2d_rect);
