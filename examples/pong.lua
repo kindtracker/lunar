@@ -14,10 +14,10 @@ local vy = -8
 lunar.log("version: %s", lunar.version)
 
 while not ctx:end_frame() do
-  ctx:color(0, 0, 0)
+  ctx:color(192, 192, 192)
   ctx:clear()
   
-  ctx:color(255, 255, 255)
+  ctx:color(0, 0, 255)
   ctx:rect_fill(10, y, 20, 80)
   ctx:color(255, 0, 0)
   ctx:rect_fill(bx, by, 10, 10)
@@ -48,12 +48,16 @@ while not ctx:end_frame() do
     end
   end
   if by <= 0 then
-    vy = -vy
+    vy = -vy + math.sin(lunar:time()*math.tan(lunar:time()))
   elseif by >= win.height then
-    vy = -vy
+    vy = -vy + math.sin(lunar:time()*math.tan(lunar:time()))
   end
   if bx >= win.width then
     vx = -vx
   end
+
+  ctx:color(0, 0, 0)
+  local time_str = tostring(math.floor(lunar:time()))
+  ctx:text(time_str, win.width/2-(#time_str*24), 30)
 end
 win:quit()
