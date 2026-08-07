@@ -11,6 +11,8 @@ local by = 450/2-5
 local vx = -8
 local vy = -8
 
+lunar.log("version: %s", lunar.version)
+
 while not ctx:end_frame() do
   ctx:color(0, 0, 0)
   ctx:clear()

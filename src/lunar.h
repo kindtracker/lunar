@@ -11,15 +11,37 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#define LUNAR_VERSION "0.2.0"
+/*
+ * CHANGELOG:
+ * 0.2.0:
+ *   added: lunar.version
+ *   added: lunar_add_service(lunar_service *service)
+ *   added: lunar_remove_service(const char *service_name)
+ *   added: lunar_search_service(const char *service_name)
+ */
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
+typedef enum {
+  lunar_BACKEND_SDL
+} lunar_backend_t;
+
+typedef struct {
+  char *name;
+  int (*service)(lua_State *L);
+} lunar_service;
 
 extern lua_State *lunar_state;
 
 extern void lunar_init();
 extern const char *lunar_run(const char *pathname);
 extern void lunar_free();
+extern void lunar_add_service(lunar_service service);
+extern void lunar_remove_service(const char *service_name);
+extern lunar_service lunar_search_service(const char *service_name);
 
 #ifdef LUNAR_IMPLEMENTATION
 #include <stdbool.h>
@@ -28,13 +50,6 @@ extern void lunar_free();
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
-
-lua_State *lunar_state;
-bool inited = false;
-
-typedef enum {
-  lunar_BACKEND_SDL
-} lunar_backend_t;
 
 typedef struct {
   SDL_Window *window;
@@ -64,6 +79,12 @@ typedef struct {
   int width;
   int height;
 } lunar_image;
+
+lua_State *lunar_state;
+bool lunar_inited = false;
+
+lunar_service lunar_services[64];
+int lunar_service_count = 3;
 
 // ctx:color(r, g, b, a?);
 static int l_gfx2d_color(lua_State *L) {
@@ -704,7 +725,7 @@ static int l_gfx2d_init(lua_State *L) {
   int height = luaL_checkinteger(L, 4);
   int target_fps = luaL_optinteger(L, 5, 60);
 
-  if (!inited) {
+  if (!lunar_inited) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       return luaL_error(L, "SDL_Init: %s", SDL_GetError());
     }
@@ -713,7 +734,7 @@ static int l_gfx2d_init(lua_State *L) {
       return luaL_error(L, "TTF_Init: %s", TTF_GetError());
     }
 
-    inited = true;
+    lunar_inited = true;
   }
 
   lua_newtable(L);
@@ -993,6 +1014,32 @@ static int l_time(lua_State *L) {
   return 1;
 }
 
+void lunar_add_service(lunar_service service) {
+  lunar_services[lunar_service_count] = service;
+}
+
+void lunar_remove_service(const char *service_name) {
+  for (int i = 0; i < lunar_service_count; i++) {
+    if (strcmp(lunar_services[i].name, service_name) == 0) {
+      for (int j = i; j < lunar_service_count - 1; j++) {
+        lunar_services[j] = lunar_services[j + 1];
+      }
+      lunar_service_count--;
+      return;
+    }
+  }
+}
+
+lunar_service lunar_search_service(const char *service_name) {
+  for (int i = 0; i < lunar_service_count; i++) {
+    lunar_service service = lunar_services[i];
+    if (strcmp(service.name, service_name) == 0) {
+      return service;
+    }
+  }
+  return (lunar_service){.name = NULL, .service = NULL};
+}
+
 // local gfx = lunar:getservice(service_name);
 static int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
@@ -1036,6 +1083,9 @@ void lunar_init() {
   lua_setfield(lunar_state, -2, "error");
   lua_pushcfunction(lunar_state, l_fatal);
   lua_setfield(lunar_state, -2, "fatal");
+
+  lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
+  lua_setfield(lunar_state, -2, "version");
 
   lua_setglobal(lunar_state, "lunar");
 }

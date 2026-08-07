@@ -1,4 +1,4 @@
-# Lunar Engine
+# 🌙 Lunar Engine
 
 Lunar is a lightweight 2D engine for building applications, headless programs, and games with Lua. It is distributed as a single-header C library.
 

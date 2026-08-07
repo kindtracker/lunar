@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -O2 -Wall -Wextra
+CFLAGS = -O2 -Wall -Wextra -Werror
 LIBS = -lm -llua -lSDL2 -lSDL2_ttf -lSDL2_image
 
 ASSET = asset
