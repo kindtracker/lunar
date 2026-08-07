@@ -84,7 +84,7 @@ lua_State *lunar_state;
 bool lunar_inited = false;
 
 lunar_service lunar_services[64];
-int lunar_service_count = 3;
+int lunar_service_count = 0;
 
 // ctx:color(r, g, b, a?);
 static int l_gfx2d_color(lua_State *L) {
@@ -886,38 +886,6 @@ static int l_input_init(lua_State *L) {
   return 0;
 }
 
-static void service_gfx2d(lua_State *L) {
-  lua_newtable(L);
-  
-  lua_pushcfunction(L, l_gfx2d_init);
-  lua_setfield(L, -2, "init");
-}
-
-static void service_input(lua_State *L) {
-  lua_newtable(L);
-
-  lua_pushcfunction(L, l_input_init);
-  lua_setfield(L, -2, "init");
-
-  lua_pushcfunction(L, l_input_key_held);
-  lua_setfield(L, -2, "key_held");
-  lua_pushcfunction(L, l_input_held);
-  lua_setfield(L, -2, "held");
-  
-  lua_pushcfunction(L, l_input_key_down);
-  lua_setfield(L, -2, "key_down");
-  lua_pushcfunction(L, l_input_down);
-  lua_setfield(L, -2, "down");
-  
-  lua_pushcfunction(L, l_input_key_up);
-  lua_setfield(L, -2, "key_up");
-  lua_pushcfunction(L, l_input_up);
-  lua_setfield(L, -2, "up");
-  
-  lua_pushcfunction(L, l_input_mouse);
-  lua_setfield(L, -2, "mouse");
-}
-
 // assets:image(path)
 static int l_assets_image(lua_State *L) {
   lua_getfield(L, 1, "_win");
@@ -953,13 +921,48 @@ static int l_assets_init(lua_State *L) {
   return 0;
 }
 
-static void service_assets(lua_State *L) {
+static int service_gfx2d(lua_State *L) {
+  lua_newtable(L);
+  
+  lua_pushcfunction(L, l_gfx2d_init);
+  lua_setfield(L, -2, "init");
+  return 1;
+}
+
+static int service_input(lua_State *L) {
+  lua_newtable(L);
+
+  lua_pushcfunction(L, l_input_init);
+  lua_setfield(L, -2, "init");
+
+  lua_pushcfunction(L, l_input_key_held);
+  lua_setfield(L, -2, "key_held");
+  lua_pushcfunction(L, l_input_held);
+  lua_setfield(L, -2, "held");
+  
+  lua_pushcfunction(L, l_input_key_down);
+  lua_setfield(L, -2, "key_down");
+  lua_pushcfunction(L, l_input_down);
+  lua_setfield(L, -2, "down");
+  
+  lua_pushcfunction(L, l_input_key_up);
+  lua_setfield(L, -2, "key_up");
+  lua_pushcfunction(L, l_input_up);
+  lua_setfield(L, -2, "up");
+  
+  lua_pushcfunction(L, l_input_mouse);
+  lua_setfield(L, -2, "mouse");
+  return 1;
+}
+
+static int service_assets(lua_State *L) {
   lua_newtable(L);
 
   lua_pushcfunction(L, l_assets_init);
   lua_setfield(L, -2, "init");
   lua_pushcfunction(L, l_assets_image);
   lua_setfield(L, -2, "image");
+  return 1;
 }
 
 static const char *lunar_log_get(lua_State *L) {
@@ -1015,7 +1018,7 @@ static int l_time(lua_State *L) {
 }
 
 void lunar_add_service(lunar_service service) {
-  lunar_services[lunar_service_count] = service;
+  lunar_services[lunar_service_count++] = service;
 }
 
 void lunar_remove_service(const char *service_name) {
@@ -1033,7 +1036,7 @@ void lunar_remove_service(const char *service_name) {
 lunar_service lunar_search_service(const char *service_name) {
   for (int i = 0; i < lunar_service_count; i++) {
     lunar_service service = lunar_services[i];
-    if (strcmp(service.name, service_name) == 0) {
+    if (service.name && (strcmp(service.name, service_name) == 0)) {
       return service;
     }
   }
@@ -1043,21 +1046,8 @@ lunar_service lunar_search_service(const char *service_name) {
 // local gfx = lunar:getservice(service_name);
 static int l_getservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
-
-  if (strcmp(name, "gfx:2d") == 0) {
-    service_gfx2d(L);
-  } else if (strcmp(name, "gfx") == 0) {
-    printf("\033[33m[warning]\033[0m gfx is not a valid service, using gfx:2d instead\n");
-    service_gfx2d(L);
-  } else if (strcmp(name, "input") == 0) {
-    service_input(L);
-  } else if (strcmp(name, "assets") == 0) {
-    service_assets(L);
-  } else {
-    return luaL_error(L, "unknown service: '%s'", name);
-  }
-
-  return 1;
+  lunar_service service = lunar_search_service(name);
+  return service.service(L);
 }
 
 void lunar_init() {
@@ -1086,6 +1076,23 @@ void lunar_init() {
 
   lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
   lua_setfield(lunar_state, -2, "version");
+
+  lunar_service gfx2d_service = {
+    .name = "gfx:2d",
+    .service = service_gfx2d
+  };
+  lunar_service input_service = {
+    .name = "input",
+    .service = service_input
+  };
+  lunar_service assets_service = {
+    .name = "assets",
+    .service = service_assets
+  };
+
+  lunar_add_service(gfx2d_service);
+  lunar_add_service(input_service);
+  lunar_add_service(assets_service);
 
   lua_setglobal(lunar_state, "lunar");
 }
