@@ -19,6 +19,8 @@
  *   added: lunar_add_service(lunar_service *service)
  *   added: lunar_remove_service(const char *service_name)
  *   added: lunar_search_service(const char *service_name)
+ *   added: ctx:font(font)
+ *   added: assets:font(path, size)
  */
 
 #include <lua.h>
@@ -97,6 +99,17 @@ static int l_gfx2d_color(lua_State *L) {
   int b = luaL_checknumber(L, 4);
   int a = luaL_optnumber(L, 5, 255);
   win->color = (SDL_Color){r, g, b, a};
+  return 0;
+}
+
+// ctx:font(font);
+static int l_gfx2d_font(lua_State *L) {
+  lua_getfield(L, 1, "_win");
+  lunar_window *win = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  TTF_Font *font = lua_touserdata(L, 2);
+  win->font = font;
   return 0;
 }
 
@@ -185,6 +198,7 @@ static int l_gfx2d_image_part(lua_State *L) {
   return 0;
 }
 
+// ctx:line_width(width)
 static int l_gfx2d_line_width(lua_State *L) {
   lua_getfield(L, 1, "_win");
   lunar_window *win = lua_touserdata(L, -1);
@@ -674,6 +688,9 @@ static int l_gfx2d_getcontext(lua_State *L) {
 
   lua_pushcfunction(L, l_gfx2d_color);
   lua_setfield(L, -2, "color");
+  lua_pushcfunction(L, l_gfx2d_font);
+  lua_setfield(L, -2, "font");
+
   lua_pushcfunction(L, l_gfx2d_text);
   lua_setfield(L, -2, "text");
   lua_pushcfunction(L, l_gfx2d_image);
@@ -910,6 +927,19 @@ static int l_assets_image(lua_State *L) {
   return 1;
 }
 
+// assets:font(path)
+static int l_assets_font(lua_State *L) {
+  const char *path = luaL_checkstring(L, 2);
+  int size = luaL_checknumber(L, 3);
+
+  TTF_Font *font = TTF_OpenFont(path, size);
+  if (!font) {
+    return luaL_error(L, "failed to load font '%s': %s", path, TTF_GetError());
+  }
+  lua_pushlightuserdata(L, font);
+  return 1;
+}
+
 static int l_assets_init(lua_State *L) {
   const char *backend = luaL_checkstring(L, 2);
   if (strcmp(backend, "sdl") != 0) {
@@ -960,8 +990,11 @@ static int service_assets(lua_State *L) {
 
   lua_pushcfunction(L, l_assets_init);
   lua_setfield(L, -2, "init");
+  
   lua_pushcfunction(L, l_assets_image);
   lua_setfield(L, -2, "image");
+  lua_pushcfunction(L, l_assets_font);
+  lua_setfield(L, -2, "font");
   return 1;
 }
 

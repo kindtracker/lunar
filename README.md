@@ -57,6 +57,8 @@ win.width
 win.height
 
 ctx:color(r, g, b, a?) -- default alpha is 255
+ctx:font(font)
+
 ctx:clear()
 ctx:end_frame()
 ctx:target_fps(target_fps?)
@@ -92,15 +94,13 @@ input:mouse() -- returns x, y, left, right, middle
 
 assets:init(backend, win)
 assets:image(path)
+assets:font(path, size)
 
 -- Planned APIs (not implemented yet)
 -- v v v v v v v v v v v v v v v v v v v
 
-assets:font(path)
 assets:sound(path)
 assets:music(path)
-
-ctx:font(font)
 
 lunar.log_callback(func)
 
