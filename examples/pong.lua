@@ -27,9 +27,9 @@ while not ctx:end_frame() do
   elseif input:key_held("W") then
     y = y -8
   end
-  if y > win.height - 90 then
+  if y > win.height - 80 then
     y = y - 8
-  elseif y < 10 then
+  elseif y < 0 then
     y = y + 8
   end
 

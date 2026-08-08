@@ -15,12 +15,16 @@
 /*
  * CHANGELOG:
  * 0.2.0:
- *   added: lunar.version
- *   added: lunar_add_service(lunar_service *service)
- *   added: lunar_remove_service(const char *service_name)
- *   added: lunar_search_service(const char *service_name)
- *   added: ctx:font(font)
- *   added: assets:font(path, size)
+ *   in Lua API:
+ *    added: lunar.version
+ *    added: ctx:font(font)
+ *    added: assets:font(path, size)
+ *    added: audio api
+ *   in lunar.h:
+ *    added: lunar_add_service(lunar_service *service)
+ *    added: lunar_remove_service(const char *service_name)
+ *    added: lunar_search_service(const char *service_name)
+ *
  */
 
 #include <lua.h>
@@ -28,7 +32,8 @@
 #include <lualib.h>
 
 typedef enum {
-  lunar_BACKEND_SDL
+  LUNAR_BACKEND_SDL
+  // lunar_BACKEND_MINIAUDIO
 } lunar_backend_t;
 
 typedef struct {
@@ -52,6 +57,13 @@ extern lunar_service lunar_search_service(const char *service_name);
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+
+typedef struct {
+  SDL_Point position;
+  SDL_Point rotation;
+  int scale;
+} lunar_camera;
 
 typedef struct {
   SDL_Window *window;
@@ -69,18 +81,31 @@ typedef struct {
 
   SDL_Color color;
   int line_width;
+  lunar_camera camera;
 } lunar_window;
-
-typedef struct {
-  lunar_window *window;
-  lunar_backend_t backend;
-} lunar_input;
 
 typedef struct {
   SDL_Texture *texture;
   int width;
   int height;
 } lunar_image;
+
+typedef struct {
+  lunar_backend_t backend;
+} lunar_audio;
+
+typedef struct {
+  int volume;
+  int channel;
+  int type;
+  Mix_Chunk *chunk;
+  Mix_Music *music;
+} lunar_audio_handle;
+
+typedef struct {
+  lunar_window *window;
+  lunar_backend_t backend;
+} lunar_input;
 
 lua_State *lunar_state;
 bool lunar_inited = false;
@@ -149,7 +174,7 @@ static int l_gfx2d_image(lua_State *L) {
 
   luaL_checktype(L, 2, LUA_TTABLE);
 
-  lua_getfield(L, 2, "image");
+  lua_getfield(L, 2, "_image");
   SDL_Texture *texture = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
@@ -179,7 +204,7 @@ static int l_gfx2d_image_part(lua_State *L) {
 
   luaL_checktype(L, 2, LUA_TTABLE);
 
-  lua_getfield(L, 2, "image");
+  lua_getfield(L, 2, "_image");
   SDL_Texture *texture = lua_touserdata(L, -1);
   lua_pop(L, 1);
 
@@ -807,6 +832,139 @@ static int l_gfx2d_init(lua_State *L) {
   return 1;
 }
 
+// audio:init(backend, win)
+static int l_audio_init(lua_State *L) {
+  const char *backend = luaL_checkstring(L, 2);
+  if (strcmp(backend, "sdl") != 0) {
+    return luaL_error(L, "unknown backend: %s", backend);
+  }
+
+  SDL_Init(SDL_INIT_AUDIO);
+  Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048);
+  return 0;
+}
+
+// handle:volume()
+static int l_audio_sound_volume(lua_State *L) {
+  lua_getfield(L, 1, "_sfx");
+  lunar_audio_handle *sfx = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  if (lua_gettop(L) >= 2) {
+    int volume = luaL_checkinteger(L, 2);
+
+    if (volume < 0) {
+       volume = 0;
+    } 
+    if (volume > MIX_MAX_VOLUME) {
+      volume = MIX_MAX_VOLUME;
+
+      sfx->volume = volume;
+
+      if (sfx->channel >= 0) {
+        Mix_Volume(sfx->channel, volume);
+      }
+    }
+
+    return 0;
+  }
+
+  lua_pushinteger(L, sfx->volume);
+  return 1;
+}
+
+// handle:play()
+static int l_audio_sound_play(lua_State *L) {
+  lua_getfield(L, 1, "_sfx");
+  lunar_audio_handle *sfx = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  if (sfx->type == 1) {
+    sfx->channel = Mix_PlayChannel(-1, sfx->chunk, 0);
+  } else {
+    sfx->channel = Mix_PlayMusic(sfx->music, 0);
+  }
+  if (sfx->channel == -1) {
+     return luaL_error(L, "failed to play %s: %s", sfx->type == 1 ? "sound" : "music", Mix_GetError());
+  }
+  Mix_Volume(sfx->channel, sfx->volume);
+  return 0;
+}
+
+// handle:stop()
+static int l_audio_sound_stop(lua_State *L) {
+  lua_getfield(L, 1, "_sfx");
+  lunar_audio_handle *sfx = lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  if (sfx->channel >= 0) {
+    if (sfx->type == 1) {
+      Mix_HaltChannel(sfx->channel);
+    } else {
+      Mix_HaltMusic();
+    }
+    sfx->channel = -1;
+  }
+
+  return 0;
+}
+
+// audio:sound(path)
+static int l_audio_sound(lua_State *L) {
+  const char *path = luaL_checkstring(L, 2);
+  Mix_Chunk *sound = Mix_LoadWAV(path);
+  if (!sound) {
+    return luaL_error(L, "failed to load sound: %s", Mix_GetError());
+  }
+  lua_newtable(L);
+
+  lunar_audio_handle *sfx = lua_newuserdata(L, sizeof(lunar_audio_handle));
+
+  sfx->type = 1;
+  sfx->chunk = sound;
+  sfx->channel = -1;
+  sfx->volume = MIX_MAX_VOLUME;
+
+  lua_pushlightuserdata(L, sfx);
+  lua_setfield(L, -2, "_sfx");
+
+  lua_pushcfunction(L, l_audio_sound_volume);
+  lua_setfield(L, -2, "volume");
+  lua_pushcfunction(L, l_audio_sound_play);
+  lua_setfield(L, -2, "play");
+  lua_pushcfunction(L, l_audio_sound_stop);
+  lua_setfield(L, -2, "stop");
+  return 1;
+}
+
+// audio:music(path)
+static int l_audio_music(lua_State *L) {
+  const char *path = luaL_checkstring(L, 2);
+  Mix_Music *sound = Mix_LoadMUS(path);
+  if (!sound) {
+    return luaL_error(L, "failed to load music: %s", Mix_GetError());
+  }
+  lua_newtable(L);
+
+  lunar_audio_handle *sfx = lua_newuserdata(L, sizeof(lunar_audio_handle));
+
+  sfx->type = 2;
+  sfx->music = sound;
+  sfx->channel = -1;
+  sfx->volume = MIX_MAX_VOLUME;
+
+  lua_pushlightuserdata(L, sfx);
+  lua_setfield(L, -2, "_sfx");
+
+  lua_pushcfunction(L, l_audio_sound_volume);
+  lua_setfield(L, -2, "volume");
+  lua_pushcfunction(L, l_audio_sound_play);
+  lua_setfield(L, -2, "play");
+  lua_pushcfunction(L, l_audio_sound_stop);
+  lua_setfield(L, -2, "stop");
+  return 1;
+}
+
 static lunar_input *input_check(lua_State *L) {
   lua_getfield(L, 1, "_handle");
   lunar_input *input = lua_touserdata(L, -1);
@@ -896,7 +1054,7 @@ static int l_input_init(lua_State *L) {
 
   lunar_input *input = lua_newuserdata(L, sizeof(*input));
   input->window = win;
-  input->backend = lunar_BACKEND_SDL;
+  input->backend = LUNAR_BACKEND_SDL;
   luaL_getmetatable(L, "lunar.input");
   lua_setmetatable(L, -2);
   lua_setfield(L, 1, "_handle");
@@ -922,7 +1080,7 @@ static int l_assets_image(lua_State *L) {
   lua_pushnumber(L, surface->h);
   lua_setfield(L, -2, "height");
   lua_pushlightuserdata(L, texture);
-  lua_setfield(L, -2, "image");
+  lua_setfield(L, -2, "_image");
   SDL_FreeSurface(surface);
   return 1;
 }
@@ -956,6 +1114,18 @@ static int service_gfx2d(lua_State *L) {
   
   lua_pushcfunction(L, l_gfx2d_init);
   lua_setfield(L, -2, "init");
+  return 1;
+}
+
+static int service_audio(lua_State *L) {
+  lua_newtable(L);
+  
+  lua_pushcfunction(L, l_audio_init);
+  lua_setfield(L, -2, "init");
+  lua_pushcfunction(L, l_audio_sound);
+  lua_setfield(L, -2, "sound");
+  lua_pushcfunction(L, l_audio_music);
+  lua_setfield(L, -2, "music");
   return 1;
 }
 
@@ -1118,12 +1288,17 @@ void lunar_init() {
     .name = "input",
     .service = service_input
   };
+  lunar_service audio_service = {
+    .name = "audio",
+    .service = service_audio
+  };
   lunar_service assets_service = {
     .name = "assets",
     .service = service_assets
   };
 
   lunar_add_service(gfx2d_service);
+  lunar_add_service(audio_service);
   lunar_add_service(input_service);
   lunar_add_service(assets_service);
 

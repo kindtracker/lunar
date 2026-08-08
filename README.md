@@ -25,6 +25,7 @@ win:free()
 - SDL2
 - SDL2_ttf
 - SDL2_image
+- SDL2_mixer
 
 ## Installation
 ```sh
@@ -38,6 +39,7 @@ make
 ### Cheatsheet
 ```lua
  -- the only supported backend is "sdl" (SDL2) for now
+-- random fun fact: both lunar.getservice("gfx:2d") and lunar:getservice("gfx:2d") work (only functions)
 
 lunar:getservice(service_name) -- example: gfx:2d
 lunar:wait(sec)
@@ -101,6 +103,14 @@ assets:font(path, size)
 
 assets:sound(path)
 assets:music(path)
+
+audio:init(backend)
+audio:sound(sound) -- returns a handle
+audio:music(music) -- returns a handle
+handle:volume(volume) -- volume is an integer (0-128)
+handle:play()
+handle:stop()
+handle:free()
 
 lunar.log_callback(func)
 
