@@ -11,31 +11,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#define LUNAR_VERSION "0.2.0"
+#define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- * 0.2.0:
- *   in Lua API:
- *    added: lunar.version
- *    added: ctx:font(font)
- *    added: assets:font(path, size)
- *    added: audio api
- *    extend lunar errors (ex: func name/service name: sdl function: error)
- *   in lunar.h:
- *    added: lunar_add_service(lunar_service *service)
- *    added: lunar_remove_service(const char *service_name)
- *    added: lunar_search_service(const char *service_name)
  *
  */
 
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-
-typedef enum {
-  LUNAR_BACKEND_SDL
-  // lunar_BACKEND_MINIAUDIO
-} lunar_backend_t;
 
 typedef struct {
   char *name;
@@ -153,12 +137,12 @@ void lunar_init() {
   lua_newtable(lunar_state);
 
   lua_pushcfunction(lunar_state, l_getservice);
-  lua_setfield(lunar_state, -2, "getservice");
+  lua_setfield(lunar_state, -2, "GetService");
 
   lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
-  lua_setfield(lunar_state, -2, "version");
+  lua_setfield(lunar_state, -2, "Version");
 
-  lua_setglobal(lunar_state, "lunar");
+  lua_setglobal(lunar_state, "Lunar");
 }
 
 void lunar_quit() {
