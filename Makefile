@@ -2,7 +2,6 @@ CC = cc
 CFLAGS = -O2 -Wall -Wextra # -Werror
 LIBS = -lm -llua
 
-ASSET = asset
 SRC = src
 BUILD = build
 OUT = $(BUILD)/lunar
@@ -17,7 +16,6 @@ clean:
 	rm -rf $(BUILD)/*
 
 compile: $(OUT)
-	cp -R $(ASSET) $(BUILD)/.
 
 web:
 	python3 -m http.server 8080
