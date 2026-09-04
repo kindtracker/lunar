@@ -1,6 +1,6 @@
 CC = cc
 CFLAGS = -O2 -Wall -Wextra # -Werror
-LIBS = -lm -llua -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
+LIBS = -lm -llua
 
 ASSET = asset
 SRC = src

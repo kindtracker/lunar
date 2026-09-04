@@ -58,14 +58,15 @@ win:quit()
 win.width
 win.height
 
+ctx:target_fps(target_fps?)
 ctx:color(r, g, b, a?) -- default alpha is 255
 ctx:font(font)
 
-ctx:clear()
-ctx:end_frame()
-ctx:target_fps(target_fps?)
 ctx:delta_time()
+ctx:end_frame()
 
+ctx:clear()
+ctx:camera(x, y, rot, scale)
 ctx:text(text, x, y)
 ctx:image(image, x, y, w?, h?) -- if w or h is not set, it will use original size
 ctx:image_part(tiles,
