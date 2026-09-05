@@ -14,7 +14,7 @@
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- *
+ * v0.0.1
  */
 
 #include <lua.h>
@@ -135,11 +135,26 @@ int l_instance_new(lua_State *L) {
   return l_instance(L);
 }
 
+int l_instance_destroy(lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_pushnil(L);
+  while (lua_next(L, 1) != 0) {
+    lua_pop(L, 1);
+    lua_pushvalue(L, -1);
+    lua_pushnil(L);
+    lua_settable(L, 1);
+  }
+
+  return 0;
+}
+
 int l_instance(lua_State *L) {
   lua_newtable(L);
 
   lua_pushcfunction(L, l_instance_new);
   lua_setfield(L, -2, "new");
+  lua_pushcfunction(L, l_instance_destroy);
+  lua_setfield(L, -2, "destroy");
   return 1;
 }
 
