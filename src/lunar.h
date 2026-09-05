@@ -130,6 +130,19 @@ static int l_getservice(lua_State *L) {
   return service.service(L);
 }
 
+int l_instance(lua_State *L);
+int l_instance_new(lua_State *L) {
+  return l_instance(L);
+}
+
+int l_instance(lua_State *L) {
+  lua_newtable(L);
+
+  lua_pushcfunction(L, l_instance_new);
+  lua_setfield(L, -2, "new");
+  return 1;
+}
+
 void lunar_init() {
   lunar_state = luaL_newstate();
   luaL_openlibs(lunar_state);
@@ -143,6 +156,9 @@ void lunar_init() {
   lua_setfield(lunar_state, -2, "Version");
 
   lua_setglobal(lunar_state, "Lunar");
+  
+  l_instance(lunar_state);
+  lua_setglobal(lunar_state, "Instance");
 }
 
 void lunar_quit() {
