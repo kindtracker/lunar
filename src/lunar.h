@@ -161,7 +161,7 @@ int l_instance_clone(lua_State *L) {
   return 1;
 }
 
-int l_instance(lua_State *L) {
+int l_instance(lua_State *L, int parent) {
   lua_newtable(L);
 
   lua_pushcfunction(L, l_instance_new);
@@ -170,6 +170,14 @@ int l_instance(lua_State *L) {
   lua_setfield(L, -2, "destroy");
   lua_pushcfunction(L, l_instance_clone);
   lua_setfield(L, -2, "clone");
+  
+  if (parent == -1) {
+    lua_pushnil();
+  } else {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, parent);
+  }
+
+  lua_setfield(L, -2, "Parent")
   return 1;
 }
 
