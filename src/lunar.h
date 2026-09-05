@@ -159,7 +159,7 @@ void lunar_init() {
   lua_setglobal(lunar_state, "__Lunar_C__Instance__");
 
   if (luaL_dofile(lunar_state, "lib/runtime/instance.lua") != LUA_OK) {
-    printf(stderr, "[lunar] runtime error: %s\n", lua_tostring(lunar_state, -1));
+    fprintf(stderr, "[lunar] runtime error: %s\n", lua_tostring(lunar_state, -1));
     lua_pop(lunar_state, 1);
     return;
   }

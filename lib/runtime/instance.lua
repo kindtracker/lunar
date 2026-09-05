@@ -6,6 +6,7 @@ function Instance.new(className)
 
   self.Name = nil
   self.className = className
+  self.UniqueId = string.format("%08x", math.random(0, 4294967296))
 
   function self:GetChildren(className)
     return self.Children
@@ -26,6 +27,14 @@ function Instance.new(className)
       end
     end
     return nil
+  end
+
+  function self:FindChildByUniqueId(Name)
+    for _, child in pairs(self:GetChildren()) do
+      if child.UniqueId = UniqueId then
+        return child
+      end
+    end
   end
 
   function self:FindChildren(Name)
