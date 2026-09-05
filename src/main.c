@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   lunar_init();
   const char *err_msg = lunar_run(pathname);
   if (err_msg != NULL) {
-    printf("\033[31m[error]\033[0m %s\n", err_msg);
+    printf("[lunar] runtime error: %s", err_msg);
   }
   lunar_quit();
   return 0;
