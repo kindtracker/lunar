@@ -148,6 +148,19 @@ int l_instance_destroy(lua_State *L) {
   return 0;
 }
 
+int l_instance_clone(lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_newtable(L);
+  lua_pushnil(L);
+  while (lua_next(L, 1) != 0) {
+    lua_pushvalue(L, -2);
+    lua_insert(L, -2);
+    lua_settable(L, -4);
+  }
+
+  return 1;
+}
+
 int l_instance(lua_State *L) {
   lua_newtable(L);
 
@@ -155,6 +168,8 @@ int l_instance(lua_State *L) {
   lua_setfield(L, -2, "new");
   lua_pushcfunction(L, l_instance_destroy);
   lua_setfield(L, -2, "destroy");
+  lua_pushcfunction(L, l_instance_clone);
+  lua_setfield(L, -2, "clone");
   return 1;
 }
 
