@@ -130,69 +130,15 @@ static int l_getservice(lua_State *L) {
   return service.service(L);
 }
 
-int l_instance(lua_State *L);
 int l_instance_new(lua_State *L) {
-  return l_instance(L);
-}
-
-int l_instance_destroy(lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
-  lua_pushnil(L);
-  while (lua_next(L, 1) != 0) {
-    lua_pop(L, 1);
-    lua_pushvalue(L, -1);
-    lua_pushnil(L);
-    lua_settable(L, 1);
-  }
-
-  return 0;
-}
-
-int l_instance_clone(lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
   lua_newtable(L);
-  lua_pushnil(L);
-  while (lua_next(L, 1) != 0) {
-    lua_pushvalue(L, -2);
-    lua_insert(L, -2);
-    lua_settable(L, -4);
-  }
-
   return 1;
 }
 
-int l_instance_getchildren(lua_State *L) {
-  luaL_checktype(L, 1, LUA_TTABLE);
-  lua_getfield(L, 1, "Children");
-  return 1;
-}
-
-int l_instance(lua_State *L, int parent) {
-  lua_newtable(L);
-
-  // Constructors
-  lua_pushcfunction(L, l_instance_new);
-  lua_setfield(L, -2, "new");
-  
-  // Methods
-  lua_pushcfunction(L, l_instance_destroy);
-  lua_setfield(L, -2, "Destroy");
-  lua_pushcfunction(L, l_instance_clone);
-  lua_setfield(L, -2, "Clone");
-  lua_pushcfunction(L, l_instance_getchildren);
-  lua_setfield(L, -2, "GetChildren");
-
-  // Properties
-  lua_newtable(L);
-  lua_setfield(L, -2, "Children");
-
-  if (parent == -1) {
-    lua_pushnil();
-  } else {
-    lua_rawgeti(L, LUA_REGISTRYINDEX, parent);
-  }
-
-  lua_setfield(L, -2, "Parent")
+int l_instance(lua_State *L) {
+  lua_newtable(lunar_state);
+  lua_pushcfunction(lunar_state, l_instance_new);
+  lua_setfield(lunar_state, -2, "new");
   return 1;
 }
 
@@ -204,13 +150,19 @@ void lunar_init() {
 
   lua_pushcfunction(lunar_state, l_getservice);
   lua_setfield(lunar_state, -2, "GetService");
-
   lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
   lua_setfield(lunar_state, -2, "Version");
-
+  
   lua_setglobal(lunar_state, "Lunar");
   
   l_instance(lunar_state);
+  lua_setglobal(lunar_state, "__Lunar_C_Instance__");
+
+  if (luaL_dofile(lunar_state, "lib/runtime/instance.lua") != LUA_OK) {
+    fprintf(stderr, "[lunar] runtime error: %s\n", lua_tostring(lunar_state, -1));
+    lua_pop(lunar_state, 1);
+    return;
+  }
   lua_setglobal(lunar_state, "Instance");
 }
 
