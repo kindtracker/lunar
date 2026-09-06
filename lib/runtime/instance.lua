@@ -29,11 +29,11 @@ function Instance.new(className)
       return Properties[key]
     end,
 
-    __newindex = function(_, Key, newValue)
-      local oldValue = Properties[Key]
-      Properties[Key] = newValue
-      if PropertyChangedSignals[Key] then
-        PropertyChangedSignals[Key]:Fire(newValue, oldValue)
+    __newindex = function(_, key, newValue)
+      local oldValue = Properties[key]
+      Properties[key] = newValue
+      if PropertyChangedSignals[key] then
+        PropertyChangedSignals[key]:Fire(newValue, oldValue)
       end
     end,
     

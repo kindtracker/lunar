@@ -98,6 +98,18 @@ static int l_time(lua_State *L) {
 }
 */
 
+int l_instance_new(lua_State *L) {
+  lua_newtable(L);
+  return 1;
+}
+
+int l_instance(lua_State *L) {
+  lua_newtable(lunar_state);
+  lua_pushcfunction(lunar_state, l_instance_new);
+  lua_setfield(lunar_state, -2, "new");
+  return 1;
+}
+
 void lunar_add_service(lunar_service service) {
   lunar_services[lunar_service_count++] = service;
 }
@@ -112,18 +124,6 @@ void lunar_remove_service(const char *service_name) {
       return;
     }
   }
-}
-
-int l_instance_new(lua_State *L) {
-  lua_newtable(L);
-  return 1;
-}
-
-int l_instance(lua_State *L) {
-  lua_newtable(lunar_state);
-  lua_pushcfunction(lunar_state, l_instance_new);
-  lua_setfield(lunar_state, -2, "new");
-  return 1;
 }
 
 int l_servicemanager_getservices(lua_State *L) {
@@ -147,11 +147,6 @@ void lunar_init() {
   luaL_openlibs(lunar_state);
 
   lua_newtable(lunar_state);
-
-  lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
-  lua_setfield(lunar_state, -2, "Version");
-  
-  lua_setglobal(lunar_state, "Lunar");
   
   l_instance(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__Instance__");
@@ -177,6 +172,18 @@ void lunar_init() {
   
   lua_getfield(lunar_state, -1, "Signal");
   lua_setglobal(lunar_state, "Signal");
+
+  lua_newtable(lunar_state);
+
+  lua_getfield(lunar_state, -2, "ServiceManager");
+  lua_getfield(lunar_state, -1, "GetService");
+  lua_setfield(lunar_state, -3, "GetService");
+  lua_pop(lunar_state, 1);
+
+  lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
+  lua_setfield(lunar_state, -2, "Version");
+
+  lua_setglobal(lunar_state, "Lunar");
 }
 
 void lunar_quit() {
