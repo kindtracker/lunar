@@ -2,11 +2,11 @@ local Connection = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime
 local Signal = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/signal.lua")
 local Instance = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/instance.lua")
 local ServiceManager = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/service.lua")
-local ConsoleService = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
+local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
 Instance.__Lunar_Internal__Init__(Signal)
-ConsoleService.__Lunar_Internal__Init__(Instance)
+local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService)
 
 return {
