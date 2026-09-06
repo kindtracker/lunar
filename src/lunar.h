@@ -23,7 +23,7 @@
 
 typedef struct {
   char *name;
-  int (*service)(lua_State *L);
+  int service;
 } lunar_service;
 
 extern lua_State *lunar_state;
@@ -114,22 +114,6 @@ void lunar_remove_service(const char *service_name) {
   }
 }
 
-lunar_service lunar_search_service(const char *service_name) {
-  for (int i = 0; i < lunar_service_count; i++) {
-    lunar_service service = lunar_services[i];
-    if (service.name && (strcmp(service.name, service_name) == 0)) {
-      return service;
-    }
-  }
-  return (lunar_service){.name = NULL, .service = NULL};
-}
-
-static int l_getservice(lua_State *L) {
-  const char *name = luaL_checkstring(L, 2);
-  lunar_service service = lunar_search_service(name);
-  return service.service(L);
-}
-
 int l_instance_new(lua_State *L) {
   lua_newtable(L);
   return 1;
@@ -142,14 +126,28 @@ int l_instance(lua_State *L) {
   return 1;
 }
 
+int l_servicemanager_getservices(lua_State *L) {
+  lua_newtable(lunar_state);
+  for (int i = 0; i < lunar_service_count; i++) {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, lunar_services[i].service);
+    lua_setfield(lunar_state, -2, lunar_services[i].name);
+  }
+  return 1;
+}
+
+int l_servicemanager(lua_State *L) {
+  lua_newtable(lunar_state);
+  lua_pushcfunction(lunar_state, l_servicemanager_getservices);
+  lua_setfield(lunar_state, -2, "GetServices");
+  return 1;
+}
+
 void lunar_init() {
   lunar_state = luaL_newstate();
   luaL_openlibs(lunar_state);
 
   lua_newtable(lunar_state);
 
-  lua_pushcfunction(lunar_state, l_getservice);
-  lua_setfield(lunar_state, -2, "GetService");
   lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
   lua_setfield(lunar_state, -2, "Version");
   
@@ -157,6 +155,9 @@ void lunar_init() {
   
   l_instance(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__Instance__");
+
+  l_servicemanager(lunar_state);
+  lua_setglobal(lunar_state, "__Lunar_C__ServiceManager__");
 
   const char *home = getenv("HOME");
   char runtime_path[4096];
