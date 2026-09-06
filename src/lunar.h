@@ -136,8 +136,8 @@ int l_servicemanager_getservices(lua_State *L) {
 }
 
 int l_servicemanager_registerservice(lua_State *L) {
-  const char *name = luaL_checkstring(L, 1);
-  luaL_checktype(L, 2, LUA_TTABLE);
+  const char *name = luaL_checkstring(L, 2);
+  luaL_checktype(L, 3, LUA_TTABLE);
   int ref = luaL_ref(L, LUA_REGISTRYINDEX);
   
   lunar_register_service((lunar_service){strdup(name), ref});
@@ -145,7 +145,7 @@ int l_servicemanager_registerservice(lua_State *L) {
 }
 
 int l_servicemanager_removeservice(lua_State *L) {
-  const char *name = luaL_checkstring(L, 1);  
+  const char *name = luaL_checkstring(L, 2);  
   lunar_remove_service(name);
   return 0;
 }

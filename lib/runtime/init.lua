@@ -5,7 +5,7 @@ local ServiceManager = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/run
 
 Signal.__Lunar_Internal__Init__(Connection)
 Instance.__Lunar_Internal__Init__(Signal)
-ServiceManager.__Lunar_Internal__Init__()
+ServiceManager.__Lunar_Internal__Init__(Instance)
 
 return {
   Connection = Connection,
