@@ -31,7 +31,7 @@ extern lua_State *lunar_state;
 extern void lunar_init();
 extern const char *lunar_run(const char *pathname);
 extern void lunar_free();
-extern void lunar_add_service(lunar_service service);
+extern void lunar_register_service(lunar_service service);
 extern void lunar_remove_service(const char *service_name);
 extern lunar_service lunar_search_service(const char *service_name);
 
@@ -110,7 +110,7 @@ int l_instance(lua_State *L) {
   return 1;
 }
 
-void lunar_add_service(lunar_service service) {
+void lunar_register_service(lunar_service service) {
   lunar_services[lunar_service_count++] = service;
 }
 
@@ -135,10 +135,32 @@ int l_servicemanager_getservices(lua_State *L) {
   return 1;
 }
 
+int l_servicemanager_registerservice(lua_State *L) {
+  const char *name = luaL_checkstring(L, 1);
+  luaL_checktype(L, 2, LUA_TTABLE);
+  int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+  
+  lunar_register_service((lunar_service){strdup(name), ref});
+  return 0;
+}
+
+int l_servicemanager_removeservice(lua_State *L) {
+  const char *name = luaL_checkstring(L, 1);  
+  lunar_remove_service(name);
+  return 0;
+}
+
 int l_servicemanager(lua_State *L) {
   lua_newtable(lunar_state);
+  
   lua_pushcfunction(lunar_state, l_servicemanager_getservices);
   lua_setfield(lunar_state, -2, "GetServices");
+  
+  lua_pushcfunction(lunar_state, l_servicemanager_registerservice);
+  lua_setfield(lunar_state, -2, "RegisterService");
+  
+  lua_pushcfunction(lunar_state, l_servicemanager_removeservice);
+  lua_setfield(lunar_state, -2, "RemoveService");
   return 1;
 }
 
