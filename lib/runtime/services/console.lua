@@ -9,16 +9,15 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
   ConsoleService.Name = "ConsoleService"
 
   ConsoleService.Colors = {
-    LOG = "37",
-    WARN = "33",
-    WARNING = "33",
-    ERROR = "31",
-    FATAL = "31",
-    DEBUG = "36"
+    LOG = "0;32",
+    WARN = "0;33",
+    WARNING = "0;33",
+    ERROR = "0;31",
+    FATAL = "0;31",
+    DEBUG = "0;36"
   }
 
-  ConsoleService.LogFormat =
-    "[{COLOR_START}{TYPE}{COLOR_END}{RESET}]: {MESSAGE}"
+  ConsoleService.LogFormat = "[{COLOR_START}{COLOR_END}{TYPE}{RESET}]: {MESSAGE}"
 
   function ConsoleService:_Log(Type, Format, ...)
     local Message = string.format(Format, ...)
