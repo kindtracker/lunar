@@ -13,7 +13,7 @@ function Instance.new(className)
   }
   Properties.Name = Properties.UniqueId 
 
-  local PropertyChangedCallbacks = {}
+  local PropertyChangedSignals = {}
 
   local Proxy = setmetatable({}, {
     __index = function(_, key)
@@ -26,8 +26,8 @@ function Instance.new(className)
     __newindex = function(_, key, new_value)
       local old_value = Properties[key]
       Properties[key] = new_value
-      if PropertyChangedCallbacks[key] then
-        PropertyChangedCallbacks[key](new_value, old_value)
+      if PropertyChangedSignals[key] then
+        PropertyChangedSignals[key]:Fire(new_value, old_value)
       end
     end,
     
@@ -87,6 +87,14 @@ function Instance.new(className)
       end
     end
     return children
+  end
+
+  function Proxy:GetPropertyChangedSignal(PropertyName)
+    if not PropertyChangedSignals[propertyName] then
+      PropertyChangedSignals[propertyName] = Signal.new()
+    end
+
+    return PropertyChangedSignals[propertyName]
   end
 
   return Proxy
