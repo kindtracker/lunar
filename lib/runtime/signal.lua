@@ -1,12 +1,18 @@
 local Signal = {}
 
+local Connection
+
+function Signal.__Lunar_Internal__Init__(connection)
+  Connection = connection
+end
+
 function Signal.new()
   local self = {}
 
   self.Connections = {}
 
   function self:Connect(Callback, DisconnectCallback)
-    local connection = Connection.new(callback, function()
+    local connection = Connection.new(Callback, function()
       for i, registeredConnection in ipairs(self.Connections) do
         if registeredConnection == connection then
           table.remove(self.Connections, i)

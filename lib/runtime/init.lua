@@ -2,6 +2,9 @@ local Connection = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime
 local Signal = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/signal.lua")
 local Instance = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/instance.lua")
 
+Signal.__Lunar_Internal__Init__(Connection)
+Instance.__Lunar_Internal__Init__(Signal)
+
 return {
   Connection = Connection,
   Signal = Signal,

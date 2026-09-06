@@ -1,6 +1,12 @@
 local CInstance = __Lunar_C__Instance__
 local Instance = {}
 
+local Signal
+
+function Instance.__Lunar_Internal__Init__(signal)
+  Signal = signal
+end
+
 function Instance.new(className)
   local self = CInstance.new(className)
 
@@ -23,11 +29,11 @@ function Instance.new(className)
       return Properties[key]
     end,
 
-    __newindex = function(_, key, new_value)
-      local old_value = Properties[key]
-      Properties[key] = new_value
-      if PropertyChangedSignals[key] then
-        PropertyChangedSignals[key]:Fire(new_value, old_value)
+    __newindex = function(_, Key, newValue)
+      local oldValue = Properties[Key]
+      Properties[Key] = newValue
+      if PropertyChangedSignals[Key] then
+        PropertyChangedSignals[Key]:Fire(newValue, oldValue)
       end
     end,
     
@@ -90,11 +96,11 @@ function Instance.new(className)
   end
 
   function Proxy:GetPropertyChangedSignal(PropertyName)
-    if not PropertyChangedSignals[propertyName] then
-      PropertyChangedSignals[propertyName] = Signal.new()
+    if not PropertyChangedSignals[PropertyName] then
+      PropertyChangedSignals[PropertyName] = Signal.new()
     end
 
-    return PropertyChangedSignals[propertyName]
+    return PropertyChangedSignals[PropertyName]
   end
 
   return Proxy

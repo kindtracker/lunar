@@ -15,6 +15,8 @@ function Connection.new(Callback, DisconnectCallback)
       self.DisconnectCallback()
     end
   end
+
+  return self
 end
 
 return Connection
