@@ -20,7 +20,7 @@ function Instance.new(className)
       if key == "Changed" then
         return changed
       end
-      return properties[key]
+      return Properties[key]
     end,
 
     __newindex = function(_, key, new_value)

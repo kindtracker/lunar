@@ -158,12 +158,21 @@ void lunar_init() {
   l_instance(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__Instance__");
 
-  if (luaL_dofile(lunar_state, "lib/runtime/instance.lua") != LUA_OK) {
+  const char *home = getenv("HOME");
+  char runtime_path[4096];
+  snprintf(runtime_path, sizeof(runtime_path), "%s/.local/share/lunare/lib/runtime/init.lua", home);
+
+  if (luaL_dofile(lunar_state, runtime_path) != LUA_OK) {
     fprintf(stderr, "[lunar] runtime error: %s\n", lua_tostring(lunar_state, -1));
     lua_pop(lunar_state, 1);
     return;
   }
+
+  lua_getfield(lunar_state, -1, "Instance");
   lua_setglobal(lunar_state, "Instance");
+  
+  lua_getfield(lunar_state, -1, "Connection");
+  lua_setglobal(lunar_state, "Connection");
 }
 
 void lunar_quit() {
