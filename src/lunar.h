@@ -174,6 +174,9 @@ void lunar_init() {
   
   lua_getfield(lunar_state, -1, "Connection");
   lua_setglobal(lunar_state, "Connection");
+  
+  lua_getfield(lunar_state, -1, "Signal");
+  lua_setglobal(lunar_state, "Signal");
 }
 
 void lunar_quit() {
