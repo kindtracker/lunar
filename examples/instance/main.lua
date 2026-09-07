@@ -10,7 +10,7 @@ Tracker.Name = "Tracker"
 
 print("Workspace:GetChildren():")
 for _, Child in pairs(Workspace:GetChildren()) do
-  print(Child.Name, Child.Parent)
+  print(Child.Name, Child.Parent.Name)
 end
 
 print("Assigning them to Workspace")
@@ -20,5 +20,5 @@ Tracker.Parent = Workspace
 
 print("Workspace:GetChildren():")
 for _, Child in pairs(Workspace:GetChildren()) do
-  print(Child.Name, Child.Parent)
+  print(Child.Name, Child.Parent.Name)
 end

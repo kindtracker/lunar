@@ -59,6 +59,39 @@ function Instance.new(className, Parent)
       return next, Properties, nil
     end
   })
+  
+  function Proxy:Destroy(Recursive)
+    if Recursive == nil then
+      Recursive = true
+    end
+
+    for _, signal in pairs(PropertyChangedSignals) do
+      if signal then
+        signal:DisconnectAll()
+      end
+    end
+
+    local Parent = Properties.Parent
+
+    if Parent then
+      Parent:GetChildren()[Properties.UniqueId] = nil
+      Properties.Parent = nil
+    end
+
+    if Recursive then
+      for _, Child in pairs(Proxy:GetChildren()) do
+        Child:Destroy(true)
+      end
+    else
+      for _, Child in pairs(Proxy:GetChildren()) do
+        if Parent then
+          Child.Parent = Parent
+        else
+          Child.Parent = nil
+        end
+      end
+    end
+  end
 
   function Proxy:GetChildren(className)
     return self.Children
