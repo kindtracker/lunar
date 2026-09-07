@@ -36,21 +36,48 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     end
   end
 
-  function FileSystemService:GetFolder(Path, Recursive)
-    Recursive = Recursive or false
+  function FileSystemService:GetFolder(Path, Name, Recursive)
+    Recursive = Recursive and Recursive or false
 
     local Folder = Instance.new()
+    Folder.Name = Name
     local Files = lfs.dir(Path)
     for fileName in Files do
       local Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, fileName, lfs.attributes(Path .. "/" .. fileName))
-      local IFile = Instance.new()
-      IFile.Name = fileName
-      IFile.Attributes = Attributes
-      IFile.Parent = Folder
+      local File = Instance.new()
+      File.Name = fileName
+      File.Attributes = Attributes
+      File.Parent = Folder
+
+      if Recursive then
+        if File.Attributes.Type == "Folder" then
+          FileSystemService:GetFolder(Path, fileName, Recursive - 1)
+        end
+      end
     end
   end
 
-  return FileSystemService
+  function FileSystemService:Open(Path, Name, Mode)
+    local File = Instance.new()
+    File.Name = Name
+    File.Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, lfs.attributes(Path))
+    File.FilePtr = io.open(Path, Mode)
+    File.Mode = mode
+
+    function File:Close()
+      File.FilePtr:close()
+    end
+
+    function File:Read(readMode)
+      File.FilePtr:read(readMode)
+    end
+
+    function File:Write(...)
+      File.FilePtr:write(...)
+    end
+
+    return File
+  end
 end
 
 return FileSystemModule
