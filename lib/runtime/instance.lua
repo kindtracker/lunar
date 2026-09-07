@@ -1,19 +1,25 @@
 local CInstance = __Lunar_C__Instance__
 local Instance = {}
 
+local Connection
 local Signal
 
-function Instance.__Lunar_Internal__Init__(signal)
+function Instance.__Lunar_Internal__Init__(connection, signal)
+  Connection = connection
   Signal = signal
 end
 
-function Instance.new(className)
-  local self = CInstance.new(className)
+function Instance.new(className, Parent)
+  if className == nil then
+    className = "Instance"
+  end
+
+  local self = CInstance.new(className, Parent)
 
   local Properties = {
     Name = nil,
     ClassName = className,
-    Parent = nil,
+    Parent = Parent,
     Children = {},
     UniqueId = string.format("%08x", math.random(0, 4294967295))
   }
@@ -21,7 +27,8 @@ function Instance.new(className)
 
   local PropertyChangedSignals = {}
 
-  local Proxy = setmetatable({}, {
+  local Proxy
+  Proxy = setmetatable({}, {
     __index = function(_, key)
       if key == "Changed" then
         return changed
@@ -32,6 +39,13 @@ function Instance.new(className)
     __newindex = function(_, key, newValue)
       local oldValue = Properties[key]
       Properties[key] = newValue
+      if key == "Parent" then
+        local Parent = Properties.Parent
+        if Parent then
+          Parent:GetChildren()[Properties.UniqueId] = nil
+        end
+        newValue:AddChild(Proxy)
+      end
       if PropertyChangedSignals[key] then
         PropertyChangedSignals[key]:Fire(newValue, oldValue)
       end
@@ -48,6 +62,10 @@ function Instance.new(className)
 
   function Proxy:GetChildren(className)
     return self.Children
+  end
+
+  function Proxy:AddChild(Child)
+    self.Children[Child.UniqueId] = Child
   end
 
   function Proxy:FindFirstChild(Name)
