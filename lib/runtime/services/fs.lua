@@ -82,8 +82,8 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
       return File.FilePtr:read(readMode)
     end
 
-    function File:Write(...)
-      File.FilePtr:write(...)
+    function File:Write(Format, ...)
+      File.FilePtr:write(string.format(Format, ...))
     end
 
     return File
