@@ -9,7 +9,7 @@ Signal.__Lunar_Internal__Init__(Connection)
 Instance.__Lunar_Internal__Init__(Signal)
 local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
-ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemModule)
+ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService)
 
 return {
   Connection = Connection,

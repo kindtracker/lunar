@@ -1,9 +1,9 @@
-local console = Lunar:GetService("ConsoleService")
+local Console = Lunar:GetService("ConsoleService")
 
-console:Log("ConsoleService.LogFormat = %s", console.LogFormat)
-console:Log("Log")
-console:Warning("Warning")
--- console:Warn("Warning") You can do this too.
-console:Error("Error")
-console:Fatal("Fatal")
-console:Debug("Debug")
+Console:Log("ConsoleService.LogFormat = %s", Console.LogFormat)
+Console:Log("Log")
+Console:Warning("Warning")
+-- Console:Warn("Warning") You can do this too.
+Console:Error("Error")
+Console:Fatal("Fatal")
+Console:Debug("Debug")

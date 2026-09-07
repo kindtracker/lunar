@@ -10,7 +10,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   FileSystemService = Instance.new()
   FileSystemService.Name = "FileSystemService"
 
-  function FileSystemModule.__Lunar_Internal__Convert_Attrs__(Path, Name, Attributes)
+  function FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, Attributes)
     local ModeList = {
       ["directory"] = "Folder",
       ["file"] = "File",
@@ -60,16 +60,26 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   function FileSystemService:Open(Path, Name, Mode)
     local File = Instance.new()
     File.Name = Name
-    File.Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, lfs.attributes(Path))
     File.FilePtr = io.open(Path, Mode)
-    File.Mode = mode
+    if not File.FilePtr then
+      return nil
+    end
+    File.Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, lfs.attributes(Path))
+    File.Mode = Mode
+
+    function File:Seek(Whence, Offset)
+      Whence = Whence and Whence or "set"
+      Offset = Offset and Offset or 0
+      File.FilePtr:seek(Whence, Offset)
+    end
 
     function File:Close()
       File.FilePtr:close()
     end
 
-    function File:Read(readMode)
-      File.FilePtr:read(readMode)
+    function File:Read(readMode, Offset)
+      File:Seek("set", Offset)
+      return File.FilePtr:read(readMode)
     end
 
     function File:Write(...)
@@ -78,6 +88,8 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
 
     return File
   end
+
+  return FileSystemService
 end
 
 return FileSystemModule
