@@ -19,8 +19,9 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   ErrorService.Name = "ErrorService"
   ErrorService.ErrorSignals = {}
 
-  function ErrorService:Traceback(Message, Level)
-    return debug.traceback(Message, Level)
+  function ErrorService:Traceback(Level)
+    Level = (Level or 1) + 1
+    return debug.traceback(nil, Level):gsub("stack traceback:\n", "")
   end
 
   function ErrorService:Create(Type, Message, Traceback)
@@ -33,8 +34,8 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   end
 
   function ErrorService:Error(ErrorInstance)
-    for _, signal in ErrorService.ErrorSignals do
-      signal:Fire(signal)
+    for _, signal in pairs(ErrorService.ErrorSignals) do
+      signal:Fire(ErrorInstance)
     end
   end
 

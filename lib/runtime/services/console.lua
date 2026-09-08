@@ -17,7 +17,7 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
     DEBUG = "0;36"
   }
 
-  ConsoleService.LogFormat = "[{COLOR}{TYPE}{RESET}]: {MESSAGE}"
+  ConsoleService.LogFormat = "[{COLOR}{TYPE}{RESET}] {MESSAGE}"
 
   function ConsoleService:_Log(Type, Format, ...)
     local Message = string.format(Format, ...)
