@@ -11,6 +11,7 @@ function ServiceManager.__Lunar_Internal__Init__(instance, ConsoleService, FileS
   CServiceManager:RegisterService("ConsoleService", ConsoleService)
   CServiceManager:RegisterService("FileSystemService", FileSystemService)
   CServiceManager:RegisterService("TimeService", TimeService)
+  CServiceManager:RegisterService("ErrorService", TimeService)
 end
 
 function ServiceManager:GetService(serviceName)

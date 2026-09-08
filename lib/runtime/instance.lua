@@ -21,6 +21,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal)
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)
   InstanceModule:RegisterClass("TimeService", EmptyModule)
+  InstanceModule:RegisterClass("ErrorService", EmptyModule)
 end
 
 function InstanceModule:RegisterClass(ClassName, ClassModule)
@@ -189,7 +190,7 @@ function InstanceModule.new(ClassName, Parent)
     return children
   end
 
-  function Proxy:GetPropertyChangedSignal(PropertyName)
+  function Proxy:OnPropertyChanged(PropertyName)
     if not PropertyChangedSignals[PropertyName] then
       PropertyChangedSignals[PropertyName] = Signal.new()
     end
