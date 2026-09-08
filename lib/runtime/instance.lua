@@ -93,7 +93,17 @@ function Instance.new(className, Parent)
     end
   end
 
-  function Proxy:GetChildren(className)
+  function Proxy:Clone()
+    local Clone = {}
+    
+    for Key, Value in pairs(Proxy) do
+      Clone[Key] = Value
+    end
+
+    return Clone
+  end
+
+  function Proxy:GetChildren()
     return self.Children
   end
 
