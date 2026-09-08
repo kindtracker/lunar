@@ -1,20 +1,20 @@
-/*
- * Lunar - Lightweight Lua engine
- *
- * Copyright (C) 2026 kindtracker
- *
- * This file is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
-
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- * v0.0.1
+ * v0.1.2:
+ *  Added:
+ *   ClassNames
+ *   Instance:Destroy/Clone()
+ * v0.1.1:
+ *  Added:
+ *   ConsoleService and FileSystemService
+ * v0.1.0:
+ *  Added:
+ *   Instance
+ *   Signal,
+ *   Connection,
+ *   Service Manager,
+ *   init.lua
  */
 
 #include <lua.h>
