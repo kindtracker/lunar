@@ -7,7 +7,7 @@ local Instance
 function FileSystemModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  FileSystemService = Instance.new()
+  FileSystemService = Instance.new("FileSystemService")
   FileSystemService.Name = "FileSystemService"
 
   function FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, Attributes)

@@ -1,29 +1,61 @@
 local CInstance = __Lunar_C__Instance__
-local Instance = {}
+local InstanceModule = {}
 
 local Connection
 local Signal
 
-function Instance.__Lunar_Internal__Init__(connection, signal)
-  Connection = connection
-  Signal = signal
+local EmptyModule = {}
+function EmptyModule.new()
+  return {}
 end
 
-function Instance.new(className, Parent)
-  if className == nil then
-    className = "Instance"
+function InstanceModule.__Lunar_Internal__Init__(connection, signal)
+  Connection = connection
+  Signal = signal
+
+  InstanceModule.Classes = {}
+
+  InstanceModule:RegisterClass("Connection", Connection)
+  InstanceModule:RegisterClass("Signal", Signal)
+
+  InstanceModule:RegisterClass("ConsoleService", EmptyModule)
+  InstanceModule:RegisterClass("FileSystemService", EmptyModule)
+end
+
+function InstanceModule:RegisterClass(ClassName, ClassModule)
+  InstanceModule.Classes[ClassName] = ClassModule
+end
+
+function InstanceModule:RemoveClass(ClassName)
+  InstanceModule.Classes[ClassName] = nil
+end
+
+function InstanceModule:FindClassModule(ClassName)
+  return InstanceModule.Classes[ClassName]
+end
+
+function InstanceModule.new(ClassName, Parent)
+  if ClassName == nil then
+    ClassName = "Instance"
   end
 
-  local self = CInstance.new(className, Parent)
+  local self = CInstance.new(ClassName, Parent)
 
   local Properties = {
     Name = nil,
-    ClassName = className,
+    ClassName = ClassName,
     Parent = Parent,
     Children = {},
     UniqueId = string.format("%08x", math.random(0, 4294967295))
   }
   Properties.Name = Properties.UniqueId 
+
+  if ClassName ~= "Instance" then
+    local ClassModule = InstanceModule:FindClassModule(ClassName)
+    for Key, Value in pairs(ClassModule.new()) do
+      Properties[Key] = Value
+    end
+  end
 
   local PropertyChangedSignals = {}
 
@@ -119,9 +151,9 @@ function Instance.new(className, Parent)
     end
   end
 
-  function Proxy:FindFirstChildByClassName(className)
+  function Proxy:FindFirstChildByClassName(ClassName)
     for _, child in pairs(Proxy:GetChildren()) do
-      if child.className == className then
+      if child.ClassName == ClassName then
         return child
       end
     end
@@ -146,10 +178,10 @@ function Instance.new(className, Parent)
     return children
   end
 
-  function Proxy:FindChildrenByClassName(className)
+  function Proxy:FindChildrenByClassName(ClassName)
     local children = {}
     for _, child in pairs(Proxy:GetChildren()) do
-      if child.className == className then
+      if child.ClassName == ClassName then
         table.insert(children, child)
       end
     end
@@ -167,4 +199,4 @@ function Instance.new(className, Parent)
   return Proxy
 end
 
-return Instance
+return InstanceModule

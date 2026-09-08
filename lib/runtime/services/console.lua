@@ -17,7 +17,7 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
     DEBUG = "0;36"
   }
 
-  ConsoleService.LogFormat = "[{COLOR_START}{COLOR_END}{TYPE}{RESET}]: {MESSAGE}"
+  ConsoleService.LogFormat = "[{COLOR}{TYPE}{RESET}]: {MESSAGE}"
 
   function ConsoleService:_Log(Type, Format, ...)
     local Message = string.format(Format, ...)
@@ -25,8 +25,7 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
 
     local flogformat = self.LogFormat
       :gsub("{RESET}", "\27[0m")
-      :gsub("{COLOR_START}", "\27[" .. Color)
-      :gsub("{COLOR_END}", "m")
+      :gsub("{COLOR}", "\27[" .. Color .. "m")
       :gsub("{TYPE}", Type)
       :gsub("{MESSAGE}", Message)
 
