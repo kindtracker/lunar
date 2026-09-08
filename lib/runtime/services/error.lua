@@ -17,7 +17,7 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
 
   ErrorService = Instance.new("ErrorService")
   ErrorService.Name = "ErrorService"
-  ErrorService.ErrorSignals = {}
+  ErrorService.OnError = Signal.new()
 
   function ErrorService:Traceback(Level)
     Level = (Level or 1) + 1
@@ -34,15 +34,7 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   end
 
   function ErrorService:Error(ErrorInstance)
-    for _, signal in pairs(ErrorService.ErrorSignals) do
-      signal:Fire(ErrorInstance)
-    end
-  end
-
-  function ErrorService:OnError()
-    local signal = Signal.new()
-    table.insert(ErrorService.ErrorSignals, signal)
-    return signal
+    ErrorService.OnError:Fire(ErrorInstance)
   end
 
   return ErrorService
