@@ -20,6 +20,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal)
 
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)
+  InstanceModule:RegisterClass("TimeService", EmptyModule)
 end
 
 function InstanceModule:RegisterClass(ClassName, ClassModule)

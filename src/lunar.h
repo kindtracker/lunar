@@ -5,6 +5,7 @@
  *  Added:
  *   ClassNames
  *   Instance:Destroy/Clone()
+ *   More services (TimeService)
  * v0.1.1:
  *  Added:
  *   ConsoleService and FileSystemService

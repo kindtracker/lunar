@@ -2,7 +2,7 @@ local CServiceManager = __Lunar_C__ServiceManager__
 local ServiceManager = {}
 local Instance
 
-function ServiceManager.__Lunar_Internal__Init__(instance, ConsoleService, FileSystemService)
+function ServiceManager.__Lunar_Internal__Init__(instance, ConsoleService, FileSystemService, TimeService)
   Instance = instance
 
   local Workspace = Instance.new()
@@ -10,6 +10,7 @@ function ServiceManager.__Lunar_Internal__Init__(instance, ConsoleService, FileS
   CServiceManager:RegisterService("Workspace", Workspace)
   CServiceManager:RegisterService("ConsoleService", ConsoleService)
   CServiceManager:RegisterService("FileSystemService", FileSystemService)
+  CServiceManager:RegisterService("TimeService", TimeService)
 end
 
 function ServiceManager:GetService(serviceName)
