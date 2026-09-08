@@ -18,6 +18,8 @@ local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService)
 
+Instance.__Lunar_Internal__Init_Stage2__(ErrorModule)
+
 return {
   Connection = Connection,
   Signal = Signal,

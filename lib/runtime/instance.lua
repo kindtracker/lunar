@@ -9,7 +9,7 @@ function EmptyModule.new()
   return {}
 end
 
-function InstanceModule.__Lunar_Internal__Init__(connection, signal)
+function InstanceModule.__Lunar_Internal__Init__(connection, signal, ErrorModule)
   Connection = connection
   Signal = signal
 
@@ -22,6 +22,10 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)
   InstanceModule:RegisterClass("TimeService", EmptyModule)
   InstanceModule:RegisterClass("ErrorService", EmptyModule)
+end
+
+function InstanceModule.__Lunar_Internal__Init_Stage2__(ErrorModule)
+  InstanceModule:RegisterClass("Error", ErrorModule)
 end
 
 function InstanceModule:RegisterClass(ClassName, ClassModule)
