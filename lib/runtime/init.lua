@@ -6,6 +6,7 @@ local Signal = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/dat
 local Vector2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/vector2.lua")
 local Vector3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/vector3.lua")
 local Color3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color3.lua")
+local CFrame = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/cframe.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
@@ -16,7 +17,8 @@ local RunModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/
 local JSONModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/json.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
-Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3)
+CFrame.__Lunar_Internal__Init__(Vector3)
+Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3, CFrame)
 
 local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
@@ -38,5 +40,6 @@ return {
   ServiceManager = ServiceManager,
   Vector2 = Vector2,
   Vector3 = Vector3,
-  Color3 = Color3
+  Color3 = Color3,
+  CFrame = CFrame
 }

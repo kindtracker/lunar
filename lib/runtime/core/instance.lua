@@ -4,16 +4,19 @@ local InstanceModule = {}
 local Connection
 local Signal
 local Vector2
+local CFrame
 
 local EmptyModule = {}
 function EmptyModule.new()
   return {}
 end
 
-function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, vector3)
+function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, vector3, color3, cframe)
   Connection = connection
   Signal = signal
   Vector2 = vector2
+  Vector3 = vector3
+  Color3 = color3
   Vector3 = vector3
 
   InstanceModule.Classes = {}
@@ -23,6 +26,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   InstanceModule:RegisterClass("Vector2", Vector2)
   InstanceModule:RegisterClass("Vector3", Vector3)
   InstanceModule:RegisterClass("Color3", Color3)
+  InstanceModule:RegisterClass("CFrame", CFrame)
 
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)

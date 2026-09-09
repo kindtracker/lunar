@@ -1,6 +1,9 @@
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
+ * v0.2.2:
+ *  Added:
+ *   More datatypes (CFrame)
  * v0.2.0:
  *  Added:
  *   ClassNames
@@ -208,6 +211,9 @@ void lunar_init() {
 
   lua_getfield(lunar_state, -1, "Color3");
   lua_setglobal(lunar_state, "Color3");
+
+  lua_getfield(lunar_state, -1, "CFrame");
+  lua_setglobal(lunar_state, "CFrame");
 
   lua_newtable(lunar_state);
 

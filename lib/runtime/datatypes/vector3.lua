@@ -29,12 +29,12 @@ function Vector3.new(X, Y, Z)
   local Proxy
 
   Proxy = setmetatable({}, {
-    __index = function(_, Key)
-      if Key == "Magnitude" then
+    __index = function(_, key)
+      if key == "Magnitude" then
         return math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2 + Properties.Z ^ 2)
       end
 
-      if Key == "Unit" then
+      if key == "Unit" then
         local Length = math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2 ^ Properties.Z ^ 2)
         
         if Length == 0 then
@@ -44,7 +44,7 @@ function Vector3.new(X, Y, Z)
         return Vector3.new(Properties.X / Length, Properties.Y / Length, Properties.Z / Length)
       end
 
-      return Properties[Key]
+      return Properties[key]
     end,
     __newindex = function(_, key, Value)
       if key == "xAxis" then
