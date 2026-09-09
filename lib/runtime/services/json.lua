@@ -26,7 +26,6 @@ function JSONModule.__Lunar_Internal__Init__(instance)
     for _, key in ipairs(Keys) do
       local value = Table[key]
 
-      print(value)
       if tostring(value) == "null" then
         value = "null"
       elseif type(value) == "table" then
