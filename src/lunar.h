@@ -8,6 +8,7 @@
  *   Fix Instances
  *   More services (TimeService, ErrorService, TaskService, RunService)
  *   More datatypes (Vector2, Vector3, Color3)
+ *   Change TaskService:Wait/Delay to TaskService.wait/delay
  * v0.1.1:
  *  Added:
  *   ConsoleService and FileSystemService

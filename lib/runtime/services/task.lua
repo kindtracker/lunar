@@ -80,7 +80,7 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
     end
   end
 
-  function TaskService:Wait(Duration)
+  function TaskService.wait(Duration)
     local Coroutine = coroutine.running()
     local Thread
     for _, value in pairs(TaskService.Threads) do
@@ -106,7 +106,7 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
     return coroutine.yield()
   end
 
-  function TaskService:Delay(Duration, Function)
+  function TaskService.delay(Duration, Function)
     return TaskService:Spawn(function()
       TaskService:Wait(Duration)
       Function()
