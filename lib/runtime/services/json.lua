@@ -8,6 +8,12 @@ function JSONModule.__Lunar_Internal__Init__(instance)
   JSONService = Instance.new("JSONService")
   JSONService.Name = "JSONService"
 
+  JSONService.Null = setmetatable({}, {
+    __tostring = function()
+      return "null"
+    end
+  })
+  
   function JSONService:Encode(Table)
     local JSONT = {}
     
@@ -20,7 +26,10 @@ function JSONModule.__Lunar_Internal__Init__(instance)
     for _, key in ipairs(Keys) do
       local value = Table[key]
 
-      if type(value) == "table" then
+      print(value)
+      if tostring(value) == "null" then
+        value = "null"
+      elseif type(value) == "table" then
         value = JSONService:Encode(value)
       elseif type(value) == "string" then
         value = string.format("%q", value)
