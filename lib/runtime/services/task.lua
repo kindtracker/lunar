@@ -35,21 +35,27 @@ function TaskModule.__Lunar_Internal__Init__(instance)
   TaskService = Instance.new("TaskService")
   TaskService.Name = "TaskService"
 
-  function TaskService:Spawn(Function, Start) 
-    if Start == nil then
-      Start = true
-    end
+  TaskService.Threads = {}
 
+  function TaskService:Spawn(Function)
     local Thread = Instance.new("Thread")
-
     Thread.Function = Function
     Thread:Initialize()
 
-    if Start == true then
-      Thread:Resume()
-    end
-
+    table.insert(TaskService.Threads, Thread)
     return Thread
+  end
+
+  function TaskService:Yield(...)
+    return coroutine.yield(...)
+  end
+
+  function TaskService:Step()
+    for _, Thread in ipairs(TaskService.Threads) do
+      if Thread:Status() ~= "Dead" then
+        Thread:Resume()
+      end
+    end
   end
 
   return TaskService
