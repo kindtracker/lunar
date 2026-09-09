@@ -7,7 +7,7 @@
  *   Instance:Destroy/Clone()
  *   Fix Instances
  *   More services (TimeService, ErrorService, TaskService, RunService)
- *   More datatypes (Vector2, Vector3)
+ *   More datatypes (Vector2, Vector3, Color3)
  * v0.1.1:
  *  Added:
  *   ConsoleService and FileSystemService

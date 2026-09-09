@@ -51,6 +51,55 @@ function Color3.new(R, G, B)
     return self.new(R + M, G + M, B +M)
   end
 
+  function self.fromHex(Hex)
+    Hex = Hex:gsub("#", "")
+    local R, G, B
+    local Length = string.len(Hex)
+    if Length == 3 then
+      R = tonumber("0x" .. Hex:sub(1, 1)) * 16
+      G = tonumber("0x" .. Hex:sub(2, 2)) * 16
+      B = tonumber("0x" .. Hex:sub(3, 3)) * 16
+    else
+      R = tonumber("0x" .. Hex:sub(1,2))
+      G = tonumber("0x" .. Hex:sub(3,4))
+      B = tonumber("0x" .. Hex:sub(5,6))
+    end
+    return self.fromRGB(R, G, B)
+  end
+
+  function Proxy:ToHSV()
+    local R, G, B = self.R, self.G, self.B
+
+    local Max = math.max(R, G, B)
+    local Min = math.min(R, G, B)
+    local Delta = Max - Min
+
+    local H = 0
+    local S = Max == 0 and 0 or Delta / Max
+    local V = Max
+
+    if Delta ~= 0 then
+      if Max == R then
+        H = ((G - B) / Delta) % 6
+      elseif Max == G then
+        H = (B - R) / Delta + 2
+      else
+        H = (R - G) / Delta + 4
+      end
+
+      H = H / 6
+    end
+
+    return H, S, V
+  end
+
+  function self:ToHex()
+    local R = math.floor(self.R * 255)
+    local G = math.floor(self.G * 255)
+    local B = math.floor(self.B * 255)
+    return string.format("#%02X%02X%02X", R, G, B)
+  end
+
   function self:Lerp(Goal, Alpha)
     return Vector3.new(
       self.X + (Goal.X - self.X) * Alpha, 
