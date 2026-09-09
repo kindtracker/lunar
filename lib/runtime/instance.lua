@@ -3,20 +3,23 @@ local InstanceModule = {}
 
 local Connection
 local Signal
+local Vector2
 
 local EmptyModule = {}
 function EmptyModule.new()
   return {}
 end
 
-function InstanceModule.__Lunar_Internal__Init__(connection, signal, ErrorModule)
+function InstanceModule.__Lunar_Internal__Init__(connection, signal)
   Connection = connection
   Signal = signal
+  Vector2 = vector2
 
   InstanceModule.Classes = {}
 
   InstanceModule:RegisterClass("Connection", Connection)
   InstanceModule:RegisterClass("Signal", Signal)
+  InstanceModule:RegisterClass("Vector2", Vector2)
 
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)
