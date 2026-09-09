@@ -10,7 +10,16 @@ function JSONModule.__Lunar_Internal__Init__(instance)
 
   function JSONService:Encode(Table)
     local JSONT = {}
-    for key, value in pairs(Table) do
+    
+    local Keys = {}
+    for key in pairs(Table) do
+      table.insert(Keys, key)
+    end
+    table.sort(Keys)
+
+    for _, key in ipairs(Keys) do
+      local value = Table[key]
+
       if type(value) == "table" then
         value = JSONService:Encode(value)
       elseif type(value) == "string" then
