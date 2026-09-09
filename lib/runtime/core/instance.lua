@@ -22,6 +22,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   InstanceModule:RegisterClass("Signal", Signal)
   InstanceModule:RegisterClass("Vector2", Vector2)
   InstanceModule:RegisterClass("Vector3", Vector3)
+  InstanceModule:RegisterClass("Color3", Color3)
 
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)

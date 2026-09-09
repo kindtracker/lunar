@@ -204,6 +204,9 @@ void lunar_init() {
   lua_getfield(lunar_state, -1, "Vector3");
   lua_setglobal(lunar_state, "Vector3");
 
+  lua_getfield(lunar_state, -1, "Color3");
+  lua_setglobal(lunar_state, "Color3");
+
   lua_newtable(lunar_state);
 
   lua_getfield(lunar_state, -2, "ServiceManager");
