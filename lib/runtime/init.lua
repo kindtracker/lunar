@@ -19,7 +19,7 @@ local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
 local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
-local JSONService = JSONModule.__Lunar_Internal__Init__(Instance, JSONService)
+local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
 
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService, JSONService)
 
