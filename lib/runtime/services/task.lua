@@ -107,15 +107,10 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
   end
 
   function TaskService:Delay(Duration, Function)
-    local Thread = TaskService:Spawn(Function)
-    Thread.Waiting = true
-
-    table.insert(TaskService.Waiting, {
-      Thread = Thread,
-      Until = TimeService:PreciseNow() + Duration
-    })
-
-    return coroutine.yield()
+    return TaskService:Spawn(function()
+      TaskService:Wait(Duration)
+      Function()
+    end)
   end
 
   return TaskService

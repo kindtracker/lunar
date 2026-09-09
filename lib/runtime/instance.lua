@@ -23,6 +23,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, ErrorModule
   InstanceModule:RegisterClass("TimeService", EmptyModule)
   InstanceModule:RegisterClass("ErrorService", EmptyModule)
   InstanceModule:RegisterClass("TaskService", EmptyModule)
+  InstanceModule:RegisterClass("RunService", EmptyModule)
 end
 
 function InstanceModule.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)

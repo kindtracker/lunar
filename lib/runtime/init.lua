@@ -8,6 +8,7 @@ local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/r
 local TimeModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/time.lua")
 local ErrorModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/error.lua")
 local TaskModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/task.lua")
+local RunModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/run.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
 Instance.__Lunar_Internal__Init__(Connection, Signal)
@@ -21,6 +22,8 @@ local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService)
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
+local RunService = RunModule.__Lunar_Internal__Init__(Instance, Signal, TaskService)
+ServiceManager.__Lunar_Internal__Init_Stage2__(RunService)
 
 return {
   Connection = Connection,
