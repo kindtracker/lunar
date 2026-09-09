@@ -9,7 +9,7 @@ Lunar also provides connections and signals.
 Contributions are welcome. Feel free to open an issue or submit a PR.
 
 ## Credits
-- **Lua** — used as Lunar's scripting language.
+- **Lua** - used as Lunar's scripting language.
 
 ## License
 This project is licensed under the GNU General Public License v3.0 or later.

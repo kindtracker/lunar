@@ -1,7 +1,7 @@
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- * v0.1.2:
+ * v0.2.0:
  *  Added:
  *   ClassNames
  *   Instance:Destroy/Clone()
@@ -13,9 +13,9 @@
  * v0.1.0:
  *  Added:
  *   Instance
- *   Signal,
- *   Connection,
- *   Service Manager,
+ *   Signal
+ *   Connection
+ *   Service Manager
  *   init.lua
  */
 
