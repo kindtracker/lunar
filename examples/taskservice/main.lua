@@ -6,7 +6,7 @@ Task:Spawn(function()
     i=i+1
     print("Thread 1:", i)
     
-    Task:Wait(0.5)
+    Task.wait(0.5)
   end
 end)
 
@@ -16,7 +16,7 @@ Task:Spawn(function()
     i=i+2
     print("Thread 2:", i)
 
-    Task:Wait(1)
+    Task.wait(1)
   end
 end)
 

@@ -16,7 +16,7 @@ function RunModule.__Lunar_Internal__Init__(instance, signal, taskservice)
   local UDuration = 1/24
 
   function RunModule.__Lunar_Internal__Cycle__()
-    TaskService:Delay(UDuration, function()
+    TaskService.delay(UDuration, function()
       RunService.Stepped:Fire()
       RunService.Heartbeat:Fire()
       RunModule.__Lunar_Internal__Cycle__()

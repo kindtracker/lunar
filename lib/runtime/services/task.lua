@@ -108,7 +108,7 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
 
   function TaskService.delay(Duration, Function)
     return TaskService:Spawn(function()
-      TaskService:Wait(Duration)
+      TaskService.wait(Duration)
       Function()
     end)
   end

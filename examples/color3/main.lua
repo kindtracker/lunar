@@ -6,7 +6,7 @@ Task:Spawn(function()
     Hue = Hue + 0.001
     local Color = Color3.fromHSV(Hue, 0.5, 0.75)
     print(Color.R, Color.G, Color.B)
-    Task:Wait(0.01)
+    Task.wait(0.01)
   end
 end)
 
