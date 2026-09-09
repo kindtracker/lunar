@@ -10,16 +10,18 @@ function EmptyModule.new()
   return {}
 end
 
-function InstanceModule.__Lunar_Internal__Init__(connection, signal)
+function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, vector3)
   Connection = connection
   Signal = signal
   Vector2 = vector2
+  Vector3 = vector3
 
   InstanceModule.Classes = {}
 
   InstanceModule:RegisterClass("Connection", Connection)
   InstanceModule:RegisterClass("Signal", Signal)
   InstanceModule:RegisterClass("Vector2", Vector2)
+  InstanceModule:RegisterClass("Vector3", Vector3)
 
   InstanceModule:RegisterClass("ConsoleService", EmptyModule)
   InstanceModule:RegisterClass("FileSystemService", EmptyModule)

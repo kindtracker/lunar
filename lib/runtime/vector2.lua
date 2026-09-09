@@ -22,12 +22,12 @@ function Vector2.new(X, Y)
   local Proxy
 
   Proxy = setmetatable({}, {
-    __index = function(_, Key)
-      if Key == "Magnitude" then
+    __index = function(_, key)
+      if key == "Magnitude" then
         return math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2)
       end
 
-      if Key == "Unit" then
+      if key == "Unit" then
         local Length = math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2)
 
         if Length == 0 then
@@ -37,10 +37,10 @@ function Vector2.new(X, Y)
         return Vector2.new(Properties.X / Length, Properties.Y / Length)
       end
 
-      return Properties[Key]
+      return Properties[key]
     end,
-    __newindex = function(_, Key, Value)
-      Properties[Key] = Value
+    __newindex = function(_, key, value)
+      Properties[key] = value
     end,
     __pairs = function()
       return next, Properties, nil
@@ -53,13 +53,13 @@ function Vector2.new(X, Y)
     end,
     __mul = function(A, B)
       if type(B) == "number" then
-        return Vector2.new(A*B, A*B)
+        return Vector2.new(A.X*B, A.Y*B)
       end
       return Vector2.new(A.X*B.X, A.Y*B.Y)
     end,
     __div = function(A, B)
       if type(B) == "number" then
-        return Vector2.new(A/B, A/B)
+        return Vector2.new(A.X/B, A.Y/B)
       end
       return Vector2.new(A.X/B.X, A.Y/B.Y)
     end,
@@ -90,8 +90,12 @@ function Vector2.new(X, Y)
     return Vector2.new(Sign(Properties.X), Sign(Properties.Y))
   end
 
-  function Proxy:Min(Other, IsSigned)
+  function Proxy:Min(vector2)
     return Vector2.new(math.min(Properties.X, vector2.X), math.min(Properties.Y, vector2.Y))
+  end
+
+  function Proxy:Max(vector2)
+    return Vector2.new(math.max(Properties.X, vector2.X), math.max(Properties.Y, vector2.Y))
   end
 
   function Proxy:Angle(Other, IsSigned)
@@ -108,7 +112,6 @@ function Vector2.new(X, Y)
 
     local Cosine = Dot / Magnitude
     Cosine = math.max(-1, math.min(1, Cosine))
-
     return math.acos(Cosine)
   end
 
@@ -116,13 +119,7 @@ function Vector2.new(X, Y)
     return Properties.X * Other.X + Properties.Y * Other.Y
   end
 
-  function Proxy:Min(vector2)
-    return Vector2.new(math.min(Properties.X, vector2.X), math.min(Properties.Y, vector2.Y))
-  end
 
-  function Proxy:Max(vector2)
-    return Vector2.new(math.max(Properties.X, vector2.X), math.max(Properties.Y, vector2.Y))
-  end
 
   return Proxy
 end

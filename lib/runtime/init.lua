@@ -4,6 +4,7 @@ local Instance = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/i
 local ServiceManager = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/service.lua")
 
 local Vector2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/vector2.lua")
+local Vector3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/vector3.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
@@ -14,7 +15,7 @@ local RunModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/
 local JSONModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/json.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
-Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2)
+Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3)
 
 local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
@@ -34,5 +35,6 @@ return {
   Signal = Signal,
   Instance = Instance,
   ServiceManager = ServiceManager,
-  Vector2 = Vector2
+  Vector2 = Vector2,
+  Vector3 = Vector3
 }

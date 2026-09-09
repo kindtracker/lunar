@@ -7,6 +7,7 @@
  *   Instance:Destroy/Clone()
  *   Fix Instances
  *   More services (TimeService, ErrorService, TaskService, RunService)
+ *   More datatypes (Vector2, Vector3)
  * v0.1.1:
  *  Added:
  *   ConsoleService and FileSystemService
@@ -199,6 +200,9 @@ void lunar_init() {
   
   lua_getfield(lunar_state, -1, "Vector2");
   lua_setglobal(lunar_state, "Vector2");
+  
+  lua_getfield(lunar_state, -1, "Vector3");
+  lua_setglobal(lunar_state, "Vector3");
 
   lua_newtable(lunar_state);
 
