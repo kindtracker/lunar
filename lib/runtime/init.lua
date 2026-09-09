@@ -28,7 +28,7 @@ local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService, JSONService)
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
-local RunService = RunModule.__Lunar_Internal__Init__(Instance, Signal, TaskService)
+local RunService = RunModule.__Lunar_Internal__Init__(Instance, Signal, TaskService, TimeService)
 ServiceManager.__Lunar_Internal__Init_Stage2__(RunService)
 
 return {
