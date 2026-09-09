@@ -1,48 +1,58 @@
 local TaskModule = {}
 local TaskService
 local Instance
+local TimeService
 
 function TaskModule.new()
   local self = {
     Function = nil,
-    Thread = nil
+    Thread = nil,
+    Waiting = false
   }
 
   function self:Initialize()
     self.Thread = coroutine.create(self.Function)
   end
 
-  function self:Status()
+  function self:GetStatus()
     local StatusList = {
       ["suspended"] = "Suspended",
       ["running"] = "Running",
       ["normal"] = "Running",
       ["dead"] = "Dead"
     }
+
     return StatusList[coroutine.status(self.Thread)]
   end
 
   function self:Resume(...)
-    coroutine.resume(self.Thread, ...)
+    local Success, Error = coroutine.resume(self.Thread, ...)
+
+    if not Success then
+      error(Error, 0)
+    end
   end
 
   return self
 end
 
-function TaskModule.__Lunar_Internal__Init__(instance)
+function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
   Instance = instance
+  TimeService = timeservice
 
   TaskService = Instance.new("TaskService")
   TaskService.Name = "TaskService"
 
   TaskService.Threads = {}
+  TaskService.Waiting = {}
 
   function TaskService:Spawn(Function)
     local Thread = Instance.new("Thread")
     Thread.Function = Function
     Thread:Initialize()
 
-    table.insert(TaskService.Threads, Thread)
+    TaskService.Threads[Thread] = Thread
+
     return Thread
   end
 
@@ -51,11 +61,50 @@ function TaskModule.__Lunar_Internal__Init__(instance)
   end
 
   function TaskService:Step()
-    for _, Thread in ipairs(TaskService.Threads) do
-      if Thread:Status() ~= "Dead" then
+    local Now = TimeService:PreciseNow()
+
+    for i = #TaskService.Waiting, 1, -1 do
+      local Waiting = TaskService.Waiting[i]
+
+      if Now >= Waiting.Until then
+        table.remove(TaskService.Waiting, i)
+
+        Waiting.Thread.Waiting = false
+        Waiting.Thread:Resume()
+      end
+    end
+
+    for _, Thread in pairs(TaskService.Threads) do
+      if Thread:GetStatus() ~= "Dead" and not Thread.Waiting then
         Thread:Resume()
       end
     end
+  end
+
+  function TaskService:Wait(Duration)
+    local Coroutine = coroutine.running()
+    local Thread
+    for _, value in pairs(TaskService.Threads) do
+      if value.Thread == Coroutine then
+        Thread = value
+        break
+      end
+    end
+
+    if not Thread then
+      Thread = Instance.new("Thread")
+      Thread.Thread = Coroutine
+      TaskService.Threads[Thread] = Thread
+    end
+
+    Thread.Waiting = true
+
+    table.insert(TaskService.Waiting, {
+      Thread = Thread,
+      Until = TimeService:PreciseNow() + Duration
+    })
+
+    return coroutine.yield()
   end
 
   return TaskService

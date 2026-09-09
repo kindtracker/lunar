@@ -16,7 +16,7 @@ local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
 local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
-local TaskService = TaskModule.__Lunar_Internal__Init__(Instance)
+local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 
 ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService)
 
