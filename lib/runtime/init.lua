@@ -3,6 +3,8 @@ local Signal = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/sig
 local Instance = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/instance.lua")
 local ServiceManager = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/service.lua")
 
+local Vector2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/vector2.lua")
+
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
 local TimeModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/time.lua")
@@ -31,5 +33,6 @@ return {
   Connection = Connection,
   Signal = Signal,
   Instance = Instance,
-  ServiceManager = ServiceManager
+  ServiceManager = ServiceManager,
+  Vector2 = Vector2
 }

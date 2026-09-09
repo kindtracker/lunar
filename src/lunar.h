@@ -196,6 +196,9 @@ void lunar_init() {
   
   lua_getfield(lunar_state, -1, "Signal");
   lua_setglobal(lunar_state, "Signal");
+  
+  lua_getfield(lunar_state, -1, "Vector2");
+  lua_setglobal(lunar_state, "Vector2");
 
   lua_newtable(lunar_state);
 
