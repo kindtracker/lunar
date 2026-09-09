@@ -119,7 +119,11 @@ function Vector2.new(X, Y)
     return Properties.X * Other.X + Properties.Y * Other.Y
   end
 
-
+  function Proxy:Lerp(Goal, Alpha)
+    return Vector2.new(
+      Properties.X + (Goal.X - Properties.X) * Alpha, 
+      Properties.Y + (Goal.Y - Properties.Y) * Alpha)
+  end
 
   return Proxy
 end

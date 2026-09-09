@@ -20,6 +20,8 @@ function Vector3.new(X, Y, Z)
   Properties.X = X or 0
   Properties.Y = Y or 0
   Properties.Z = Z or 0
+  Properties.one = Vector3.new(1, 1, 1)
+  Properties.zero = Vector3.new(0, 0, 0)
   Properties.xAxis = Vector3.new(1, 0, 0)
   Properties.yAxis = Vector3.new(0, 1, 0)
   Properties.zAxis = Vector3.new(0, 0, 1)
@@ -52,6 +54,12 @@ function Vector3.new(X, Y, Z)
         return
       end
       if key == "zAxis" then
+        return
+      end
+      if key == "one" then
+        return
+      end
+      if key == "zero" then
         return
       end
       Properties[key] = Value
@@ -133,6 +141,13 @@ function Vector3.new(X, Y, Z)
 
   function Proxy:Dot(Other)
     return Properties.X * Other.X + Properties.Y * Other.Y + Properties.Z * Other.Z
+  end
+
+  function Proxy:Lerp(Goal, Alpha)
+    return Vector3.new(
+      Properties.X + (Goal.X - Properties.X) * Alpha, 
+      Properties.Y + (Goal.Y - Properties.Y) * Alpha, 
+      Properties.Z + (Goal.Z - Properties.Z) * Alpha)
   end
 
   return Proxy
