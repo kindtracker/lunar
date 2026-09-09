@@ -37,5 +37,6 @@ return {
   Instance = Instance,
   ServiceManager = ServiceManager,
   Vector2 = Vector2,
-  Vector3 = Vector3
+  Vector3 = Vector3,
+  Color3 = Color3
 }
