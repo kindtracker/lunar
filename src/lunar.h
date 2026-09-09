@@ -107,9 +107,9 @@ int l_instance_new(lua_State *L) {
 }
 
 int l_instance(lua_State *L) {
-  lua_newtable(lunar_state);
-  lua_pushcfunction(lunar_state, l_instance_new);
-  lua_setfield(lunar_state, -2, "new");
+  lua_newtable(L);
+  lua_pushcfunction(L, l_instance_new);
+  lua_setfield(L, -2, "new");
   return 1;
 }
 
@@ -154,16 +154,16 @@ int l_servicemanager_removeservice(lua_State *L) {
 }
 
 int l_servicemanager(lua_State *L) {
-  lua_newtable(lunar_state);
+  lua_newtable(L);
   
-  lua_pushcfunction(lunar_state, l_servicemanager_getservices);
-  lua_setfield(lunar_state, -2, "GetServices");
+  lua_pushcfunction(L, l_servicemanager_getservices);
+  lua_setfield(L, -2, "GetServices");
   
-  lua_pushcfunction(lunar_state, l_servicemanager_registerservice);
-  lua_setfield(lunar_state, -2, "RegisterService");
+  lua_pushcfunction(L, l_servicemanager_registerservice);
+  lua_setfield(L, -2, "RegisterService");
   
-  lua_pushcfunction(lunar_state, l_servicemanager_removeservice);
-  lua_setfield(lunar_state, -2, "RemoveService");
+  lua_pushcfunction(L, l_servicemanager_removeservice);
+  lua_setfield(L, -2, "RemoveService");
   return 1;
 }
 
