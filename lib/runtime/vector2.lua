@@ -1,8 +1,16 @@
 local Vector2 = {}
 
-function Vector2.new(X, Y)
-  local self = {}
+function Sign(Number)
+  if Number > 0 then
+    return 1
+  end
+  if Number < 0 then
+    return -1
+  end
+  return 0
+end
 
+function Vector2.new(X, Y)
   local Properties = {
     X = 0,
     Y = 0
@@ -12,23 +20,84 @@ function Vector2.new(X, Y)
   Properties.Y = Y or 0
 
   local Proxy
+
   Proxy = setmetatable({}, {
-    __index = function(_, key)
-      return Properties[key]
+    __index = function(_, Key)
+      if Key == "Magnitude" then
+        return math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2)
+      end
+
+      if Key == "Unit" then
+        local Length = math.sqrt(Properties.X ^ 2 + Properties.Y ^ 2)
+
+        if Length == 0 then
+          return Vector2.new(0, 0)
+        end
+
+        return Vector2.new(Properties.X / Length, Properties.Y / Length)
+      end
+
+      return Properties[Key]
     end,
 
-    __newindex = function(_, key, newValue)
-      Properties[key] = newValue
-    end,
-    
-    __len = function()
-      return #Properties.Children
+    __newindex = function(_, Key, Value)
+      Properties[Key] = Value
     end,
 
     __pairs = function()
       return next, Properties, nil
     end
   })
+
+  function Proxy:Abs()
+    return Vector2.new(math.abs(Properties.X), math.abs(Properties.Y))
+  end
+
+  function Proxy:Ceil()
+    return Vector2.new(math.ceil(Properties.X), math.ceil(Properties.Y))
+  end
+
+  function Proxy:Floor()
+    return Vector2.new(math.floor(Properties.X), math.floor(Properties.Y))
+  end
+
+  function Proxy:Sign()
+    return Vector2.new(Sign(Properties.X), Sign(Properties.Y))
+  end
+
+  function Proxy:Min(Other, IsSigned)
+    return Vector2.new(math.min(Properties.X, vector2.X), math.min(Properties.Y, vector2.Y))
+  end
+
+  function Proxy:Angle(Other, IsSigned)
+    local Magnitude = Properties.Magnitude * Other.Magnitude
+
+    if Magnitude == 0 then
+      return 0
+    end
+
+    if IsSigned then
+      local Cross = Properties.X * Other.Y - Properties.Y * Other.X
+      return math.atan2(Cross, Proxy:Dot(Other))
+    end
+
+    local Cosine = Dot / Magnitude
+    Cosine = math.max(-1, math.min(1, Cosine))
+
+    return math.acos(Cosine)
+  end
+
+  function Proxy:Dot(Other)
+    return Properties.X * Other.X + Properties.Y * Other.Y
+  end
+
+  function Proxy:Min(vector2)
+    return Vector2.new(math.min(Properties.X, vector2.X), math.min(Properties.Y, vector2.Y))
+  end
+
+  function Proxy:Max(vector2)
+    return Vector2.new(math.max(Properties.X, vector2.X), math.max(Properties.Y, vector2.Y))
+  end
 
   return Proxy
 end
