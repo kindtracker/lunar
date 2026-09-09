@@ -39,14 +39,39 @@ function Vector2.new(X, Y)
 
       return Properties[Key]
     end,
-
     __newindex = function(_, Key, Value)
       Properties[Key] = Value
     end,
-
     __pairs = function()
       return next, Properties, nil
-    end
+    end,
+    __add = function(A, B)
+      return Vector2.new(A.X+B.X, A.Y+B.Y)
+    end,
+    __sub = function(A, B)
+      return Vector2.new(A.X-B.X, A.Y-B.Y)
+    end,
+    __mul = function(A, B)
+      if type(B) == "number" then
+        return Vector2.new(A*B, A*B)
+      end
+      return Vector2.new(A.X*B.X, A.Y*B.Y)
+    end,
+    __div = function(A, B)
+      if type(B) == "number" then
+        return Vector2.new(A/B, A/B)
+      end
+      return Vector2.new(A.X/B.X, A.Y/B.Y)
+    end,
+    __unm = function(A)
+      return Vector2.new(-A.X, -A.Y)
+    end,
+    __eq = function(A, B)
+      return A.X == B.X and A.Y == B.Y
+    end,
+    __tostring = function(A)
+      return string.format("%g, %g", A.X, A.Y)
+    end,
   })
 
   function Proxy:Abs()
