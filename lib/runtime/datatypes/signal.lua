@@ -3,48 +3,48 @@ local Signal = {}
 local Connection
 
 function Signal.__Lunar_Internal__Init__(connection)
-	Connection = connection
+  Connection = connection
 end
 
 function Signal.new()
-	local self = {}
+  local self = {}
 
-	self.Connections = {}
+  self.Connections = {}
 
-	function self:Connect(Callback, DisconnectCallback)
-		local connection
-		connection = Connection.new(Callback, function()
-			for i, registeredConnection in ipairs(self.Connections) do
-				if registeredConnection == connection then
-					table.remove(self.Connections, i)
-					break
-				end
-			end
-			if DisconnectCallback then
-				DisconnectCallback(connection)
-			end
-		end)
+  function self:Connect(Callback, DisconnectCallback)
+    local connection
+    connection = Connection.new(Callback, function()
+      for i, registeredConnection in ipairs(self.Connections) do
+        if registeredConnection == connection then
+          table.remove(self.Connections, i)
+          break
+        end
+      end
+      if DisconnectCallback then
+        DisconnectCallback(connection)
+      end
+    end)
 
-		table.insert(self.Connections, connection)
-		return connection
-	end
+    table.insert(self.Connections, connection)
+    return connection
+  end
 
-	function self:DisconnectAll()
-		for _, connection in ipairs(self.Connections) do
-			connection:Disconnect()
-			connection = nil
-		end
-	end
+  function self:DisconnectAll()
+    for _, connection in ipairs(self.Connections) do
+      connection:Disconnect()
+      connection = nil
+    end
+  end
 
-	function self:Fire(...)
-		for _, connection in ipairs(self.Connections) do
-			if connection.Connected then
-				connection.Callback(...)
-			end
-		end
-	end
+  function self:Fire(...)
+    for _, connection in ipairs(self.Connections) do
+      if connection.Connected then
+        connection.Callback(...)
+      end
+    end
+  end
 
-	return self
+  return self
 end
 
 return Signal

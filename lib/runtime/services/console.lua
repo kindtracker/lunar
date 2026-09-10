@@ -14,7 +14,7 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
     WARNING = "0;33",
     ERROR = "0;31",
     FATAL = "0;31",
-    DEBUG = "0;36"
+    DEBUG = "0;36",
   }
 
   ConsoleService.LogFormat = "[{COLOR}{TYPE}{RESET}] {MESSAGE}"

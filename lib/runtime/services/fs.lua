@@ -18,7 +18,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
       ["named pipe"] = "NamedPipe",
       ["char device"] = "CharDevice",
       ["block device"] = "BlockDevice",
-      ["other"] = "Unknown"
+      ["other"] = "Unknown",
     }
     local Lunar_Attributes = {
       Name = Name,
@@ -28,7 +28,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
       ModificationTime = Attributes.modification,
       AccessTime = Attributes.access,
       ChangeTime = Attributes.change,
-      Permissions = Attributes.permissions
+      Permissions = Attributes.permissions,
     }
 
     for key, value in pairs(Attributes) do
@@ -43,7 +43,8 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     Folder.Name = Name
     local Files = lfs.dir(Path)
     for fileName in Files do
-      local Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, fileName, lfs.attributes(Path .. "/" .. fileName))
+      local Attributes =
+        FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, fileName, lfs.attributes(Path .. "/" .. fileName))
       local File = Instance.new()
       File.Name = fileName
       File.Attributes = Attributes

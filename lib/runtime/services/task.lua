@@ -7,7 +7,7 @@ function TaskModule.new()
   local self = {
     Function = nil,
     Thread = nil,
-    Waiting = false
+    Waiting = false,
   }
 
   function self:Initialize()
@@ -19,7 +19,7 @@ function TaskModule.new()
       ["suspended"] = "Suspended",
       ["running"] = "Running",
       ["normal"] = "Running",
-      ["dead"] = "Dead"
+      ["dead"] = "Dead",
     }
 
     return StatusList[coroutine.status(self.Thread)]
@@ -100,7 +100,7 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
 
     table.insert(TaskService.Waiting, {
       Thread = Thread,
-      Until = TimeService:PreciseNow() + Duration
+      Until = TimeService:PreciseNow() + Duration,
     })
 
     return coroutine.yield()

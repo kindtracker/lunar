@@ -31,7 +31,17 @@ local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
 
-ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService, JSONService, LMathService, LTableService)
+ServiceManager.__Lunar_Internal__Init__(
+  Instance,
+  ConsoleService,
+  FileSystemService,
+  TimeService,
+  ErrorService,
+  TaskService,
+  JSONService,
+  LMathService,
+  LTableService
+)
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
 local RunService = RunModule.__Lunar_Internal__Init__(Instance, Signal, TaskService, TimeService)
@@ -45,5 +55,5 @@ return {
   Vector2 = Vector2,
   Vector3 = Vector3,
   Color3 = Color3,
-  CFrame = CFrame
+  CFrame = CFrame,
 }

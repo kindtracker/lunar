@@ -29,7 +29,7 @@ function Color3.fromHSV(Hue, Saturation, Value)
     R, G, B = C, 0, X
   end
 
-  return Color3.new(R + M, G + M, B +M)
+  return Color3.new(R + M, G + M, B + M)
 end
 
 function Color3.fromHex(Hex)
@@ -41,9 +41,9 @@ function Color3.fromHex(Hex)
     G = tonumber("0x" .. Hex:sub(2, 2)) * 16
     B = tonumber("0x" .. Hex:sub(3, 3)) * 16
   else
-    R = tonumber("0x" .. Hex:sub(1,2))
-    G = tonumber("0x" .. Hex:sub(3,4))
-    B = tonumber("0x" .. Hex:sub(5,6))
+    R = tonumber("0x" .. Hex:sub(1, 2))
+    G = tonumber("0x" .. Hex:sub(3, 4))
+    B = tonumber("0x" .. Hex:sub(5, 6))
   end
   return Color3.fromRGB(R, G, B)
 end
@@ -53,7 +53,7 @@ function Color3.new(R, G, B)
   self = {
     R = 0,
     G = 0,
-    B = 0
+    B = 0,
   }
   self.R = R or 0
   self.G = G or 0
@@ -94,9 +94,10 @@ function Color3.new(R, G, B)
 
   function self:Lerp(Goal, Alpha)
     return Vector3.new(
-      self.X + (Goal.X - self.X) * Alpha, 
-      self.Y + (Goal.Y - self.Y) * Alpha, 
-      self.Z + (Goal.Z - self.Z) * Alpha)
+      self.X + (Goal.X - self.X) * Alpha,
+      self.Y + (Goal.Y - self.Y) * Alpha,
+      self.Z + (Goal.Z - self.Z) * Alpha
+    )
   end
 
   return self

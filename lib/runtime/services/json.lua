@@ -11,12 +11,12 @@ function JSONModule.__Lunar_Internal__Init__(instance)
   JSONService.Null = setmetatable({}, {
     __tostring = function()
       return "null"
-    end
+    end,
   })
-  
+
   function JSONService:Encode(Table)
     local JSONT = {}
-    
+
     local Keys = {}
     for key in pairs(Table) do
       table.insert(Keys, key)

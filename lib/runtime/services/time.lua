@@ -8,7 +8,7 @@ function TimeModule.__Lunar_Internal__Init__(instance)
   TimeService = Instance.new("TimeService")
   TimeService.Name = "TimeService"
   TimeService.TimeStart = os.time()
-  
+
   function TimeService:Now()
     return os.time()
   end

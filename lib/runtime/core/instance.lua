@@ -68,9 +68,9 @@ function InstanceModule.new(ClassName, Parent)
     ClassName = ClassName,
     Parent = Parent,
     Children = {},
-    UniqueId = string.format("%08x", math.random(0, 4294967295))
+    UniqueId = string.format("%08x", math.random(0, 4294967295)),
   }
-  Properties.Name = Properties.UniqueId 
+  Properties.Name = Properties.UniqueId
 
   if ClassName ~= "Instance" then
     local ClassModule = InstanceModule:FindClassModule(ClassName)
@@ -104,16 +104,16 @@ function InstanceModule.new(ClassName, Parent)
         PropertyChangedSignals[key]:Fire(newValue, oldValue)
       end
     end,
-    
+
     __len = function()
       return #Properties.Children
     end,
 
     __pairs = function()
       return next, Properties, nil
-    end
+    end,
   })
-  
+
   function Proxy:Destroy(Recursive)
     if Recursive == nil then
       Recursive = true
@@ -149,7 +149,7 @@ function InstanceModule.new(ClassName, Parent)
 
   function Proxy:Clone()
     local Clone = {}
-    
+
     for Key, Value in pairs(Proxy) do
       Clone[Key] = Value
     end

@@ -8,8 +8,10 @@ function Connection.new(Callback, DisconnectCallback)
   self.DisconnectCallback = DisconnectCallback
 
   function self:Disconnect()
-    if not self.Connected then return end
-    
+    if not self.Connected then
+      return
+    end
+
     self.Connected = false
     if self.DisconnectCallback then
       self.DisconnectCallback()

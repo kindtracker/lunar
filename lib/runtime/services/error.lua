@@ -7,7 +7,7 @@ function ErrorModule.new()
   return {
     Type = "?",
     Message = "?",
-    Traceback = "?"
+    Traceback = "?",
   }
 end
 
@@ -38,10 +38,11 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   end
 
   function ErrorService:Print(ErrorInstance)
-    print(string.format("\27[1;31m%s:\27[0m %s\n%s", 
-      ErrorInstance.Type, 
-      ErrorInstance.Message, 
-      ErrorInstance.Traceback):gsub("	", "   "))
+    print(
+      string
+        .format("\27[1;31m%s:\27[0m %s\n%s", ErrorInstance.Type, ErrorInstance.Message, ErrorInstance.Traceback)
+        :gsub("	", "   ")
+    )
   end
 
   return ErrorService

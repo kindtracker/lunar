@@ -15,7 +15,7 @@ function RunModule.__Lunar_Internal__Init__(instance, signal, taskservice, times
   RunService.Name = "RunService"
   RunService.Stepped = Signal.new()
   RunService.Heartbeat = Signal.new()
-  local UDuration = 1/24
+  local UDuration = 1 / 24
   local LastTime = TimeService:PreciseNow()
 
   function RunModule.__Lunar_Internal__Cycle__()

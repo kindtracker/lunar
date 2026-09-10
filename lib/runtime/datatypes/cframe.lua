@@ -25,21 +25,13 @@ function CFrame.__Lunar_Internal__Init__(vector3)
 end
 
 local function Normalize(Vector)
-  local Magnitude = math.sqrt(
-    Vector.X * Vector.X +
-    Vector.Y * Vector.Y +
-    Vector.Z * Vector.Z
-  )
+  local Magnitude = math.sqrt(Vector.X * Vector.X + Vector.Y * Vector.Y + Vector.Z * Vector.Z)
 
   if Magnitude == 0 then
     return Vector3.new(0, 0, 0)
   end
 
-  return Vector3.new(
-    Vector.X / Magnitude,
-    Vector.Y / Magnitude,
-    Vector.Z / Magnitude
-  )
+  return Vector3.new(Vector.X / Magnitude, Vector.Y / Magnitude, Vector.Z / Magnitude)
 end
 
 local function Dot(A, B)
@@ -47,19 +39,10 @@ local function Dot(A, B)
 end
 
 local function Cross(A, B)
-  return Vector3.new(
-    A.Y * B.Z - A.Z * B.Y,
-    A.Z * B.X - A.X * B.Z,
-    A.X * B.Y - A.Y * B.X
-  )
+  return Vector3.new(A.Y * B.Z - A.Z * B.Y, A.Z * B.X - A.X * B.Z, A.X * B.Y - A.Y * B.X)
 end
 
-local function CreateCFrame(
-  X, Y, Z,
-  R00, R01, R02,
-  R10, R11, R12,
-  R20, R21, R22
-)
+local function CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
   local Properties = {
     X = X,
     Y = Y,
@@ -72,7 +55,7 @@ local function CreateCFrame(
     R12 = R12,
     R20 = R20,
     R21 = R21,
-    R22 = R22
+    R22 = R22,
   }
 
   local Proxy
@@ -80,29 +63,13 @@ local function CreateCFrame(
   Proxy = setmetatable({}, {
     __index = function(_, Key)
       if Key == "XVector" or Key == "RightVector" then
-        return Vector3.new(
-          Properties.R00,
-          Properties.R10,
-          Properties.R20
-        )
+        return Vector3.new(Properties.R00, Properties.R10, Properties.R20)
       elseif Key == "YVector" or Key == "UpVector" then
-        return Vector3.new(
-          Properties.R01,
-          Properties.R11,
-          Properties.R21
-        )
+        return Vector3.new(Properties.R01, Properties.R11, Properties.R21)
       elseif Key == "ZVector" then
-        return Vector3.new(
-          Properties.R02,
-          Properties.R12,
-          Properties.R22
-        )
+        return Vector3.new(Properties.R02, Properties.R12, Properties.R22)
       elseif Key == "LookVector" then
-        return Vector3.new(
-          -Properties.R02,
-          -Properties.R12,
-          -Properties.R22
-        )
+        return Vector3.new(-Properties.R02, -Properties.R12, -Properties.R22)
       end
 
       return Properties[Key]
@@ -134,12 +101,7 @@ local function CreateCFrame(
         local Y = A.Y + A.R10 * B.X + A.R11 * B.Y + A.R12 * B.Z
         local Z = A.Z + A.R20 * B.X + A.R21 * B.Y + A.R22 * B.Z
 
-        return CreateCFrame(
-          X, Y, Z,
-          R00, R01, R02,
-          R10, R11, R12,
-          R20, R21, R22
-        )
+        return CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
       end
 
       return Vector3.new(
@@ -154,9 +116,15 @@ local function CreateCFrame(
         A.X + B.X,
         A.Y + B.Y,
         A.Z + B.Z,
-        A.R00, A.R01, A.R02,
-        A.R10, A.R11, A.R12,
-        A.R20, A.R21, A.R22
+        A.R00,
+        A.R01,
+        A.R02,
+        A.R10,
+        A.R11,
+        A.R12,
+        A.R20,
+        A.R21,
+        A.R22
       )
     end,
 
@@ -165,11 +133,17 @@ local function CreateCFrame(
         A.X - B.X,
         A.Y - B.Y,
         A.Z - B.Z,
-        A.R00, A.R01, A.R02,
-        A.R10, A.R11, A.R12,
-        A.R20, A.R21, A.R22
+        A.R00,
+        A.R01,
+        A.R02,
+        A.R10,
+        A.R11,
+        A.R12,
+        A.R20,
+        A.R21,
+        A.R22
       )
-    end
+    end,
   })
 
   function Proxy:Inverse()
@@ -189,12 +163,7 @@ local function CreateCFrame(
     local Y = -(R10 * Properties.X + R11 * Properties.Y + R12 * Properties.Z)
     local Z = -(R20 * Properties.X + R21 * Properties.Y + R22 * Properties.Z)
 
-    return CreateCFrame(
-      X, Y, Z,
-      R00, R01, R02,
-      R10, R11, R12,
-      R20, R21, R22
-    )
+    return CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
   end
 
   function Proxy:VectorToWorldSpace(Vector)
@@ -221,36 +190,20 @@ local function CreateCFrame(
 end
 
 function CFrame.new(...)
-  local Arguments = {...}
+  local Arguments = { ... }
   local ArgumentLength = #Arguments
 
   if ArgumentLength == 0 then
-    return CreateCFrame(
-      0, 0, 0,
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1
-    )
+    return CreateCFrame(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1)
   elseif ArgumentLength == 1 then
     local Position = Arguments[1]
 
-    return CreateCFrame(
-      Position.X,
-      Position.Y,
-      Position.Z,
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1
-    )
+    return CreateCFrame(Position.X, Position.Y, Position.Z, 1, 0, 0, 0, 1, 0, 0, 0, 1)
   elseif ArgumentLength == 2 then
     local Position = Arguments[1]
     local LookAt = Arguments[2]
 
-    local Forward = Normalize(Vector3.new(
-      LookAt.X - Position.X,
-      LookAt.Y - Position.Y,
-      LookAt.Z - Position.Z
-    ))
+    local Forward = Normalize(Vector3.new(LookAt.X - Position.X, LookAt.Y - Position.Y, LookAt.Z - Position.Z))
 
     local Up = Vector3.new(0, 1, 0)
 
@@ -265,19 +218,18 @@ function CFrame.new(...)
       Position.X,
       Position.Y,
       Position.Z,
-      Right.X, Up.X, -Forward.X,
-      Right.Y, Up.Y, -Forward.Y,
-      Right.Z, Up.Z, -Forward.Z
+      Right.X,
+      Up.X,
+      -Forward.X,
+      Right.Y,
+      Up.Y,
+      -Forward.Y,
+      Right.Z,
+      Up.Z,
+      -Forward.Z
     )
   elseif ArgumentLength == 3 then
-    return CreateCFrame(
-      Arguments[1],
-      Arguments[2],
-      Arguments[3],
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1
-    )
+    return CreateCFrame(Arguments[1], Arguments[2], Arguments[3], 1, 0, 0, 0, 1, 0, 0, 0, 1)
   elseif ArgumentLength == 7 then
     local X = Arguments[1]
     local Y = Arguments[2]
@@ -300,12 +252,7 @@ function CFrame.new(...)
     local R21 = 2 * (qY * qZ + qX * qW)
     local R22 = 1 - 2 * (qX * qX + qY * qY)
 
-    return CreateCFrame(
-      X, Y, Z,
-      R00, R01, R02,
-      R10, R11, R12,
-      R20, R21, R22
-    )
+    return CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
   elseif ArgumentLength == 12 then
     return CreateCFrame(
       Arguments[1],
