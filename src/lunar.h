@@ -3,6 +3,7 @@
  * CHANGELOG:
  * v0.2.2:
  *  Added:
+ *   More services (LMathService)
  *   More datatypes (CFrame)
  * v0.2.0:
  *  Added:
@@ -15,13 +16,13 @@
  *   Added DeltaTime to RunService
  * v0.1.1:
  *  Added:
+ *   Service Manager
  *   ConsoleService and FileSystemService
  * v0.1.0:
  *  Added:
  *   Instance
  *   Signal
  *   Connection
- *   Service Manager
  *   init.lua
  */
 

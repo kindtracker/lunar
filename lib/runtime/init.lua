@@ -16,20 +16,22 @@ local TaskModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime
 local RunModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/run.lua")
 local JSONModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/json.lua")
 local LMathModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/libraries/lmath.lua")
+local LTableModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/libraries/ltable.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
 Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3, CFrame)
 
+local LMathService = LMathModule.__Lunar_Internal__Init__(Instance)
+local LTableService = LTableModule.__Lunar_Internal__Init__(Instance)
 local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
 local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
-local LMathService = LMathModule.__Lunar_Internal__Init__(Instance)
 
-ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService, JSONService, LMathService)
+ServiceManager.__Lunar_Internal__Init__(Instance, ConsoleService, FileSystemService, TimeService, ErrorService, TaskService, JSONService, LMathService, LTableService)
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
 local RunService = RunModule.__Lunar_Internal__Init__(Instance, Signal, TaskService, TimeService)

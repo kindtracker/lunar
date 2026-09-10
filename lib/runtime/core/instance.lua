@@ -36,6 +36,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   InstanceModule:RegisterClass("RunService", EmptyModule)
   InstanceModule:RegisterClass("JSONService", EmptyModule)
   InstanceModule:RegisterClass("LMathService", EmptyModule)
+  InstanceModule:RegisterClass("LTableService", EmptyModule)
 end
 
 function InstanceModule.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
