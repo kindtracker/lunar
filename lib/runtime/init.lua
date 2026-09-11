@@ -18,6 +18,7 @@ local RunModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/
 local JSONModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/json.lua")
 local LMathModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/libraries/lmath.lua")
 local LTableModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/libraries/ltable.lua")
+local HttpClientModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/http-client.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
@@ -31,6 +32,7 @@ local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
+local HttpClientService = HttpClientModule.__Lunar_Internal__Init__(Instance)
 
 ServiceManager.__Lunar_Internal__Init__(
   Instance,
@@ -41,7 +43,8 @@ ServiceManager.__Lunar_Internal__Init__(
   TaskService,
   JSONService,
   LMathService,
-  LTableService
+  LTableService,
+  HttpClientService
 )
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
