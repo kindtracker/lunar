@@ -1,9 +1,13 @@
 local instance = Instance.new()
 
 if instance == nil then
-  return nil
+  return "instance = nil"
 end
 
 instance.Name = "Test"
 
-return instance.Name == "Test"
+if instance.Name ~= "Test" then
+  return 'instance.Name ~= "Test"'
+end
+
+return true

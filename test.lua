@@ -1,14 +1,16 @@
-local tests = {
+local Tests = {
   "tests/core/instance.lua",
 }
 
-for _, test in ipairs(tests) do
-  local TestOk, ErrorMessage = pcall(dofile, test)
+for _, Test in ipairs(Tests) do
+  local TestMessage, ErrorMessage = pcall(dofile, Test)
 
-  if TestOk then
-    print(string.format("[PASS] %s", test))
-  else
-    print(string.format("[FAIL] %s", test))
+  if type(TestMessage) == "boolean" and TestMessage then
+    print(string.format("[PASS] Test %s", Test))
+  elseif TestMessage == nil then
+    print(string.format("[FAIL] Test %s (crash) | %s", Test, ErrorMessage))
+  elseif TestMessage then
+    print(string.format("[FAIL] Test %s (error) | %s", Test, TestMessage))
     print(ErrorMessage)
   end
 end
