@@ -6,6 +6,7 @@ local Signal = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/dat
 local Vector2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/vector2.lua")
 local Vector3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/vector3.lua")
 local Color3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color3.lua")
+local Color4 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color4.lua")
 local CFrame = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/cframe.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
@@ -55,5 +56,6 @@ return {
   Vector2 = Vector2,
   Vector3 = Vector3,
   Color3 = Color3,
+  Color4 = Color4,
   CFrame = CFrame,
 }

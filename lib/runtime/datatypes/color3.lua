@@ -93,10 +93,10 @@ function Color3.new(R, G, B)
   end
 
   function self:Lerp(Goal, Alpha)
-    return Vector3.new(
-      self.X + (Goal.X - self.X) * Alpha,
-      self.Y + (Goal.Y - self.Y) * Alpha,
-      self.Z + (Goal.Z - self.Z) * Alpha
+    return Color3.new(
+      self.R + (Goal.R - self.R) * Alpha,
+      self.G + (Goal.G - self.G) * Alpha,
+      self.B + (Goal.B - self.B) * Alpha
     )
   end
 

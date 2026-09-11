@@ -213,6 +213,9 @@ void lunar_init() {
   lua_getfield(lunar_state, -1, "Color3");
   lua_setglobal(lunar_state, "Color3");
 
+  lua_getfield(lunar_state, -1, "Color4");
+  lua_setglobal(lunar_state, "Color4");
+
   lua_getfield(lunar_state, -1, "CFrame");
   lua_setglobal(lunar_state, "CFrame");
 
