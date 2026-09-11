@@ -46,7 +46,10 @@ function JSONModule.__Lunar_Internal__Init__(instance)
     JSON = JSON:gsub("%]", "}")
     JSON = JSON:gsub('([,{]%s*)"(.-)"%s*:', '%1["%2"]=')
 
-    local Chunk, Error = load("return " .. JSON, "JSON", "t", {})
+    local Chunk = load("return " .. JSON, "JSON", "t", {})
+    if Chunk == nil then
+      return nil
+    end
     return Chunk()
   end
 

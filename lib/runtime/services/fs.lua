@@ -34,6 +34,8 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     for key, value in pairs(Attributes) do
       Lunar_Attributes["__Hidden_LFS__" .. key] = value
     end
+
+    return Lunar_Attributes
   end
 
   function FileSystemService:GetFolder(Path, Name, Recursive)
