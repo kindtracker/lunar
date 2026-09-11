@@ -2,6 +2,10 @@ local Tests = {
   "tests/core/instance/create.lua",
   "tests/core/instance/parent.lua",
   "tests/core/service/getservice.lua",
+  "tests/core/datatypes/color3/create.lua",
+  "tests/core/datatypes/color3/fromrgb.lua",
+  "tests/core/datatypes/color3/fromhex.lua",
+  "tests/core/datatypes/color3/fromhsv.lua",
 }
 
 for _, Test in ipairs(Tests) do
