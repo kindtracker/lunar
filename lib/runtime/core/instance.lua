@@ -22,31 +22,47 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
 
   InstanceModule.Classes = {}
 
-  InstanceModule:RegisterClass("Connection", Connection)
-  InstanceModule:RegisterClass("Signal", Signal)
-  InstanceModule:RegisterClass("Vector2", Vector2)
-  InstanceModule:RegisterClass("Vector3", Vector3)
-  InstanceModule:RegisterClass("Color3", Color3)
-  InstanceModule:RegisterClass("CFrame", CFrame)
+  InstanceModule:RegisterClass("Connection", Connection, InstanceModule)
+  InstanceModule:RegisterClass("Signal", Signal, InstanceModule)
+  InstanceModule:RegisterClass("Vector2", Vector2, InstanceModule)
+  InstanceModule:RegisterClass("Vector3", Vector3, InstanceModule)
+  InstanceModule:RegisterClass("Color3", Color3, InstanceModule)
+  InstanceModule:RegisterClass("CFrame", CFrame, InstanceModule)
 
-  InstanceModule:RegisterClass("Service", EmptyModule)
+  InstanceModule:RegisterClass("Service", EmptyModule, InstanceModule)
 end
 
 function InstanceModule.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
-  InstanceModule:RegisterClass("Error", ErrorModule)
-  InstanceModule:RegisterClass("Thread", TaskModule)
+  InstanceModule:RegisterClass("Error", ErrorModule, InstanceModule)
+  InstanceModule:RegisterClass("Thread", TaskModule, InstanceModule)
 end
 
-function InstanceModule:RegisterClass(ClassName, ClassModule)
-  InstanceModule.Classes[ClassName] = ClassModule
+function InstanceModule:RegisterClass(ClassName, ClassModule, ParentModule)
+  InstanceModule.Classes[ClassName] = { Module = ClassModule, ParentModule = ParentModule }
 end
 
 function InstanceModule:RemoveClass(ClassName)
   InstanceModule.Classes[ClassName] = nil
 end
 
-function InstanceModule:FindClassModule(ClassName)
+function InstanceModule:FindClassByName(ClassName)
   return InstanceModule.Classes[ClassName]
+end
+
+function InstanceModule.__Lunar_Internal__ClassNew__(Class)
+  local Properties = {}
+  if Class.Parent then
+    local Parent = InstanceModule.__Lunar_Internal__ClassNew__(Class.Parent)
+    for Key, Value in pairs(Parent) do
+      Properties[Key] = Value
+    end
+  end
+
+  for Key, Value in pairs(Class.Module.new()) do
+    Properties[Key] = Value
+  end
+
+  return Properties
 end
 
 function InstanceModule.new(ClassName, Parent)
@@ -67,8 +83,9 @@ function InstanceModule.new(ClassName, Parent)
   Properties.Name = Properties.UniqueId
 
   if ClassName ~= "Instance" then
-    local ClassModule = InstanceModule:FindClassModule(ClassName)
-    for Key, Value in pairs(ClassModule.new()) do
+    local Class = InstanceModule:FindClassByName(ClassName)
+    local ClassReady = InstanceModule.__Lunar_Internal__ClassNew__(Class)
+    for Key, Value in pairs(ClassReady) do
       Properties[Key] = Value
     end
   end
