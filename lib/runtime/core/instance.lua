@@ -18,6 +18,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   Vector3 = vector3
   Color3 = color3
   Vector3 = vector3
+  CFframe = CFrame
 
   InstanceModule.Classes = {}
 
@@ -61,6 +62,7 @@ function InstanceModule.new(ClassName, Parent)
     Parent = Parent,
     Children = {},
     UniqueId = string.format("%08x", math.random(0, 4294967295)),
+    Changed = Signal.new(),
   }
   Properties.Name = Properties.UniqueId
 
@@ -76,9 +78,6 @@ function InstanceModule.new(ClassName, Parent)
   local Proxy
   Proxy = setmetatable({}, {
     __index = function(_, key)
-      if key == "Changed" then
-        return changed
-      end
       return Properties[key]
     end,
 
@@ -94,6 +93,7 @@ function InstanceModule.new(ClassName, Parent)
       end
       if PropertyChangedSignals[key] then
         PropertyChangedSignals[key]:Fire(newValue, oldValue)
+        Properties.Changed:Fire(key, newValue, oldValue)
       end
     end,
 
@@ -202,7 +202,7 @@ function InstanceModule.new(ClassName, Parent)
     return children
   end
 
-  function Proxy:OnPropertyChanged(PropertyName)
+  function Proxy:GetPropertyChangedSignal(PropertyName)
     if not PropertyChangedSignals[PropertyName] then
       PropertyChangedSignals[PropertyName] = Signal.new()
     end
