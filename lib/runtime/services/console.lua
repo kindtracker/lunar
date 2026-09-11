@@ -5,7 +5,7 @@ local Instance
 function ConsoleServiceModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  ConsoleService = Instance.new("ConsoleService")
+  ConsoleService = Instance.new("Service")
   ConsoleService.Name = "ConsoleService"
 
   ConsoleService.Colors = {

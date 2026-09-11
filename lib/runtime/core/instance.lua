@@ -28,15 +28,7 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   InstanceModule:RegisterClass("Color3", Color3)
   InstanceModule:RegisterClass("CFrame", CFrame)
 
-  InstanceModule:RegisterClass("ConsoleService", EmptyModule)
-  InstanceModule:RegisterClass("FileSystemService", EmptyModule)
-  InstanceModule:RegisterClass("TimeService", EmptyModule)
-  InstanceModule:RegisterClass("ErrorService", EmptyModule)
-  InstanceModule:RegisterClass("TaskService", EmptyModule)
-  InstanceModule:RegisterClass("RunService", EmptyModule)
-  InstanceModule:RegisterClass("JSONService", EmptyModule)
-  InstanceModule:RegisterClass("LMathService", EmptyModule)
-  InstanceModule:RegisterClass("LTableService", EmptyModule)
+  InstanceModule:RegisterClass("Service", EmptyModule)
 end
 
 function InstanceModule.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)

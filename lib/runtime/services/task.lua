@@ -40,7 +40,7 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
   Instance = instance
   TimeService = timeservice
 
-  TaskService = Instance.new("TaskService")
+  TaskService = Instance.new("Service")
   TaskService.Name = "TaskService"
 
   TaskService.Threads = {}

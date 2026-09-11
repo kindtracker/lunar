@@ -11,7 +11,7 @@ function RunModule.__Lunar_Internal__Init__(instance, signal, taskservice, times
   TaskService = taskservice
   TimeService = timeservice
 
-  RunService = Instance.new("RunService")
+  RunService = Instance.new("Service")
   RunService.Name = "RunService"
   RunService.Stepped = Signal.new()
   RunService.Heartbeat = Signal.new()

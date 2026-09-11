@@ -15,7 +15,7 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   Instance = instance
   Signal = signal
 
-  ErrorService = Instance.new("ErrorService")
+  ErrorService = Instance.new("Service")
   ErrorService.Name = "ErrorService"
   ErrorService.OnError = Signal.new()
 

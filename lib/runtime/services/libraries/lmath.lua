@@ -5,7 +5,7 @@ local Instance
 function LMathModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  LMathService = Instance.new("LMathService")
+  LMathService = Instance.new("Service")
   LMathService.Name = "LMathService"
 
   LMathService.nan = 0 / 0

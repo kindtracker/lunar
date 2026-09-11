@@ -5,7 +5,7 @@ local Instance
 function LTableModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  LTableService = Instance.new("LTableService")
+  LTableService = Instance.new("Service")
   LTableService.Name = "LTableService"
 
   for key, value in pairs(table) do

@@ -5,7 +5,7 @@ local Instance
 function JSONModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  JSONService = Instance.new("JSONService")
+  JSONService = Instance.new("Service")
   JSONService.Name = "JSONService"
 
   JSONService.Null = setmetatable({}, {

@@ -5,7 +5,7 @@ local Instance
 function TimeModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
-  TimeService = Instance.new("TimeService")
+  TimeService = Instance.new("Service")
   TimeService.Name = "TimeService"
   TimeService.TimeStart = os.time()
 
