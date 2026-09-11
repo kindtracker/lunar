@@ -3,8 +3,8 @@
  * CHANGELOG:
  * v0.2.2:
  *  Added:
- *   More services (LMathService)
- *   More datatypes (CFrame)
+ *   More services (LMathService, LTableService,  HttpClientService)
+ *   More datatypes (CFrame, Color4)
  * v0.2.0:
  *  Added:
  *   ClassNames
