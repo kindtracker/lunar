@@ -6,6 +6,10 @@ local Tests = {
   "tests/core/datatypes/color3/fromrgb.lua",
   "tests/core/datatypes/color3/fromhex.lua",
   "tests/core/datatypes/color3/fromhsv.lua",
+  "tests/core/datatypes/color4/create.lua",
+  "tests/core/datatypes/color4/fromrgba.lua",
+  "tests/core/datatypes/color4/fromhex.lua",
+  "tests/core/datatypes/color4/fromhsv.lua",
 }
 
 for _, Test in ipairs(Tests) do
