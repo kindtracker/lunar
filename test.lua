@@ -1,5 +1,7 @@
 local Tests = {
-  "tests/core/instance.lua",
+  "tests/core/instance/create.lua",
+  "tests/core/instance/parent.lua",
+  "tests/core/service/getservice.lua",
 }
 
 for _, Test in ipairs(Tests) do

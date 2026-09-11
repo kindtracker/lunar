@@ -1,3 +1,7 @@
+if Instance.new == nil then
+  return "Instance.new = nil"
+end
+
 local instance = Instance.new()
 
 if instance == nil then
