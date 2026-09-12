@@ -24,7 +24,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   FileSystemService = Instance.new("Service")
   FileSystemService.Name = "FileSystemService"
 
-  function FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, Attributes)
+  function FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Attributes)
     local ModeList = {
       ["directory"] = "Folder",
       ["file"] = "File",
@@ -35,7 +35,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
       ["other"] = "Unknown",
     }
     local Lunar_Attributes = {
-      Name = Name,
+      Name = FileSystemService:GetFileName(Path),
       Path = Path,
       Type = ModeList[Attributes.mode],
       Size = Attributes.size,
@@ -52,18 +52,25 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     return Lunar_Attributes
   end
 
-  function FileSystemService:GetFolder(Path, Name, Recursive)
+  function FileSystemService:GetFileName(Path)
+    return Path:match("([^/]+)$")
+  end
+
+  function FileSystemService:GetExtension(Path)
+    return Path:match("%.([^%.]+)$")
+  end
+
+  function FileSystemService:GetFolder(Path, Recursive)
     Recursive = Recursive or false
 
     local Folder = Instance.new("Folder")
-    Folder.Name = Name
+    Folder.Name = FileSystemService:GetFileName(Path)
 
     for FileName in lfs.dir(Path) do
       local FilePath = Path .. "/" .. FileName
 
       if FileName ~= "." and FileName ~= ".." then
-        local Attributes =
-          FileSystemService:__Lunar_Internal__Convert_Attrs__(FilePath, FileName, lfs.attributes(FilePath))
+        local Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(FilePath, lfs.attributes(FilePath))
 
         local File = Instance.new()
         File.Name = FileName
@@ -71,7 +78,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
         File.Parent = Folder
 
         if Recursive and Attributes.Type == "Folder" then
-          local ChildFolder = FileSystemService:GetFolder(FilePath, FileName, true)
+          local ChildFolder = FileSystemService:GetFolder(FilePath, true)
           ChildFolder.Parent = File
         end
       end
@@ -80,14 +87,14 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     return Folder
   end
 
-  function FileSystemService:Open(Path, Name, Mode)
+  function FileSystemService:Open(Path, Mode)
     local File = Instance.new("File")
-    File.Name = Name
+    File.Name = FileSystemService:GetFileName(Path)
     File.FilePtr = io.open(Path, Mode)
     if not File.FilePtr then
       return nil
     end
-    File.Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, Name, lfs.attributes(Path))
+    File.Attributes = FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, lfs.attributes(Path))
     File.Mode = Mode
 
     function File:Seek(Whence, Offset)
@@ -128,9 +135,12 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
 
   function FileSystemService:Copy(FromPath, ToPath)
     local FromFile = FileSystemService:Open(FromPath, FromPath, "rb")
+    if FromFile == nil then
+      return nil
+    end
     local FromContent = FromFile:Read("*a")
     local ToFile = FileSystemService:Open(ToPath, ToPath, "wb")
-    if FromFile == nil or ToFile == nil then
+    if ToFile == nil then
       return nil
     end
     ToFile:Write(FromContent)
@@ -138,6 +148,24 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     ToFile:Close()
     FromFile:Destroy()
     ToFile:Destroy()
+  end
+
+  function FileSystemService:GetAttributes(Path)
+    return FileSystemService:__Lunar_Internal__Convert_Attrs__(Path, lfs.attributes(path))
+  end
+
+  function FileSystemService:Exists(Path)
+    local Attributes = lfs.attributes(Path)
+    return Attributes ~= nil
+  end
+
+  function FileSystemService:IsFile(Path)
+    local Attributes = FileSystemService:GetAttributes(Path)
+    return Attributes.Type ~= "Folder"
+  end
+
+  function FileSystemService:IsFolder(Path)
+    return not FileSystemService:IsFile(Path)
   end
 
   return FileSystemService
