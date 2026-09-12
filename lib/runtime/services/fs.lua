@@ -101,7 +101,9 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     end
 
     function File:Read(readMode, Offset)
-      File:Seek("set", Offset)
+      if Offset then
+        File:Seek("set", Offset)
+      end
       return File.FilePtr:read(readMode)
     end
 
@@ -110,6 +112,32 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
     end
 
     return File
+  end
+
+  function FileSystemService:CreateFolder(Path)
+    return lfs.mkdir(Path)
+  end
+
+  function FileSystemService:Delete(Path)
+    return os.remove(Path)
+  end
+
+  function FileSystemService:Move(FromPath, ToPath)
+    return os.rename(FromPath, ToPath)
+  end
+
+  function FileSystemService:Copy(FromPath, ToPath)
+    local FromFile = FileSystemService:Open(FromPath, FromPath, "rb")
+    local FromContent = FromFile:Read("*a")
+    local ToFile = FileSystemService:Open(ToPath, ToPath, "wb")
+    if FromFile == nil or ToFile == nil then
+      return nil
+    end
+    ToFile:Write(FromContent)
+    FromFile:Close()
+    ToFile:Close()
+    FromFile:Destroy()
+    ToFile:Destroy()
   end
 
   return FileSystemService

@@ -7,6 +7,7 @@
  *   FileSystemService (
  *    Fixed FSS:GetFolder()
  *    Add instances/classnames for files and folders
+ *    Add more feunctions to FSS
  *   )
  *  Added:
  *   String Library (LStringLibrary)
