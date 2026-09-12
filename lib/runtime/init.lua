@@ -8,6 +8,7 @@ local Vector3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/da
 local Color3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color3.lua")
 local Color4 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color4.lua")
 local CFrame = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/cframe.lua")
+local UDim = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/udim.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
@@ -24,8 +25,8 @@ Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
 Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3, CFrame)
 
-local LMathService = LMathModule.__Lunar_Internal__Init__(Instance)
-local LTableService = LTableModule.__Lunar_Internal__Init__(Instance)
+local LMathLibrary = LMathModule.__Lunar_Internal__Init__(Instance)
+local LTableLibrary = LTableModule.__Lunar_Internal__Init__(Instance)
 local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
 local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
@@ -42,8 +43,8 @@ ServiceManager.__Lunar_Internal__Init__(
   ErrorService,
   TaskService,
   JSONService,
-  LMathService,
-  LTableService,
+  LMathLibrary,
+  LTableLibrary,
   HttpClientService
 )
 
@@ -61,4 +62,5 @@ return {
   Color3 = Color3,
   Color4 = Color4,
   CFrame = CFrame,
+  UDim = UDim,
 }

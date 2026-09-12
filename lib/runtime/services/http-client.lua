@@ -13,7 +13,36 @@ function HttpClientModule.__Lunar_Internal__Init__(instance, jsonservice)
   HttpClientService = Instance.new("Service")
   HttpClientService.Name = "HttpClientService"
 
-  HttpClientService.RequestOptions = { Headers = {} }
+  local RequestOptions = { Headers = {} }
+  local Proxy = setmetatable({}, {
+    __index = function(_, key)
+      if key == "Timeout" then
+        return http.TIMEOUT
+      end
+      return RequestOptions[key]
+    end,
+    __newindex = function(key, value)
+      if key == "Timeout" then
+        http.TIMEOUT = value
+      end
+      RequestOptions[key] = value
+    end,
+  })
+  local Proxy = setmetatable({}, {
+    __index = function(_, key)
+      if key == "Timeout" then
+        return http.TIMEOUT
+      end
+      return RequestOptions[key]
+    end,
+    __newindex = function(_, key, value)
+      if key == "Timeout" then
+        http.TIMEOUT = value
+      end
+      RequestOptions[key] = value
+    end,
+  })
+  HttpClientService.RequestOptions = Proxy
 
   function HttpClientService:__Lunar_Internal__Convert_RequestOptions__(RequestOptions)
     return {

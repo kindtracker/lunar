@@ -10,8 +10,8 @@ function ServiceManager.__Lunar_Internal__Init__(
   ErrorService,
   TaskService,
   JSONService,
-  LMathService,
-  LTableService,
+  LMathLibrary,
+  LTableLibrary,
   HttpClientService
 )
   Instance = instance
@@ -25,8 +25,8 @@ function ServiceManager.__Lunar_Internal__Init__(
   CServiceManager:RegisterService("ErrorService", ErrorService)
   CServiceManager:RegisterService("TaskService", TaskService)
   CServiceManager:RegisterService("JSONService", JSONService)
-  CServiceManager:RegisterService("LMathService", LMathService)
-  CServiceManager:RegisterService("LTableService", LTableService)
+  CServiceManager:RegisterService("LMathLibrary", LMathLibrary)
+  CServiceManager:RegisterService("LTableLibrary", LTableLibrary)
   CServiceManager:RegisterService("HttpClientService", HttpClientService)
 end
 

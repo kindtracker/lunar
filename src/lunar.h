@@ -1,10 +1,10 @@
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- * v0.2.2:
+ * v0.2.4:
  *  Added:
- *   More services (LMathService, LTableService,  HttpClientService)
- *   More datatypes (CFrame, Color4)
+ *   More services (LMathService, LTableService, JSONService, HttpClientService)
+ *   More datatypes (CFrame, Color4, UDim)
  * v0.2.0:
  *  Added:
  *   ClassNames
@@ -219,6 +219,9 @@ void lunar_init() {
   lua_getfield(lunar_state, -1, "CFrame");
   lua_setglobal(lunar_state, "CFrame");
 
+  lua_getfield(lunar_state, -1, "UDim");
+  lua_setglobal(lunar_state, "UDim");
+  
   lua_newtable(lunar_state);
 
   lua_getfield(lunar_state, -2, "ServiceManager");
