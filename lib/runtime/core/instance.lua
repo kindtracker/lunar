@@ -14,7 +14,18 @@ function EmptyModule.new()
   return {}
 end
 
-function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, vector3, color3, cframe, udim, udim2)
+function InstanceModule.__Lunar_Internal__Init__(
+  connection,
+  signal,
+  vector2,
+  vector3,
+  color3,
+  cframe,
+  udim,
+  udim2,
+  FileInstanceModule,
+  FolderInstanceModule
+)
   Connection = connection
   Signal = signal
   Vector2 = vector2
@@ -34,6 +45,8 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   InstanceModule:RegisterClass("CFrame", CFrame, InstanceModule)
   InstanceModule:RegisterClass("UDim", UDim, InstanceModule)
   InstanceModule:RegisterClass("UDim2", UDim2, InstanceModule)
+  InstanceModule:RegisterClass("File", FileInstanceModule, InstanceModule)
+  InstanceModule:RegisterClass("Folder", FolderInstanceModule, InstanceModule)
 
   InstanceModule:RegisterClass("Service", EmptyModule, InstanceModule)
 end

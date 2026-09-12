@@ -4,6 +4,20 @@ local FileSystemModule = {}
 local FileSystemService
 local Instance
 
+FileSystemModule.FileInstanceModule = {}
+FileSystemModule.FolderInstanceModule = {}
+function FileSystemModule.FileInstanceModule.new()
+  return {
+    Attributes = {},
+    FilePtr = nil,
+    Mode = "",
+  }
+end
+
+function FileSystemModule.FolderInstanceModule.new()
+  return {}
+end
+
 function FileSystemModule.__Lunar_Internal__Init__(instance)
   Instance = instance
 
@@ -41,7 +55,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   function FileSystemService:GetFolder(Path, Name, Recursive)
     Recursive = Recursive or false
 
-    local Folder = Instance.new()
+    local Folder = Instance.new("Folder")
     Folder.Name = Name
 
     for FileName in lfs.dir(Path) do
@@ -67,7 +81,7 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   end
 
   function FileSystemService:Open(Path, Name, Mode)
-    local File = Instance.new()
+    local File = Instance.new("File")
     File.Name = Name
     File.FilePtr = io.open(Path, Mode)
     if not File.FilePtr then
@@ -101,4 +115,4 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
   return FileSystemService
 end
 
-return FileSystemModule
+return FileSystemModule, FileSystemModule.FileInstanceModule, FileSystemModule.FolderInstanceModule

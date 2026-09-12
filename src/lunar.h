@@ -4,7 +4,10 @@
  * v0.3.0:
  *  Improvement update
  *  Improved:
- *   FileSystemService (Fixed FSS:GetFolder())
+ *   FileSystemService (
+ *    Fixed FSS:GetFolder()
+ *    Add instances/classnames for Files and Folders
+ *   )
  * v0.2.5:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)

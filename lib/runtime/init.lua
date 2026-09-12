@@ -12,7 +12,8 @@ local UDim = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datat
 local UDim2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/udim2.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
-local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
+local FileSystemModule, FileInstanceModule, FolderInstanceModule =
+  dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
 local TimeModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/time.lua")
 local ErrorModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/error.lua")
 local TaskModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/task.lua")
@@ -25,7 +26,18 @@ local HttpClientModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/r
 Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
 UDim2.__Lunar_Internal__Init__(UDim)
-Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3, CFrame, UDim, UDim2)
+Instance.__Lunar_Internal__Init__(
+  Connection,
+  Signal,
+  Vector2,
+  Vector3,
+  Color3,
+  CFrame,
+  UDim,
+  UDim2,
+  FileInstanceModule,
+  FolderInstanceModule
+)
 
 local LMathLibrary = LMathModule.__Lunar_Internal__Init__(Instance)
 local LTableLibrary = LTableModule.__Lunar_Internal__Init__(Instance)
