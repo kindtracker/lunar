@@ -6,8 +6,10 @@
  *  Improved:
  *   FileSystemService (
  *    Fixed FSS:GetFolder()
- *    Add instances/classnames for Files and Folders
+ *    Add instances/classnames for files and folders
  *   )
+ *  Added:
+ *   String Library (LStringLibrary)
  * v0.2.5:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)
