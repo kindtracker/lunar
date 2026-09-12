@@ -51,10 +51,7 @@ function UDim.new(Scale, Offset)
   })
 
   function Proxy:Lerp(Goal, Alpha)
-    return UDim.new(
-      Properties.Scale + (Goal.Scale - Properties.X) * Alpha,
-      Properties.Offset + (Goal.Offset - Properties.Y) * Alpha
-    )
+    return UDim.new(Properties.Scale + (Goal.Scale - Properties.Scale) * Alpha)
   end
 
   return Proxy

@@ -9,6 +9,7 @@ local Color3 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/dat
 local Color4 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/color4.lua")
 local CFrame = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/cframe.lua")
 local UDim = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/udim.lua")
+local UDim2 = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/datatypes/udim2.lua")
 
 local ConsoleServiceModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/console.lua")
 local FileSystemModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/runtime/services/fs.lua")
@@ -23,6 +24,7 @@ local HttpClientModule = dofile(os.getenv("HOME") .. "/.local/share/lunare/lib/r
 
 Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
+UDim2.__Lunar_Internal__Init__(UDim)
 Instance.__Lunar_Internal__Init__(Connection, Signal, Vector2, Vector3, Color3, CFrame)
 
 local LMathLibrary = LMathModule.__Lunar_Internal__Init__(Instance)
@@ -63,4 +65,5 @@ return {
   Color4 = Color4,
   CFrame = CFrame,
   UDim = UDim,
+  UDim2 = UDim2,
 }

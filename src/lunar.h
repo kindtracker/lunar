@@ -4,7 +4,7 @@
  * v0.2.4:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)
- *   More datatypes (CFrame, Color4, UDim)
+ *   More datatypes (CFrame, Color4, UDim, UDim2)
  * v0.2.0:
  *  Added:
  *   ClassNames
@@ -221,7 +221,10 @@ void lunar_init() {
 
   lua_getfield(lunar_state, -1, "UDim");
   lua_setglobal(lunar_state, "UDim");
-  
+
+  lua_getfield(lunar_state, -1, "UDim2");
+  lua_setglobal(lunar_state, "UDim2");
+
   lua_newtable(lunar_state);
 
   lua_getfield(lunar_state, -2, "ServiceManager");
