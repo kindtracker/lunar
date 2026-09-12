@@ -1,10 +1,17 @@
 #define LUNAR_VERSION "0.0.1"
 /*
  * CHANGELOG:
- * v0.2.4:
+ * v0.2.5:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)
  *   More datatypes (CFrame, Color4, UDim, UDim2)
+ *   Make instance better (
+ *     Clone children in Instance:Clone()
+ *     Add Instance:GetChildrenCount()
+ *     Add Instance:GetDescendants()
+ *     Add Instance:IsA(ClassName)
+ *     Add Instance:GetFullName(ClassName)
+ *   )
  * v0.2.0:
  *  Added:
  *   ClassNames

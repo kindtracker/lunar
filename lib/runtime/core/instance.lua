@@ -4,6 +4,7 @@ local InstanceModule = {}
 local Connection
 local Signal
 local Vector2
+local Vector3
 local CFrame
 local UDim
 local UDim2
@@ -19,10 +20,9 @@ function InstanceModule.__Lunar_Internal__Init__(connection, signal, vector2, ve
   Vector2 = vector2
   Vector3 = vector3
   Color3 = color3
-  Vector3 = vector3
-  CFframe = cframe
-  UDim = UDim
-  UDim2 = UDim2
+  CFrame = cframe
+  UDim = udim
+  UDim2 = udim2
 
   InstanceModule.Classes = {}
 
@@ -108,11 +108,12 @@ function InstanceModule.new(ClassName, Parent)
       local oldValue = Properties[key]
       Properties[key] = newValue
       if key == "Parent" then
-        local Parent = Properties.Parent
-        if Parent then
-          Parent:GetChildren()[Properties.UniqueId] = nil
+        if oldValue then
+          oldValue:GetChildren()[Properties.UniqueId] = nil
         end
-        newValue:AddChild(Proxy)
+        if newValue then
+          newValue:AddChild(Proxy)
+        end
       end
       if PropertyChangedSignals[key] then
         PropertyChangedSignals[key]:Fire(newValue, oldValue)
@@ -166,7 +167,15 @@ function InstanceModule.new(ClassName, Parent)
     local Clone = {}
 
     for Key, Value in pairs(Proxy) do
-      Clone[Key] = Value
+      if Key ~= "Children" then
+        Clone[Key] = Value
+      end
+    end
+
+    Clone.Children = {}
+    for _, Child in pairs(Proxy:GetChildren()) do
+      local CloneChild = Child:Clone()
+      CloneChild.Parent = Clone
     end
 
     return Clone
@@ -174,6 +183,16 @@ function InstanceModule.new(ClassName, Parent)
 
   function Proxy:GetChildren()
     return self.Children
+  end
+
+  function Proxy:GetChildrenCount()
+    local Count = 0
+
+    for _ in pairs(Properties.Children) do
+      Count = Count + 1
+    end
+
+    return Count
   end
 
   function Proxy:AddChild(Child)
@@ -197,7 +216,7 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindChildByUniqueId(Name)
+  function Proxy:FindChildByUniqueId(UniqueId)
     for _, child in pairs(Proxy:GetChildren()) do
       if child.UniqueId == UniqueId then
         return child
@@ -231,6 +250,48 @@ function InstanceModule.new(ClassName, Parent)
     end
 
     return PropertyChangedSignals[PropertyName]
+  end
+
+  function Proxy:GetDescendants()
+    local Descendants = {}
+    local function AddChildren(Instance)
+      for _, Child in pairs(Instance:GetChildren()) do
+        table.insert(Descendants, Child)
+        AddChildren(Child)
+      end
+    end
+    AddChildren(Proxy)
+    return Descendants
+  end
+
+  function Proxy:ClearAllChildren()
+    for _, Child in pairs(Proxy:GetChildren()) do
+      Child:Destroy()
+    end
+  end
+
+  function Proxy:IsA(ClassName)
+    local TargetClassModule = InstanceModule:FindClassByName(ClassName).Module
+    local CurrentClass = InstanceModule:FindClassByName(self.ClassName)
+
+    while CurrentClass do
+      if CurrentClass.Module == TargetClassModule then
+        return true
+      end
+      CurrentClass = InstanceModule:FindClassByName(CurrentClass.ParentModule)
+    end
+
+    return self.ClassName == ClassName
+  end
+
+  function Proxy:GetFullName()
+    local Result = Proxy.Name
+    local CurrentInstance = Proxy.Parent
+    while CurrentInstance ~= nil do
+      Result = CurrentInstance.Name .. "." .. Result
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return Result
   end
 
   return Proxy
