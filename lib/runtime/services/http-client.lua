@@ -4,9 +4,11 @@ local ltn12 = require("ltn12")
 local HttpClientModule = {}
 local HttpClientService
 local Instance
+local JSONService
 
-function HttpClientModule.__Lunar_Internal__Init__(instance)
+function HttpClientModule.__Lunar_Internal__Init__(instance, jsonservice)
   Instance = instance
+  JSONService = jsonservice
 
   HttpClientService = Instance.new("Service")
   HttpClientService.Name = "HttpClientService"
@@ -93,6 +95,14 @@ function HttpClientModule.__Lunar_Internal__Init__(instance)
 
   function HttpClientService:Head(Url)
     return HttpClientService:Get(Url, "HEAD")
+  end
+
+  function HttpClientService:JSONEncode(Table)
+    return JSONService:Encode(Table)
+  end
+
+  function HttpClientService:JSONDecode(JSON)
+    return JSONService:Decode(JSON)
   end
 
   HttpClientService:__Lunar_Internal__Clear_RequestOptions__()

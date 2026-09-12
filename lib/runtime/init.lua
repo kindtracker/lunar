@@ -32,7 +32,7 @@ local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
-local HttpClientService = HttpClientModule.__Lunar_Internal__Init__(Instance)
+local HttpClientService = HttpClientModule.__Lunar_Internal__Init__(Instance, JSONService)
 
 ServiceManager.__Lunar_Internal__Init__(
   Instance,
