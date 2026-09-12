@@ -47,9 +47,16 @@ function HttpClientModule.__Lunar_Internal__Init__(instance)
     HttpClientService.RequestOptions.Url = Url
     HttpClientService.RequestOptions.Method = __Lunar_Interna__Override_Method__ or "GET"
     HttpClientService.RequestOptions.__Hidden_socket_http__sink = ltn12.sink.table(Response)
-    http.request(HttpClientService:__Lunar_Internal__Convert_RequestOptions__(HttpClientService.RequestOptions))
+    local Result, Status, Headers =
+      http.request(HttpClientService:__Lunar_Internal__Convert_RequestOptions__(HttpClientService.RequestOptions))
     HttpClientService:__Lunar_Internal__Clear_RequestOptions__()
-    return table.concat(Response)
+    return {
+      Url = Url,
+      Result = Result,
+      Status = Status,
+      Headers = Headers,
+      Body = table.concat(Response),
+    }
   end
 
   function HttpClientService:Post(Url, ContentType, Body, __Lunar_Interna__Override_Method__)
@@ -60,9 +67,16 @@ function HttpClientModule.__Lunar_Internal__Init__(instance)
     HttpClientService.RequestOptions.Headers["Content-Length"] = tostring(#Body)
     HttpClientService.RequestOptions.__Hidden_socket_http__source = ltn12.source.string(Body)
     HttpClientService.RequestOptions.__Hidden_socket_http__sink = ltn12.sink.table(Response)
-    http.request(HttpClientService:__Lunar_Internal__Convert_RequestOptions__(HttpClientService.RequestOptions))
+    local Result, Status, Headers =
+      http.request(HttpClientService:__Lunar_Internal__Convert_RequestOptions__(HttpClientService.RequestOptions))
     HttpClientService:__Lunar_Internal__Clear_RequestOptions__()
-    return table.concat(Response)
+    return {
+      Url = Url,
+      Result = Result,
+      Status = Status,
+      Headers = Headers,
+      Body = table.concat(Response),
+    }
   end
 
   function HttpClientService:Put(Url, ContentType, Body)

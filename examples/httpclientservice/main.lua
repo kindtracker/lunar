@@ -1,5 +1,10 @@
 local HttpClientService = Lunar:GetService("HttpClientService")
+local Console = Lunar:GetService("ConsoleService")
 
 local Url = "http://example.com/"
-local Content = HttpClientService:Get(Url)
-print(Content)
+local Response = HttpClientService:Get(Url)
+if Response.Result ~= 1 then
+  Console:Error("Failed to get %s", Url)
+end
+Console:Log("Status: %d", Response.Status)
+print(Response.Body)
