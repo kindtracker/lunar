@@ -19,6 +19,9 @@
  *    Add more functions and signals (ChildAdded and ChildRemoved) to Instance
  *    Add Tags and Attributes
  *   )
+ *   init.lua (
+ *    Add base variable
+ *   )
  *  Added:
  *   String Library (LStringLibrary)
  *   Alias for load -> loadstring function
