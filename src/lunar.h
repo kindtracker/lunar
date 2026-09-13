@@ -16,6 +16,7 @@
  *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
  *  Added:
  *   String Library (LStringLibrary)
+ *   Alias for load -> loadstring function
  * v0.2.5:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)
@@ -198,6 +199,9 @@ int l_servicemanager(lua_State *L) {
 void lunar_init() {
   lunar_state = luaL_newstate();
   luaL_openlibs(lunar_state);
+
+  lua_getglobal(lunar_state, "load");
+  lua_setglobal(lunar_state, "loadstring");
 
   lua_newtable(lunar_state);
   
