@@ -13,6 +13,7 @@
  *    Add more functions to ConsoleService
  *   )
  *   Changed ErrorService.OnError to ErrorService.ErrorHandler
+ *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
  *  Added:
  *   String Library (LStringLibrary)
  * v0.2.5:
