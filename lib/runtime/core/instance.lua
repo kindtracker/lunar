@@ -89,8 +89,6 @@ function InstanceModule.new(ClassName, Parent)
     ClassName = "Instance"
   end
 
-  local self = CInstance.new(ClassName, Parent)
-
   local Properties = {
     Name = nil,
     ClassName = ClassName,
@@ -101,44 +99,34 @@ function InstanceModule.new(ClassName, Parent)
     ChildAdded = Signal.new(),
     ChildRemoved = Signal.new(),
   }
-  Properties.Name = Properties.UniqueId
-
-  if ClassName ~= "Instance" then
-    local Class = InstanceModule:FindClassByName(ClassName)
-    local ClassReady = InstanceModule.__Lunar_Internal__ClassNew__(Class)
-    for Key, Value in pairs(ClassReady) do
-      Properties[Key] = Value
-    end
-  end
-
   local PropertyChangedSignals = {}
 
-  local Proxy
-  Proxy = setmetatable({}, {
+  local self
+  self = setmetatable({}, {
     __index = function(_, key)
       return Properties[key]
     end,
 
     __newindex = function(_, key, newValue)
-      local oldValue = Properties[key]
+      local oldValue = self[key]
       Properties[key] = newValue
       if key == "Parent" then
         if oldValue then
-          oldValue:GetChildren()[Properties.UniqueId] = nil
+          oldValue:GetChildren()[self.UniqueId] = nil
           oldValue.ChildRemoved:Fire(self)
         end
         if newValue then
-          newValue:AddChild(Proxy)
+          newValue:AddChild(self)
         end
       end
       if PropertyChangedSignals[key] then
         PropertyChangedSignals[key]:Fire(newValue, oldValue)
-        Properties.Changed:Fire(key, newValue, oldValue)
+        self.Changed:Fire(key, newValue, oldValue)
       end
     end,
 
     __len = function()
-      return #Properties.Children
+      return #self.Children
     end,
 
     __pairs = function()
@@ -146,7 +134,17 @@ function InstanceModule.new(ClassName, Parent)
     end,
   })
 
-  function Proxy:Destroy(Recursive)
+  self.Name = self.UniqueId
+
+  if ClassName ~= "Instance" then
+    local Class = InstanceModule:FindClassByName(ClassName)
+    local ClassReady = InstanceModule.__Lunar_Internal__ClassNew__(Class)
+    for Key, Value in pairs(ClassReady) do
+      self[Key] = Value
+    end
+  end
+
+  function self:Destroy(Recursive)
     if Recursive == nil then
       Recursive = true
     end
@@ -157,19 +155,19 @@ function InstanceModule.new(ClassName, Parent)
       end
     end
 
-    local Parent = Properties.Parent
+    local Parent = self.Parent
 
     if Parent then
-      Parent:GetChildren()[Properties.UniqueId] = nil
-      Properties.Parent = nil
+      Parent:GetChildren()[self.UniqueId] = nil
+      self.Parent = nil
     end
 
     if Recursive then
-      for _, Child in pairs(Proxy:GetChildren()) do
+      for _, Child in pairs(self:GetChildren()) do
         Child:Destroy(true)
       end
     else
-      for _, Child in pairs(Proxy:GetChildren()) do
+      for _, Child in pairs(self:GetChildren()) do
         if Parent then
           Child.Parent = Parent
         else
@@ -179,17 +177,17 @@ function InstanceModule.new(ClassName, Parent)
     end
   end
 
-  function Proxy:Clone()
+  function self:Clone()
     local Clone = {}
 
-    for Key, Value in pairs(Proxy) do
+    for Key, Value in pairs(self) do
       if Key ~= "Children" then
         Clone[Key] = Value
       end
     end
 
     Clone.Children = {}
-    for _, Child in pairs(Proxy:GetChildren()) do
+    for _, Child in pairs(self:GetChildren()) do
       local CloneChild = Child:Clone()
       CloneChild.Parent = Clone
     end
@@ -197,27 +195,27 @@ function InstanceModule.new(ClassName, Parent)
     return Clone
   end
 
-  function Proxy:GetChildren()
+  function self:GetChildren()
     return self.Children
   end
 
-  function Proxy:GetChildrenCount()
+  function self:GetChildrenCount()
     local Count = 0
 
-    for _ in pairs(Properties.Children) do
+    for _ in pairs(self.Children) do
       Count = Count + 1
     end
 
     return Count
   end
 
-  function Proxy:AddChild(Child)
+  function self:AddChild(Child)
     self.Children[Child.UniqueId] = Child
     self.ChildAdded:Fire(Child)
   end
 
-  function Proxy:FindFirstChild(Name, Recursive)
-    for _, Child in pairs(Proxy:GetChildren()) do
+  function self:FindFirstChild(Name, Recursive)
+    for _, Child in pairs(self:GetChildren()) do
       if Recursive then
         local RChild = Child:FindFirstChild(Name, true)
         if RChild then
@@ -231,8 +229,8 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindFirstChildOfClass(ClassName, Recursive)
-    for _, Child in pairs(Proxy:GetChildren()) do
+  function self:FindFirstChildOfClass(ClassName, Recursive)
+    for _, Child in pairs(self:GetChildren()) do
       if Recursive then
         local RChild = Child:FindFirstChildOfClass(ClassName, true)
         if RChild then
@@ -246,8 +244,8 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindFirstChildWhichIsA(ClassName, Recursive)
-    for _, Child in pairs(Proxy:GetChildren()) do
+  function self:FindFirstChildWhichIsA(ClassName, Recursive)
+    for _, Child in pairs(self:GetChildren()) do
       if Recursive then
         local RChild = Child:FindFirstChildOfClass(ClassName, true)
         if RChild then
@@ -261,11 +259,11 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindFirstDescendant(Name)
-    return Proxy:FindFirstChild(Name, true)
+  function self:FindFirstDescendant(Name)
+    return self:FindFirstChild(Name, true)
   end
 
-  function Proxy:GetPropertyChangedSignal(PropertyName)
+  function self:GetPropertyChangedSignal(PropertyName)
     if not PropertyChangedSignals[PropertyName] then
       PropertyChangedSignals[PropertyName] = Signal.new()
     end
@@ -273,7 +271,7 @@ function InstanceModule.new(ClassName, Parent)
     return PropertyChangedSignals[PropertyName]
   end
 
-  function Proxy:GetDescendants()
+  function self:GetDescendants()
     local Descendants = {}
     local function AddChildren(Instance)
       for _, Child in pairs(Instance:GetChildren()) do
@@ -281,17 +279,17 @@ function InstanceModule.new(ClassName, Parent)
         AddChildren(Child)
       end
     end
-    AddChildren(Proxy)
+    AddChildren(self)
     return Descendants
   end
 
-  function Proxy:ClearAllChildren()
-    for _, Child in pairs(Proxy:GetChildren()) do
+  function self:ClearAllChildren()
+    for _, Child in pairs(self:GetChildren()) do
       Child:Destroy()
     end
   end
 
-  function Proxy:IsA(ClassName)
+  function self:IsA(ClassName)
     local TargetClassModule = InstanceModule:FindClassByName(ClassName).Module
     local CurrentClass = InstanceModule:FindClassByName(self.ClassName)
 
@@ -305,9 +303,9 @@ function InstanceModule.new(ClassName, Parent)
     return self.ClassName == ClassName
   end
 
-  function Proxy:GetFullName()
-    local Result = Proxy.Name
-    local CurrentInstance = Proxy.Parent
+  function self:GetFullName()
+    local Result = self.Name
+    local CurrentInstance = self.Parent
     while CurrentInstance ~= nil do
       Result = CurrentInstance.Name .. "." .. Result
       CurrentInstance = CurrentInstance.Parent
@@ -315,8 +313,8 @@ function InstanceModule.new(ClassName, Parent)
     return Result
   end
 
-  function Proxy:FindFirstAncestor(Name)
-    local CurrentInstance = Proxy.Parent
+  function self:FindFirstAncestor(Name)
+    local CurrentInstance = self.Parent
     while CurrentInstance ~= nil do
       if CurrentInstance.Name == Name then
         return CurrentInstance
@@ -326,8 +324,8 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindFirstAncestorOfClass(ClassName)
-    local CurrentInstance = Proxy.Parent
+  function self:FindFirstAncestorOfClass(ClassName)
+    local CurrentInstance = self.Parent
     while CurrentInstance ~= nil do
       if CurrentInstance.ClassName == ClassName then
         return CurrentInstance
@@ -337,8 +335,8 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:FindFirstAncestorWhichIsA(ClassName)
-    local CurrentInstance = Proxy.Parent
+  function self:FindFirstAncestorWhichIsA(ClassName)
+    local CurrentInstance = self.Parent
     while CurrentInstance ~= nil do
       if CurrentInstance:IsA(ClassName) then
         return CurrentInstance
@@ -348,10 +346,10 @@ function InstanceModule.new(ClassName, Parent)
     return nil
   end
 
-  function Proxy:IsAncestorOf(Descendant)
+  function self:IsAncestorOf(Descendant)
     local CurrentInstance = Descendant.Parent
     while CurrentInstance ~= nil do
-      if CurrentInstance == Proxy then
+      if CurrentInstance == self then
         return true
       end
       CurrentInstance = CurrentInstance.Parent
@@ -359,8 +357,8 @@ function InstanceModule.new(ClassName, Parent)
     return false
   end
 
-  function Proxy:IsDescendantOf(Ancestor)
-    local CurrentInstance = Proxy.Parent
+  function self:IsDescendantOf(Ancestor)
+    local CurrentInstance = self.Parent
     while CurrentInstance ~= nil do
       if CurrentInstance == Ancestor then
         return true
@@ -370,7 +368,7 @@ function InstanceModule.new(ClassName, Parent)
     return false
   end
 
-  return Proxy
+  return self
 end
 
 return InstanceModule
