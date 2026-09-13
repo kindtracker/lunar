@@ -82,4 +82,7 @@ return {
   CFrame = CFrame,
   UDim = UDim,
   UDim2 = UDim2,
+  LMathLibrary = LMathLibrary,
+  LTableLibrary = LTableLibrary,
+  LStringLibrary = LStringLibrary,
 }

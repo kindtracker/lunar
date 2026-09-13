@@ -25,6 +25,7 @@
  *  Added:
  *   String Library (LStringLibrary)
  *   Alias for load -> loadstring function
+ *   Alias for LMathLibrary, LTableLibrary, LStringLibrary -> lmath, ltable, lstring (globals)
  * v0.2.5:
  *  Added:
  *   More services (LMathService, LTableService, JSONService, HttpClientService)
@@ -258,6 +259,15 @@ void lunar_init() {
 
   lua_getfield(lunar_state, -1, "UDim2");
   lua_setglobal(lunar_state, "UDim2");
+
+  lua_getfield(lunar_state, -1, "LMathLibrary");
+  lua_setglobal(lunar_state, "lmath");
+
+  lua_getfield(lunar_state, -1, "LTableLibrary");
+  lua_setglobal(lunar_state, "ltable");
+
+  lua_getfield(lunar_state, -1, "LStringLibrary");
+  lua_setglobal(lunar_state, "lstring");
 
   lua_newtable(lunar_state);
 
