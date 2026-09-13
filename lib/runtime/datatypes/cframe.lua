@@ -1,22 +1,5 @@
 -- Mostly CFrame code is ai-generated (i couldn't understand the math)
 
---[[
-
-Not implemented:
-
-CFrame.fromAxisAngle()
-CFrame.fromEulerAnglesXYZ()
-CFrame.fromOrientation()
-CFrame:Lerp()
-CFrame:ToEulerAnglesXYZ()
-CFrame:ToOrientation()
-CFrame:GetComponents()
-CFrame:ToAxisAngle()
-CFrame.Rotation
-CFrame.Position
-
---]]
-
 local CFrame = {}
 local Vector3
 
@@ -40,6 +23,78 @@ end
 
 local function Cross(A, B)
   return Vector3.new(A.Y * B.Z - A.Z * B.Y, A.Z * B.X - A.X * B.Z, A.X * B.Y - A.Y * B.X)
+end
+
+local function MatrixToQuaternion(CF)
+  local Trace = CF.R00 + CF.R11 + CF.R22
+
+  local X
+  local Y
+  local Z
+  local W
+
+  if Trace > 0 then
+    local S = math.sqrt(Trace + 1) * 2
+
+    W = 0.25 * S
+    X = (CF.R21 - CF.R12) / S
+    Y = (CF.R02 - CF.R20) / S
+    Z = (CF.R10 - CF.R01) / S
+  elseif CF.R00 > CF.R11 and CF.R00 > CF.R22 then
+    local S = math.sqrt(1 + CF.R00 - CF.R11 - CF.R22) * 2
+
+    W = (CF.R21 - CF.R12) / S
+    X = 0.25 * S
+    Y = (CF.R01 + CF.R10) / S
+    Z = (CF.R02 + CF.R20) / S
+  elseif CF.R11 > CF.R22 then
+    local S = math.sqrt(1 + CF.R11 - CF.R00 - CF.R22) * 2
+
+    W = (CF.R02 - CF.R20) / S
+    X = (CF.R01 + CF.R10) / S
+    Y = 0.25 * S
+    Z = (CF.R12 + CF.R21) / S
+  else
+    local S = math.sqrt(1 + CF.R22 - CF.R00 - CF.R11) * 2
+
+    W = (CF.R10 - CF.R01) / S
+    X = (CF.R02 + CF.R20) / S
+    Y = (CF.R12 + CF.R21) / S
+    Z = 0.25 * S
+  end
+
+  return X, Y, Z, W
+end
+
+local function QuaternionSlerp(AX, AY, AZ, AW, BX, BY, BZ, BW, Alpha)
+  local DotProduct = AX * BX + AY * BY + AZ * BZ + AW * BW
+
+  if DotProduct < 0 then
+    BX = -BX
+    BY = -BY
+    BZ = -BZ
+    BW = -BW
+    DotProduct = -DotProduct
+  end
+
+  if DotProduct > 0.9995 then
+    local X = AX + Alpha * (BX - AX)
+    local Y = AY + Alpha * (BY - AY)
+    local Z = AZ + Alpha * (BZ - AZ)
+    local W = AW + Alpha * (BW - AW)
+
+    local Length = math.sqrt(X * X + Y * Y + Z * Z + W * W)
+
+    return X / Length, Y / Length, Z / Length, W / Length
+  end
+
+  local Theta = math.acos(math.max(-1, math.min(1, DotProduct)))
+  local SinTheta = math.sin(Theta)
+
+  local A = math.sin((1 - Alpha) * Theta) / SinTheta
+  local B = math.sin(Alpha * Theta) / SinTheta
+
+  return AX * A + BX * B, AY * A + BY * B, AZ * A + BZ * B, AW * A + BW * B
 end
 
 local function CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
@@ -70,6 +125,23 @@ local function CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22
         return Vector3.new(Properties.R02, Properties.R12, Properties.R22)
       elseif Key == "LookVector" then
         return Vector3.new(-Properties.R02, -Properties.R12, -Properties.R22)
+      elseif Key == "Position" then
+        return Vector3.new(Properties.X, Properties.Y, Properties.Z)
+      elseif Key == "Rotation" then
+        return CreateCFrame(
+          0,
+          0,
+          0,
+          Properties.R00,
+          Properties.R01,
+          Properties.R02,
+          Properties.R10,
+          Properties.R11,
+          Properties.R12,
+          Properties.R20,
+          Properties.R21,
+          Properties.R22
+        )
       end
 
       return Properties[Key]
@@ -186,6 +258,127 @@ local function CreateCFrame(X, Y, Z, R00, R01, R02, R10, R11, R12, R20, R21, R22
     return self:Inverse() * Vector
   end
 
+  function Proxy:GetComponents()
+    return Properties.X,
+      Properties.Y,
+      Properties.Z,
+      Properties.R00,
+      Properties.R01,
+      Properties.R02,
+      Properties.R10,
+      Properties.R11,
+      Properties.R12,
+      Properties.R20,
+      Properties.R21,
+      Properties.R22
+  end
+
+  function Proxy:ToWorldSpace(CFrame2)
+    return self * CFrame2
+  end
+
+  function Proxy:ToObjectSpace(CFrame2)
+    return self:Inverse() * CFrame2
+  end
+
+  function Proxy:ToAxisAngle()
+    local Trace = Properties.R00 + Properties.R11 + Properties.R22
+    local CosAngle = math.max(-1, math.min(1, (Trace - 1) / 2))
+    local Angle = math.acos(CosAngle)
+
+    if Angle < 0.000001 then
+      return Vector3.new(1, 0, 0), 0
+    end
+
+    local S = 2 * math.sin(Angle)
+
+    if math.abs(S) < 0.000001 then
+      return Vector3.new(1, 0, 0), Angle
+    end
+
+    local Axis = Vector3.new(
+      (Properties.R21 - Properties.R12) / S,
+      (Properties.R02 - Properties.R20) / S,
+      (Properties.R10 - Properties.R01) / S
+    )
+
+    return Normalize(Axis), Angle
+  end
+
+  function Proxy:ToEulerAnglesXYZ()
+    local R20 = Properties.R20
+
+    local Y = math.asin(math.max(-1, math.min(1, -R20)))
+
+    local X
+    local Z
+
+    if math.abs(math.cos(Y)) > 0.000001 then
+      X = math.atan2(Properties.R21, Properties.R22)
+      Z = math.atan2(Properties.R10, Properties.R00)
+    else
+      X = math.atan2(-Properties.R12, Properties.R11)
+      Z = 0
+    end
+
+    return X, Y, Z
+  end
+
+  function Proxy:ToOrientation()
+    return self:ToEulerAnglesXYZ()
+  end
+
+  function Proxy:Lerp(Goal, Alpha)
+    local AX, AY, AZ, AW = MatrixToQuaternion(self)
+    local BX, BY, BZ, BW = MatrixToQuaternion(Goal)
+
+    local X, Y, Z, W = QuaternionSlerp(AX, AY, AZ, AW, BX, BY, BZ, BW, Alpha)
+
+    local PositionX = Properties.X + (Goal.X - Properties.X) * Alpha
+    local PositionY = Properties.Y + (Goal.Y - Properties.Y) * Alpha
+    local PositionZ = Properties.Z + (Goal.Z - Properties.Z) * Alpha
+
+    local Result = CFrame.new(PositionX, PositionY, PositionZ, X, Y, Z, W)
+
+    return Result
+  end
+
+  function Proxy:FuzzyEq(Other, Epsilon)
+    Epsilon = Epsilon or 0.000001
+
+    local function Close(A, B)
+      return math.abs(A - B) <= Epsilon
+    end
+
+    return Close(Properties.X, Other.X)
+      and Close(Properties.Y, Other.Y)
+      and Close(Properties.Z, Other.Z)
+      and Close(Properties.R00, Other.R00)
+      and Close(Properties.R01, Other.R01)
+      and Close(Properties.R02, Other.R02)
+      and Close(Properties.R10, Other.R10)
+      and Close(Properties.R11, Other.R11)
+      and Close(Properties.R12, Other.R12)
+      and Close(Properties.R20, Other.R20)
+      and Close(Properties.R21, Other.R21)
+      and Close(Properties.R22, Other.R22)
+  end
+
+  function Proxy:IsIdentity()
+    return Properties.X == 0
+      and Properties.Y == 0
+      and Properties.Z == 0
+      and Properties.R00 == 1
+      and Properties.R01 == 0
+      and Properties.R02 == 0
+      and Properties.R10 == 0
+      and Properties.R11 == 1
+      and Properties.R12 == 0
+      and Properties.R20 == 0
+      and Properties.R21 == 0
+      and Properties.R22 == 1
+  end
+
   return Proxy
 end
 
@@ -285,6 +478,31 @@ function CFrame.Angles(X, Y, Z)
   local qW = CX * CY * CZ + SX * SY * SZ
 
   return CFrame.new(0, 0, 0, qX, qY, qZ, qW)
+end
+
+function CFrame.fromAxisAngle(Axis, Angle)
+  Axis = Normalize(Axis)
+
+  local HalfAngle = Angle / 2
+  local S = math.sin(HalfAngle)
+
+  return CFrame.new(0, 0, 0, Axis.X * S, Axis.Y * S, Axis.Z * S, math.cos(HalfAngle))
+end
+
+function CFrame.fromEulerAnglesXYZ(X, Y, Z)
+  return CFrame.Angles(X, Y, Z)
+end
+
+function CFrame.fromOrientation(X, Y, Z)
+  return CFrame.Angles(X, Y, Z)
+end
+
+function CFrame.fromMatrix(Position, Vx, Vy, Vz)
+  if Vz == nil then
+    Vz = Cross(Vx, Vy)
+  end
+
+  return CFrame.new(Position.X, Position.Y, Position.Z, Vx.X, Vy.X, Vz.X, Vx.Y, Vy.Y, Vz.Y, Vx.Z, Vy.Z, Vz.Z)
 end
 
 return CFrame

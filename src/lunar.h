@@ -14,6 +14,7 @@
  *   )
  *   Changed ErrorService.OnError to ErrorService.ErrorHandler
  *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
+ *   Fully implement CFrame
  *  Added:
  *   String Library (LStringLibrary)
  *   Alias for load -> loadstring function
