@@ -1,9 +1,10 @@
 local ErrorService = Lunar:GetService("ErrorService")
-local ConsoleService = Lunar:GetService("ConsoleService")
 
 -- Error is an instance created by ErrorService
 
-ErrorService.OnError:Connect(function(Error)
+ErrorService.AlwaysPrintError = false -- You can set ErrorService.AlwaysPrintError to true when you have no ErrorHandler
+
+ErrorService.ErrorHandler:Connect(function(Error)
   ErrorService:Print(Error)
 end)
 

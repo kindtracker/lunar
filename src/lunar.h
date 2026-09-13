@@ -12,6 +12,7 @@
  *   ConsoleService (
  *    Add more functions to ConsoleService
  *   )
+ *   Changed ErrorService.OnError to ErrorService.ErrorHandler
  *  Added:
  *   String Library (LStringLibrary)
  * v0.2.5:

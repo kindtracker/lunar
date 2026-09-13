@@ -17,7 +17,8 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
 
   ErrorService = Instance.new("Service")
   ErrorService.Name = "ErrorService"
-  ErrorService.OnError = Signal.new()
+  ErrorService.ErrorHandler = Signal.new()
+  ErrorService.AlwaysPrintError = false
 
   function ErrorService:Traceback(Level)
     Level = (Level or 1) + 1
@@ -34,7 +35,10 @@ function ErrorModule.__Lunar_Internal__Init__(instance, signal)
   end
 
   function ErrorService:Error(ErrorInstance)
-    ErrorService.OnError:Fire(ErrorInstance)
+    ErrorService.ErrorHandler:Fire(ErrorInstance)
+    if ErrorService.AlwaysPrintError == true then
+      ErrorService:Print(ErrorInstance)
+    end
   end
 
   function ErrorService:Print(ErrorInstance)

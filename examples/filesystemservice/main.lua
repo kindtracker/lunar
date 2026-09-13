@@ -1,6 +1,6 @@
 local FileSystemService = Lunar:GetService("FileSystemService")
 
-local LogsFile = FileSystemService:Open("Workspace/Logs", "Logs", "a+")
+local LogsFile = FileSystemService:Open("Workspace/Logs", "a+")
 LogsFile:Write("Opened in " .. os.time() .. "\n")
 local Logs = LogsFile:Read("*a")
 
