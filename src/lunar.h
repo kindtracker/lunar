@@ -9,6 +9,9 @@
  *    Add instances/classnames for files and folders
  *    Add more functions to FSS
  *   )
+ *   ConsoleService (
+ *    Add more functions to ConsoleService
+ *   )
  *  Added:
  *   String Library (LStringLibrary)
  * v0.2.5:

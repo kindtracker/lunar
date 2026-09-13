@@ -43,7 +43,7 @@ Instance.__Lunar_Internal__Init__(
 local LMathLibrary = LMathModule.__Lunar_Internal__Init__(Instance)
 local LTableLibrary = LTableModule.__Lunar_Internal__Init__(Instance)
 local LStringLibrary = LStringModule.__Lunar_Internal__Init__(Instance)
-local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance)
+local ConsoleService = ConsoleServiceModule.__Lunar_Internal__Init__(Instance, Signal)
 local FileSystemService = FileSystemModule.__Lunar_Internal__Init__(Instance)
 local TimeService = TimeModule.__Lunar_Internal__Init__(Instance)
 local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
