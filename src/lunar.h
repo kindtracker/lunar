@@ -1,4 +1,4 @@
-#define LUNAR_VERSION "0.0.1"
+#define LUNAR_VERSION "0.3.0"
 /*
  * CHANGELOG:
  * v0.3.0:
