@@ -212,49 +212,53 @@ function InstanceModule.new(ClassName, Parent)
     self.Children[Child.UniqueId] = Child
   end
 
-  function Proxy:FindFirstChild(Name)
-    for _, child in pairs(Proxy:GetChildren()) do
-      if child.Name == Name then
-        return child
+  function Proxy:FindFirstChild(Name, Recursive)
+    for _, Child in pairs(Proxy:GetChildren()) do
+      if Recursive then
+        local RChild = Child:FindFirstChild(Name, true)
+        if RChild then
+          return RChild
+        end
       end
-    end
-  end
-
-  function Proxy:FindFirstChildByClassName(ClassName)
-    for _, child in pairs(Proxy:GetChildren()) do
-      if child.ClassName == ClassName then
-        return child
+      if Child.Name == Name then
+        return Child
       end
     end
     return nil
   end
 
-  function Proxy:FindChildByUniqueId(UniqueId)
-    for _, child in pairs(Proxy:GetChildren()) do
-      if child.UniqueId == UniqueId then
-        return child
+  function Proxy:FindFirstChildOfClass(ClassName, Recursive)
+    for _, Child in pairs(Proxy:GetChildren()) do
+      if Recursive then
+        local RChild = Child:FindFirstChildOfClass(ClassName, true)
+        if RChild then
+          return RChild
+        end
+      end
+      if Child.ClassName == ClassName then
+        return Child
       end
     end
+    return nil
   end
 
-  function Proxy:FindChildren(Name)
-    local children = {}
-    for _, child in pairs(Proxy:GetChildren()) do
-      if child.Name == Name then
-        table.insert(children, child)
+  function Proxy:FindFirstChildWhichIsA(ClassName, Recursive)
+    for _, Child in pairs(Proxy:GetChildren()) do
+      if Recursive then
+        local RChild = Child:FindFirstChildOfClass(ClassName, true)
+        if RChild then
+          return RChild
+        end
+      end
+      if Child:IsA(ClassName) then
+        return Child
       end
     end
-    return children
+    return nil
   end
 
-  function Proxy:FindChildrenByClassName(ClassName)
-    local children = {}
-    for _, child in pairs(Proxy:GetChildren()) do
-      if child.ClassName == ClassName then
-        table.insert(children, child)
-      end
-    end
-    return children
+  function Proxy:FindFirstDescendant(Name)
+    return Proxy:FindFirstChild(Name, true)
   end
 
   function Proxy:GetPropertyChangedSignal(PropertyName)
@@ -305,6 +309,61 @@ function InstanceModule.new(ClassName, Parent)
       CurrentInstance = CurrentInstance.Parent
     end
     return Result
+  end
+
+  function Proxy:FindFirstAncestor(Name)
+    local CurrentInstance = Proxy.Parent
+    while CurrentInstance ~= nil do
+      if CurrentInstance.Name == Name then
+        return CurrentInstance
+      end
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return nil
+  end
+
+  function Proxy:FindFirstAncestorOfClass(ClassName)
+    local CurrentInstance = Proxy.Parent
+    while CurrentInstance ~= nil do
+      if CurrentInstance.ClassName == ClassName then
+        return CurrentInstance
+      end
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return nil
+  end
+
+  function Proxy:FindFirstAncestorWhichIsA(ClassName)
+    local CurrentInstance = Proxy.Parent
+    while CurrentInstance ~= nil do
+      if CurrentInstance:IsA(ClassName) then
+        return CurrentInstance
+      end
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return nil
+  end
+
+  function Proxy:IsAncestorOf(Descendant)
+    local CurrentInstance = Descendant.Parent
+    while CurrentInstance ~= nil do
+      if CurrentInstance == Proxy then
+        return true
+      end
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return false
+  end
+
+  function Proxy:IsDescendantOf(Ancestor)
+    local CurrentInstance = Proxy.Parent
+    while CurrentInstance ~= nil do
+      if CurrentInstance == Ancestor then
+        return true
+      end
+      CurrentInstance = CurrentInstance.Parent
+    end
+    return false
   end
 
   return Proxy
