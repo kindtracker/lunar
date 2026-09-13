@@ -98,6 +98,8 @@ function InstanceModule.new(ClassName, Parent)
     Children = {},
     UniqueId = string.format("%08x", math.random(0, 4294967295)),
     Changed = Signal.new(),
+    ChildAdded = Signal.new(),
+    ChildRemoved = Signal.new(),
   }
   Properties.Name = Properties.UniqueId
 
@@ -123,6 +125,7 @@ function InstanceModule.new(ClassName, Parent)
       if key == "Parent" then
         if oldValue then
           oldValue:GetChildren()[Properties.UniqueId] = nil
+          oldValue.ChildRemoved:Fire(self)
         end
         if newValue then
           newValue:AddChild(Proxy)
@@ -210,6 +213,7 @@ function InstanceModule.new(ClassName, Parent)
 
   function Proxy:AddChild(Child)
     self.Children[Child.UniqueId] = Child
+    self.ChildAdded:Fire(Child)
   end
 
   function Proxy:FindFirstChild(Name, Recursive)

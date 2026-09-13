@@ -16,7 +16,7 @@
  *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
  *   Fully implement CFrame
  *   Instance (
- *    Add more functions to Instance
+ *    Add more functions and signals to Instance
  *   )
  *  Added:
  *   String Library (LStringLibrary)
