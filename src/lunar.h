@@ -85,60 +85,6 @@ lua_State *lunar_state;
 lunar_service lunar_services[256];
 int lunar_service_count = 0;
 
-/*
-static const char *lunar_log_get(lua_State *L) {
-  lua_getglobal(L, "string");
-  lua_getfield(L, -1, "format");
-  lua_remove(L, -2);
-  lua_insert(L, 1);
-  lua_call(L, lua_gettop(L) - 1, 1);
-  return lua_tostring(L, -1);
-}
-
-// lunar.log(format, ...)
-static int l_log(lua_State *L) {
-  printf("\033[32m[log]\033[0m %s\n", lunar_log_get(L));
-  return 0;
-}
-
-// lunar.info(format, ...)
-static int l_info(lua_State *L) {
-  printf("\033[36m[info]\033[0m %s\n", lunar_log_get(L));
-  return 0;
-}
-
-// lunar.warn(format, ...)
-static int l_warn(lua_State *L) {
-  printf("\033[33m[warning]\033[0m %s\n", lunar_log_get(L));
-  return 0;
-}
-
-// lunar.error(format, ...)
-static int l_error(lua_State *L) {
-  printf("\033[31m[error]\033[0m %s\n", lunar_log_get(L));
-  return 0;
-}
-
-// lunar.fatal(format, ...)
-static int l_fatal(lua_State *L) {
-  printf("\033[31m[fatal]\033[0m %s\n", lunar_log_get(L));
-  return 0;
-}
-
-// lunar.wait(sec)
-static int l_wait(lua_State *L) {
-  float sec = luaL_checknumber(L, 2);
-  SDL_Delay(sec*1000);
-  return 0;
-}
-
-// lunar.time(sec)
-static int l_time(lua_State *L) {
-  lua_pushnumber(L, (float)(SDL_GetTicks())/1000);
-  return 1;
-}
-*/
-
 int l_instance_new(lua_State *L) {
   lua_newtable(L);
   return 1;
