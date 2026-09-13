@@ -98,6 +98,8 @@ function InstanceModule.new(ClassName, Parent)
     Changed = Signal.new(),
     ChildAdded = Signal.new(),
     ChildRemoved = Signal.new(),
+    Tags = {},
+    Attributes = {},
   }
   local PropertyChangedSignals = {}
 
@@ -366,6 +368,38 @@ function InstanceModule.new(ClassName, Parent)
       CurrentInstance = CurrentInstance.Parent
     end
     return false
+  end
+
+  function self:AddTag(Tag)
+    self.Tags[Tag] = true
+  end
+
+  function self:RemoveTag(Tag)
+    self.Tags[Tag] = nil
+  end
+
+  function self:HasTag(Tag)
+    return self.Tags[Tag]
+  end
+
+  function self:GetTags()
+    local Tags = {}
+    for _, Tag in ipairs(self.Tags) do
+      table.insert(Tags, Tag)
+    end
+    return Tags
+  end
+
+  function self:SetAttribute(Attribute, Value)
+    self.Attributes[Attribute] = Value
+  end
+
+  function self:RemoveAttribute(Attribute)
+    self.Attributes[Attribute] = nil
+  end
+
+  function self:GetAttributes()
+    return self.Attributes
   end
 
   return self
