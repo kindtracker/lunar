@@ -164,15 +164,12 @@ void lunar_init() {
   lua_setglobal(lunar_state, "loadstring");
 
   lua_newtable(lunar_state);
-  
+
   l_instance(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__Instance__");
 
   l_servicemanager(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__ServiceManager__");
-
-  l_registry(lunar_state);
-  lua_setglobal(lunar_state, "__Lunar_C__Registry__");
 
   const char *home = getenv("HOME");
   char runtime_path[4096];
