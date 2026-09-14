@@ -56,14 +56,37 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
 
       local Response = {}
 
-      Response.Redirect = PResponse.writeDefaultErrorMessage
-      Response.WriteErrorMessage = PResponse.writeDefaultErrorMessage
-      Response.WriteFile = PResponse.writeFile
-      Response.Write = PResponse.write
-      Response.AddHeader = PResponse.addHeader
-      Response.AddHeaders = PResponse.addHeaders
-      Response.SetStatusCode = PResponse.statusCode
-      Response.SetContentType = PResponse.contentType
+      function Response:Redirect(Location, Temporary)
+        return PResponse:redirect(Location, Temporary)
+      end
+
+      function Response:WriteErrorMessage(StatusCode, Message)
+        return PResponse:writeDefaultErrorMessage(StatusCode, Message)
+      end
+
+      function Response:WriteFile(File)
+        return PResponse:writeFile(File)
+      end
+
+      function Response:Write(Content)
+        return PResponse:write(Content)
+      end
+
+      function Response:AddHeader(Key, Value)
+        return PResponse:addHeader(Key, Value)
+      end
+
+      function Response:AddHeaders(Headers)
+        return PResponse:addHeaders(Headers)
+      end
+
+      function Response:SetStatusCode(StatusCode, StatusMessage)
+        return PResponse:statusCode(StatusCode, StatusMessage)
+      end
+
+      function Response:SetContentType(Value)
+        return PResponse:contentType(Value)
+      end
 
       function Response:Close()
         return PResponse:close()
