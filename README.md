@@ -36,7 +36,8 @@ ConsoleService.Colors -- Colors of every log type
 ConsoleService.LogLevels -- Log level of every log type
 ConsoleService.LogLevel -- Current log level
 ConsoleService.LogFormat -- Current log format
-ConsoleService:_Log(LogType, Format, ...) -- Internal (Usable from user)
+
+ConsoleService:_Log(LogType, Format, ...)
 ConsoleService:Log(Format, ...)
 ConsoleService:Info(Format, ...)
 ConsoleService:Warn(Format, ...)
@@ -53,6 +54,46 @@ ConsoleService:RegisterLogType(Type, LogType, Level, Color)
 ConsoleService:SetColor(LogType, Color)
 ConsoleService:SetLogLevel(LogLevel)
 ConsoleService:SetLogFormat(LogFormat)
+
+-- ErrorService
+
+ErrorService.ErrorHandler -- Signal
+-- ErrorService.ErrorHandler:Connect(function(ErrorInstance) end)
+
+ErrorService.AlwaysPrintError -- Always print error when ErrorService:Error is called
+
+ErrorService:Create(Type, Message, Traceback) -- Returns an ErrorInstance
+ErrorService:Traceback(Level)
+ErrorService:Error(ErrorInstance)
+ErrorService:Print(errorInstance)
+
+-- FileSystemService
+
+FileSystemService:GetFileName(Path)
+FileSystemService:GetExtension(Path)
+FileSystemService:GetFolder(Path, Recursive)
+FileSystemService:Open(Path, Mode) -- Mode is C-Style fopen() mode string.
+FileSystemService:CreateFolder(Path)
+FileSystemService:Delete(Path)
+FileSystemService:Move(FromPath, ToPath)
+FileSystemService:Copy(FromPath, ToPath)
+
+FileSystemService:GetAttributes(Path)
+-- Returns:
+{
+  Name, -- String
+  Path, -- String
+  Type, -- String, can be "Folder", "File", "Socket", "NamedPipe", "CharDevice", "BlockDevice", "Unknown"
+  Size, -- Number
+  ModificationTime, -- Number
+  AccessTime, -- Number
+  ChangeTime, -- Number
+  Permissions -- String
+}
+
+FileSystemService:Exists(Path)
+FileSystemService:IsFile(Path)
+FileSystemService:IsFolder(Path)
 ```
 
 ## License
