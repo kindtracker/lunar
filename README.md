@@ -134,6 +134,75 @@ HttpSharedService:UrlRemoveDotSegments(Path)
 HttpSharedService:UrlResolve(BaseUrl, RelativeUrl)
 HttpSharedService:UrlSetQuery(Url, Query)
 HttpSharedService:UrlSetAuthority(Url, Authority)
+
+-- HttpClientService
+
+HttpClientService.RequestOptions
+{
+  Url,
+  Headers,
+  Method,
+  Proxy,
+  FollowRedirect,
+  -- Hidden but you can modify/access them
+  __Hidden_socket_http__sink,
+  __Hidden_socket_http__create,
+  __Hidden_socket_http__step,
+  __Hidden_socket_http__source,
+}
+
+HttpClientService:ClearRequestOptions()
+-- HttpClientService:ClearRequestOptions basically is
+HttpClientService.RequestOptions.Method = "GET"
+HttpClientService.RequestOptions.Headers["Content-Type"] = nil
+HttpClientService.RequestOptions.Headers["Content-Length"] = nil
+HttpClientService.RequestOptions.__Hidden_socket_http__source = nil
+HttpClientService.RequestOptions.__Hidden_socket_http__sink = nil
+
+HttpClientService:Request(Url) -- Doesn't modify RequestOptions
+
+HttpClientService:Get(Url)
+HttpClientService:Post(Url, ContentType, Body)
+HttpClientService:Put(Url, ContentType, Body)
+HttpClientService:Patch(Url, ContentType, Body)
+HttpClientService:Delete(Url)
+HttpClientService:Head(Url)
+
+-- HttpServerService
+
+HttpServerService:MatchRoute(Route, Path)
+
+HttpServerService:Create(Options) -- Returns Server
+-- Options:
+{
+  Port,
+  Host,
+  Location,
+}
+
+Server:Route(Method, Path, Callback)
+-- Server:Route("GET", "/", function(Request, Response) end)
+
+Server:Listen(Callback)
+
+Request.Method
+Request.Path
+Request.Params
+Request.Headers
+Request.PostData
+Request.Ip
+Request.Port
+Request.QueryString
+
+Response:Redirect(Location, Temporary)
+Response:WriteErrorMessage(StatusCode, Message)
+Response:WriteFile(File)
+Response:Write(Content)
+Response:AddHeader(Key, Value)
+Response:AddHeaders(Headers)
+Response:SetStatusCode(StatusCode, StatusMessage)
+Response:SetContentType(Value)
+Response:Close()
 ```
 
 ## License
