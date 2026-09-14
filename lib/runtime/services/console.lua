@@ -13,7 +13,7 @@ function ConsoleServiceModule.__Lunar_Internal__Init__(instance, signal)
 
   ConsoleService.Colors = {
     LOG = "0;32",
-    INFO = "0;32",
+    INFO = "0;36",
     WARN = "0;33",
     WARNING = "0;33",
     ERROR = "0;31",
