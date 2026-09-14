@@ -39,6 +39,7 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
       location = Options.Location,
     })
     PServer.Routes = {}
+    PServer.Uses = {}
 
     function PServerRequestCallback(PRequest, PResponse)
       local Path = PRequest:path()
@@ -114,7 +115,10 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
       })
     end
 
-    function PServer:Listen()
+    function PServer:Listen(Callback)
+      if Callback then
+        Callback()
+      end
       PServer:start(PServerRequestCallback)
     end
 

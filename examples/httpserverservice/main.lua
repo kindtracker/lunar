@@ -1,6 +1,8 @@
 local HttpServerService = Lunar:GetService("HttpServerService")
 local Console = Lunar:GetService("ConsoleService")
 
+-- You can access /index.html (or /) and /hello
+
 local Server = HttpServerService:Create({
   Port = 8080,
   Host = "127.0.0.1",
@@ -13,4 +15,6 @@ Server:Route("GET", "/hello", function(Request, Response)
   Response:Close()
 end)
 
-Server:Listen()
+Server:Listen(function()
+  Console:Info("Server running at http://localhost:8080/")
+end)
