@@ -1,6 +1,9 @@
-#define LUNAR_VERSION "0.3.0"
+#define LUNAR_VERSION "0.3.5"
 /*
  * CHANGELOG:
+ * v0.3.5:
+ *  Added:
+ *   More services (HttpServerService, HttpBaseService)
  * v0.3.0:
  *  Improvement update
  *  Improved:
