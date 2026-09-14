@@ -15,7 +15,7 @@ function ServiceManager.__Lunar_Internal__Init__(
   LStringLibrary,
   HttpClientService,
   HttpServerService,
-  HttpBaseService
+  HttpSharedService
 )
   Instance = instance
 
@@ -33,7 +33,7 @@ function ServiceManager.__Lunar_Internal__Init__(
   CServiceManager:RegisterService("LStringLibrary", LStringLibrary)
   CServiceManager:RegisterService("HttpClientService", HttpClientService)
   CServiceManager:RegisterService("HttpServerService", HttpServerService)
-  CServiceManager:RegisterService("HttpBaseService", HttpBaseService)
+  CServiceManager:RegisterService("HttpSharedService", HttpSharedService)
 end
 
 function ServiceManager.__Lunar_Internal__Init_Stage2__(RunService)
