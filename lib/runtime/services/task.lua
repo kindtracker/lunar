@@ -55,10 +55,6 @@ function TaskModule.__Lunar_Internal__Init__(instance, timeservice)
     return Thread
   end
 
-  function TaskService:Yield(...)
-    return coroutine.yield(...)
-  end
-
   function TaskService:Step()
     local Now = TimeService:PreciseNow()
 

@@ -104,6 +104,11 @@ FileSystemService:Exists(Path)
 FileSystemService:IsFile(Path)
 FileSystemService:IsFolder(Path)
 
+-- JSONService
+
+JSONService:Encode(Table)
+JSONService:Decode(JSON)
+
 -- HttpSharedService
 
 HttpSharedService:JSONEncode(Table)
@@ -203,6 +208,35 @@ Response:AddHeaders(Headers)
 Response:SetStatusCode(StatusCode, StatusMessage)
 Response:SetContentType(Value)
 Response:Close()
+
+-- RunService
+
+-- RunService needs TaskService:Step()
+-- See /examples/taskservice/main.lua
+-- Stepped fires before Heartbeat
+
+RunService.Stepped -- Signal
+-- RunService.Stepped:Connect(function(DeltaTime) end)
+
+RunService.Heartbeat -- Signal
+-- RunService.Heartbeat:Connect(function(DeltaTime) end)
+
+-- TaskService
+
+-- See /examples/taskservice/main.lua
+
+TaskService:Spawn(Function)
+TaskService:Step() -- Needs to be called in a while true loop
+
+-- Cannot be called from the main thread otherwise Lua will error
+TaskService.wait(Duration)
+TaskService.delay(Duration, Function)
+
+-- Thread is an internal Instance created by wait() or delay(), this will not be internal in future
+
+Thread:Initialize()
+Thread:GetStatus()
+Thread:Resume(...)
 ```
 
 ## License
