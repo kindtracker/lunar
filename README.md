@@ -237,6 +237,13 @@ TaskService.delay(Duration, Function)
 Thread:Initialize()
 Thread:GetStatus()
 Thread:Resume(...)
+
+-- TimeService
+
+TimeService:Now() -- Seconds
+TimeService:PreciseNow()
+TimeService:Elapsed()
+TimeService:Date(Format, ...) -- Format is from os.date
 ```
 
 ## License
