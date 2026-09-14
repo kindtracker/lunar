@@ -16,7 +16,7 @@
  *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
  *   Fully implement CFrame
  *   Instance (
- *    Add more functions and signals (ChildAdded and ChildRemoved) to Instance
+ *    Add more functions and events (Destroying, ChildAdded and ChildRemoved) to Instance
  *    Add Tags and Attributes
  *   )
  *   init.lua (
@@ -67,6 +67,8 @@ typedef struct {
   int service;
 } lunar_service;
 
+typedef int (*lunar_registry_fire)(lua_State *L, ...);
+
 extern lua_State *lunar_state;
 
 extern void lunar_init();
@@ -84,6 +86,9 @@ lua_State *lunar_state;
 
 lunar_service lunar_services[256];
 int lunar_service_count = 0;
+
+lunar_registry_fire lunar_registry_functions[256];
+int lunar_registry_function_count = 0;
 
 int l_instance_new(lua_State *L) {
   lua_newtable(L);
@@ -165,6 +170,9 @@ void lunar_init() {
 
   l_servicemanager(lunar_state);
   lua_setglobal(lunar_state, "__Lunar_C__ServiceManager__");
+
+  l_registry(lunar_state);
+  lua_setglobal(lunar_state, "__Lunar_C__Registry__");
 
   const char *home = getenv("HOME");
   char runtime_path[4096];

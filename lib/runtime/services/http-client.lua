@@ -4,30 +4,14 @@ local ltn12 = require("ltn12")
 local HttpClientModule = {}
 local HttpClientService
 local Instance
-local JSONService
 
-function HttpClientModule.__Lunar_Internal__Init__(instance, jsonservice)
+function HttpClientModule.__Lunar_Internal__Init__(instance)
   Instance = instance
-  JSONService = jsonservice
 
   HttpClientService = Instance.new("Service")
   HttpClientService.Name = "HttpClientService"
 
   local RequestOptions = { Headers = {} }
-  local Proxy = setmetatable({}, {
-    __index = function(_, key)
-      if key == "Timeout" then
-        return http.TIMEOUT
-      end
-      return RequestOptions[key]
-    end,
-    __newindex = function(key, value)
-      if key == "Timeout" then
-        http.TIMEOUT = value
-      end
-      RequestOptions[key] = value
-    end,
-  })
   local Proxy = setmetatable({}, {
     __index = function(_, key)
       if key == "Timeout" then
@@ -124,14 +108,6 @@ function HttpClientModule.__Lunar_Internal__Init__(instance, jsonservice)
 
   function HttpClientService:Head(Url)
     return HttpClientService:Get(Url, "HEAD")
-  end
-
-  function HttpClientService:JSONEncode(Table)
-    return JSONService:Encode(Table)
-  end
-
-  function HttpClientService:JSONDecode(JSON)
-    return JSONService:Decode(JSON)
   end
 
   HttpClientService:__Lunar_Internal__Clear_RequestOptions__()

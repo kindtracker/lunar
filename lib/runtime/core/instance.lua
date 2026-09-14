@@ -98,6 +98,7 @@ function InstanceModule.new(ClassName, Parent)
     Changed = Signal.new(),
     ChildAdded = Signal.new(),
     ChildRemoved = Signal.new(),
+    Destroying = Signal.new(),
     Tags = {},
     Attributes = {},
   }
@@ -150,6 +151,8 @@ function InstanceModule.new(ClassName, Parent)
     if Recursive == nil then
       Recursive = true
     end
+
+    self.Destroying:Fire()
 
     for _, signal in pairs(PropertyChangedSignals) do
       if signal then
