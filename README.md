@@ -72,7 +72,16 @@ ErrorService:Print(errorInstance)
 FileSystemService:GetFileName(Path)
 FileSystemService:GetExtension(Path)
 FileSystemService:GetFolder(Path, Recursive)
-FileSystemService:Open(Path, Mode) -- Mode is C-Style fopen() mode string.
+
+FileSystemService:Open(Path, Mode) -- Returns a File (Instance), Mode is C-Style fopen() mode string.
+File.FilePtr
+File.Attributes
+File.Mode
+File:Seek(Whence, Offset)
+File:Close()
+File:Read(ReadMode, Offset) -- ReadMode is from io.open
+File:Write(Format)
+
 FileSystemService:CreateFolder(Path)
 FileSystemService:Delete(Path)
 FileSystemService:Move(FromPath, ToPath)
@@ -94,6 +103,37 @@ FileSystemService:GetAttributes(Path)
 FileSystemService:Exists(Path)
 FileSystemService:IsFile(Path)
 FileSystemService:IsFolder(Path)
+
+-- HttpSharedService
+
+HttpSharedService:JSONEncode(Table)
+HttpSharedService:JSONDecode(JSON)
+
+HttpSharedService:QueryDecode(QueryString)
+HttpSharedService:QueryEncode(QueryTable)
+
+HttpSharedService:UrlParse(Url)
+-- Returns:
+{
+  Scheme,
+  UserInfo,
+  User,
+  Password,
+  Authority,
+  Host,
+  Port,
+  Path,
+  Query,
+  Fragment
+}
+
+HttpSharedService:UrlBuild(Url)
+HttpSharedService:UrlNormalize(Url)
+HttpSharedService:UrlAddSegment(Url, Segment)
+HttpSharedService:UrlRemoveDotSegments(Path)
+HttpSharedService:UrlResolve(BaseUrl, RelativeUrl)
+HttpSharedService:UrlSetQuery(Url, Query)
+HttpSharedService:UrlSetAuthority(Url, Authority)
 ```
 
 ## License
