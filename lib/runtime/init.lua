@@ -1,4 +1,7 @@
 local Base = os.getenv("HOME") .. "/.local/share/lunare/lib/runtime"
+local BaseExternal = os.getenv("HOME") .. "/.local/share/lunare/lib/external"
+
+package.path = BaseExternal .. "/?.lua;" .. BaseExternal .. "/?/init.lua;" .. package.path
 
 local Instance = dofile(Base .. "/core/instance.lua")
 local ServiceManager = dofile(Base .. "/core/service.lua")

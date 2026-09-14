@@ -1,9 +1,4 @@
-local function GetScriptFolder()
-  local Source = debug.getinfo(2, "S").source
-  return Source:sub(2):match("(.*/)")
-end
-
-local json = dofile(GetScriptFolder() .. "../../external/json.lua")
+local json = require("json")
 
 local JSONModule = {}
 local JSONService
