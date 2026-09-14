@@ -3,7 +3,7 @@
  * CHANGELOG:
  * v0.3.5:
  *  Added:
- *   More services (HttpServerService, HttpBaseService)
+ *   More services (HttpServerService, HttpSharedService)
  * v0.3.0:
  *  Improvement update
  *  Improved:
@@ -16,11 +16,10 @@
  *    Add more functions to ConsoleService
  *   )
  *   Changed ErrorService.OnError to ErrorService.ErrorHandler
- *   Make JSONService use json.lua from https://github.com/rxi/json.lua because it has better handling and more safer
- *   Fully implement CFrame
- *   Instance (
- *    Add more functions and events (Destroying, ChildAdded and ChildRemoved) to Instance
- *    Add Tags and Attributes
+ *   Make JSONService use json.lua from https://github.com/rxi/json.lua because
+ * it has better handling and more safer Fully implement CFrame Instance ( Add
+ * more functions and events (Destroying, ChildAdded and ChildRemoved) to
+ * Instance Add Tags and Attributes
  *   )
  *   init.lua (
  *    Add base variable
@@ -28,11 +27,9 @@
  *  Added:
  *   String Library (LStringLibrary)
  *   Alias for load -> loadstring function
- *   Alias for LMathLibrary, LTableLibrary, LStringLibrary -> lmath, ltable, lstring (globals)
- * v0.2.5:
- *  Added:
- *   More services (LMathService, LTableService, JSONService, HttpClientService)
- *   More datatypes (CFrame, Color4, UDim, UDim2)
+ *   Alias for LMathLibrary, LTableLibrary, LStringLibrary -> lmath, ltable,
+ * lstring (globals) v0.2.5: Added: More services (LMathService, LTableService,
+ * JSONService, HttpClientService) More datatypes (CFrame, Color4, UDim, UDim2)
  *   Make instance better (
  *     Clone children in Instance:Clone()
  *     Add Instance:GetChildrenCount()
@@ -61,8 +58,8 @@
  *   init.lua
  */
 
-#include <lua.h>
 #include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
 
 typedef struct {
@@ -134,26 +131,26 @@ int l_servicemanager_registerservice(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
   luaL_checktype(L, 3, LUA_TTABLE);
   int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-  
+
   lunar_register_service((lunar_service){strdup(name), ref});
   return 0;
 }
 
 int l_servicemanager_removeservice(lua_State *L) {
-  const char *name = luaL_checkstring(L, 2);  
+  const char *name = luaL_checkstring(L, 2);
   lunar_remove_service(name);
   return 0;
 }
 
 int l_servicemanager(lua_State *L) {
   lua_newtable(L);
-  
+
   lua_pushcfunction(L, l_servicemanager_getservices);
   lua_setfield(L, -2, "GetServices");
-  
+
   lua_pushcfunction(L, l_servicemanager_registerservice);
   lua_setfield(L, -2, "RegisterService");
-  
+
   lua_pushcfunction(L, l_servicemanager_removeservice);
   lua_setfield(L, -2, "RemoveService");
   return 1;
@@ -176,26 +173,28 @@ void lunar_init() {
 
   const char *home = getenv("HOME");
   char runtime_path[4096];
-  snprintf(runtime_path, sizeof(runtime_path), "%s/.local/share/lunare/lib/runtime/init.lua", home);
+  snprintf(runtime_path, sizeof(runtime_path),
+           "%s/.local/share/lunare/lib/runtime/init.lua", home);
 
   if (luaL_dofile(lunar_state, runtime_path) != LUA_OK) {
-    fprintf(stderr, "[lunar] runtime error: %s\n", lua_tostring(lunar_state, -1));
+    fprintf(stderr, "[lunar] runtime error: %s\n",
+            lua_tostring(lunar_state, -1));
     lua_pop(lunar_state, 1);
     return;
   }
 
   lua_getfield(lunar_state, -1, "Instance");
   lua_setglobal(lunar_state, "Instance");
-  
+
   lua_getfield(lunar_state, -1, "Connection");
   lua_setglobal(lunar_state, "Connection");
-  
+
   lua_getfield(lunar_state, -1, "Signal");
   lua_setglobal(lunar_state, "Signal");
-  
+
   lua_getfield(lunar_state, -1, "Vector2");
   lua_setglobal(lunar_state, "Vector2");
-  
+
   lua_getfield(lunar_state, -1, "Vector3");
   lua_setglobal(lunar_state, "Vector3");
 
@@ -230,15 +229,13 @@ void lunar_init() {
   lua_setfield(lunar_state, -3, "GetService");
   lua_pop(lunar_state, 1);
 
-  lua_pushstring(lunar_state, "Lunar v"LUNAR_VERSION);
+  lua_pushstring(lunar_state, "Lunar v" LUNAR_VERSION);
   lua_setfield(lunar_state, -2, "Version");
 
   lua_setglobal(lunar_state, "Lunar");
 }
 
-void lunar_quit() {
-  lua_close(lunar_state);
-}
+void lunar_quit() { lua_close(lunar_state); }
 
 const char *lunar_run(const char *pathname) {
   int status = luaL_loadfile(lunar_state, pathname);
