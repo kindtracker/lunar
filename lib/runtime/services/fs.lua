@@ -107,15 +107,15 @@ function FileSystemModule.__Lunar_Internal__Init__(instance)
       File.FilePtr:close()
     end
 
-    function File:Read(readMode, Offset)
+    function File:Read(ReadMode, Offset)
       if Offset then
         File:Seek("set", Offset)
       end
-      return File.FilePtr:read(readMode)
+      return File.FilePtr:read(ReadMode)
     end
 
-    function File:Write(Format, ...)
-      File.FilePtr:write(string.format(Format, ...))
+    function File:Write(Content)
+      File.FilePtr:write(Content)
     end
 
     return File
