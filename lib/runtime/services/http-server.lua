@@ -44,32 +44,48 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
       local Path = PRequest:path()
 
       local Request = {
+        Method = PRequest:method(),
         Path = Path,
         Params = {},
+        Headers = PRequest:headers(),
+        PostData = PRequest:post(),
+        Ip = PRequest.ip,
+        Port = PRequest.port,
+        QueryString = PRequest.querystring,
       }
 
       local Response = {}
 
-      function Response:Write(Content)
-        PResponse:write(Content)
-      end
+      Response.Redirect = PResponse.writeDefaultErrorMessage
+      Response.WriteErrorMessage = PResponse.writeDefaultErrorMessage
+      Response.WriteFile = PResponse.writeFile
+      Response.Write = PResponse.write
+      Response.AddHeader = PResponse.addHeader
+      Response.AddHeaders = PResponse.addHeaders
+      Response.SetStatusCode = PResponse.statusCode
+      Response.SetContentType = PResponse.contentType
 
       function Response:Close()
         return PResponse:close()
       end
 
       for _, Route in ipairs(PServer.Routes) do
+        if Route.Method ~= Request.Method then
+          goto continue
+        end
         local Params = HttpServerService:MatchRoute(Route.Path, Path)
 
         if Params then
           Request.Params = Params
           return Route.Callback(Request, Response)
         end
+        ::continue::
       end
     end
 
-    function PServer:Route(Path, Callback)
+    function PServer:Route(Method, Path, Callback)
       table.insert(PServer.Routes, {
+        Method = Method,
         Path = Path,
         Callback = Callback,
       })
