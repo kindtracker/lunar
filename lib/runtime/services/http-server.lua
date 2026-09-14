@@ -32,17 +32,16 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
     return Params
   end
 
-  function HttpServerService:Create(Port, Host, Location)
+  function HttpServerService:Create(Options)
     local PServer = pegasus:new({
-      port = Port,
-      host = Host,
-      location = Location,
+      port = Options.Port or 8080,
+      host = Options.Host or "127.0.0.1",
+      location = Options.Location,
     })
-
     PServer.Routes = {}
 
     function PServerRequestCallback(PRequest, PResponse)
-      local Path = PRequest.path
+      local Path = PRequest:path()
 
       local Request = {
         Path = Path,
@@ -55,13 +54,16 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
         PResponse:write(Content)
       end
 
+      function Response:Close()
+        return PResponse:close()
+      end
+
       for _, Route in ipairs(PServer.Routes) do
         local Params = HttpServerService:MatchRoute(Route.Path, Path)
 
         if Params then
           Request.Params = Params
-          Route.Callback(Request, Response)
-          return
+          return Route.Callback(Request, Response)
         end
       end
     end
