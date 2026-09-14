@@ -10,7 +10,8 @@ Contributions are welcome. Feel free to open an issue or submit a PR.
 
 ## Credits
 - **Lua** - used as Lunar's scripting language.
-- **LuaSocket** - used in Http Services (Uses socket.http).
+- **LuaSocket** - used in HttpClientService.
+- **pegasus** used in HttpServerService.
 - **json.lua** - used in JSONService (https://github.com/rxi/json.lua).
 
 ## Cheatsheet
