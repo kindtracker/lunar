@@ -3,9 +3,11 @@ local pegasus = require("pegasus")
 local HttpServerModule = {}
 local HttpServerService
 local Instance
+local FileSystemService
 
-function HttpServerModule.__Lunar_Internal__Init__(instance)
+function HttpServerModule.__Lunar_Internal__Init__(instance, filesystemservice)
   Instance = instance
+  FileSystemService = filesystemservice
 
   HttpServerService = Instance.new("Service")
   HttpServerService.Name = "HttpServerService"
@@ -36,13 +38,19 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
     local PServer = pegasus:new({
       port = Options.Port or 8080,
       host = Options.Host or "127.0.0.1",
-      location = Options.Location,
     })
     PServer.Routes = {}
     PServer.Uses = {}
 
-    function PServerRequestCallback(PRequest, PResponse)
+    function PServerRequestCallback(PRequest, PResponse, CurrentUse)
+      if CurrentUse == nil then
+        CurrentUse = #PServer.Uses
+      end
       local Path = PRequest:path()
+
+      if Path == "/" then
+        Path = "/index.html"
+      end
 
       local Request = {
         Method = PRequest:method(),
@@ -93,6 +101,25 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
         return PResponse:close()
       end
 
+      if CurrentUse ~= 0 then
+        local Use = PServer.Uses[CurrentUse]
+        local AllowedNextUse = false
+
+        local function Next()
+          AllowedNextUse = true
+        end
+        Use(Request, Response, Next)
+        if not AllowedNextUse then
+          return nil
+        end
+        return PServerRequestCallback(PRequest, PResponse, CurrentUse - 1)
+      end
+
+      local FilePath = Options.Location .. "/" .. Request.Path
+      if FileSystemService:Exists(FilePath) then
+        return Response:WriteFile(FilePath)
+      end
+
       for _, Route in ipairs(PServer.Routes) do
         if Route.Method ~= Request.Method then
           goto continue
@@ -113,6 +140,10 @@ function HttpServerModule.__Lunar_Internal__Init__(instance)
         Path = Path,
         Callback = Callback,
       })
+    end
+
+    function PServer:Use(Callback)
+      table.insert(PServer.Uses, Callback)
     end
 
     function PServer:Listen(Callback)

@@ -57,7 +57,7 @@ local ErrorService = ErrorModule.__Lunar_Internal__Init__(Instance, Signal)
 local TaskService = TaskModule.__Lunar_Internal__Init__(Instance, TimeService)
 local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
 local HttpClientService = HttpClientModule.__Lunar_Internal__Init__(Instance)
-local HttpServerService = HttpServerModule.__Lunar_Internal__Init__(Instance)
+local HttpServerService = HttpServerModule.__Lunar_Internal__Init__(Instance, FileSystemService)
 local HttpSharedService = HttpSharedModule.__Lunar_Internal__Init__(Instance, JSONService)
 local RandomService = RandomModule.__Lunar_Internal__Init__(Instance, TimeService)
 
