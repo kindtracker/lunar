@@ -99,8 +99,12 @@ function InstanceModule.new(ClassName, Parent)
     ChildAdded = Signal.new(),
     ChildRemoved = Signal.new(),
     Destroying = Signal.new(),
+    AncestryChanged = Signal.new(),
+    DescendantAdded = Signal.new(),
+    DescendantRemoving = Signal.new(),
     Tags = {},
     Attributes = {},
+    AttributeSignals = {},
   }
   local PropertyChangedSignals = {}
 
@@ -117,9 +121,11 @@ function InstanceModule.new(ClassName, Parent)
         if oldValue then
           oldValue:GetChildren()[self.UniqueId] = nil
           oldValue.ChildRemoved:Fire(self)
+          oldValue.DescendantRemoving:Fire(self)
         end
         if newValue then
           newValue:AddChild(self)
+          self.AncestryChanged:Fire(self, newValue)
         end
       end
       if PropertyChangedSignals[key] then
@@ -217,6 +223,7 @@ function InstanceModule.new(ClassName, Parent)
   function self:AddChild(Child)
     self.Children[Child.UniqueId] = Child
     self.ChildAdded:Fire(Child)
+    self.DescendantAdded:Fire(Child)
   end
 
   function self:FindFirstChild(Name, Recursive)
@@ -274,6 +281,14 @@ function InstanceModule.new(ClassName, Parent)
     end
 
     return PropertyChangedSignals[PropertyName]
+  end
+
+  function self:GetAttributeChangedSignal(Attribute)
+    if not self.AttributeSignals[Attribute] then
+      self.AttributeSignals[Attribute] = Signal.new()
+    end
+
+    return self.AttributeSignals[Attribute]
   end
 
   function self:GetDescendants()
@@ -394,7 +409,9 @@ function InstanceModule.new(ClassName, Parent)
   end
 
   function self:SetAttribute(Attribute, Value)
+    local oldValue = self.Attributes[Attribute]
     self.Attributes[Attribute] = Value
+    self.AttributeSignals[Attribute]:Fire(Value, oldValue)
   end
 
   function self:RemoveAttribute(Attribute)

@@ -4,6 +4,7 @@
  * v0.3.5:
  *  Added:
  *   More services (HttpServerService, HttpSharedService)
+ *   More functions and signals to Instance
  * v0.3.0:
  *  Improvement update
  *  Improved:
