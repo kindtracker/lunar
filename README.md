@@ -24,7 +24,7 @@ ConsoleService, ErrorService
 FileSystemService, HttpClientService
 HttpServerService, HttpSharedService
 JSONService, RunService, TaskService
-TimeService
+TimeService, RandomService
 
 Available libraries (You can get them via GetService):
 LMathLibrary, LStringLibrary,
@@ -209,6 +209,19 @@ Response:AddHeaders(Headers)
 Response:SetStatusCode(StatusCode, StatusMessage)
 Response:SetContentType(Value)
 Response:Close()
+
+-- RandomService
+
+RandomService.new(Seed) -- Returns a RNG, if seed is nil, seed will be current time
+
+RNG.StartSeed
+RNG.CurrentSeed
+RNG:RawRandom() -- Internal (Callable from user)
+RNG:Next() -- 0 to 1
+RNG:NextInteger(Min, Max)
+RNG:NextNumber(Min, Max)
+RNG:NextBoolean()
+RNG:Seed(Seed) -- Sets StartSeed and CurrentSeed to Seed
 
 -- RunService
 

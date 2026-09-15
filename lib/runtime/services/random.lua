@@ -3,7 +3,7 @@ local RandomService
 local Instance
 local TimeService
 
-function RandomModule.__Lunar_Internal__Init__(instance, lmath, timeservice)
+function RandomModule.__Lunar_Internal__Init__(instance, timeservice)
   Instance = instance
   TimeService = timeservice
 
