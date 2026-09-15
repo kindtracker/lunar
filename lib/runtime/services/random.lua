@@ -53,10 +53,17 @@ function RandomModule.__Lunar_Internal__Init__(instance, timeservice)
 
     function RNG:Seed(Seed)
       if Seed == nil then
-        Seed = TimeService:Now()
+        for _ = 1, 4 do
+          Seed = TimeService:Now()
+        end
       end
       RNG.StartSeed = Seed
       RNG.CurrentSeed = Seed
+      RNG:RawRandom()
+    end
+
+    for _ = 1, 4 do
+      RNG:RawRandom()
     end
 
     return RNG
