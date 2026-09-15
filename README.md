@@ -186,6 +186,9 @@ HttpServerService:Create(Options) -- Returns Server
   Location,
 }
 
+Server:Use(Callback)
+-- Server:Use(function(Request, Response, Next) end) Next is a function
+
 Server:Route(Method, Path, Callback)
 -- Server:Route("GET", "/", function(Request, Response) end)
 
@@ -235,6 +238,12 @@ RunService.Stepped -- Signal
 
 RunService.Heartbeat -- Signal
 -- RunService.Heartbeat:Connect(function(DeltaTime) end)
+
+RunService.IsServerBool -- Default is true
+RunService:SetServerMode()
+RunService:SetClientMode()
+RunService:IsServer()
+RunService:IsClient()
 
 -- TaskService
 
