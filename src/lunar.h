@@ -5,6 +5,13 @@
  *  Added:
  *   More services (HttpServerService, HttpSharedService, RandomService)
  *   More functions and signals to Instance
+ *   More functions to RunService (
+ *    .IsClient,
+ *    .IsServer,
+ *    :SetServerMode()
+ *    :SetClientMode()
+ *    .IsSeverBool
+ *   )
  * v0.3.0:
  *  Improvement update
  *  Improved:

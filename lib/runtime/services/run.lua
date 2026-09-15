@@ -15,10 +15,11 @@ function RunModule.__Lunar_Internal__Init__(instance, signal, taskservice, times
   RunService.Name = "RunService"
   RunService.Stepped = Signal.new()
   RunService.Heartbeat = Signal.new()
+  RunService.IsServerBool = true
   local UDuration = 1 / 24
   local LastTime = TimeService:PreciseNow()
 
-  function RunModule.__Lunar_Internal__Cycle__()
+  function RunService.__Lunar_Internal__Cycle__()
     TaskService.delay(UDuration, function()
       local Now = TimeService:PreciseNow()
       local DeltaTime = Now - LastTime
@@ -26,12 +27,27 @@ function RunModule.__Lunar_Internal__Init__(instance, signal, taskservice, times
 
       RunService.Stepped:Fire(DeltaTime)
       RunService.Heartbeat:Fire(DeltaTime)
-      RunModule.__Lunar_Internal__Cycle__()
+      RunService.__Lunar_Internal__Cycle__()
     end)
   end
 
-  RunModule.__Lunar_Internal__Cycle__()
+  function RunService:SetServerMode()
+    RunService.IsServerBool = true
+  end
 
+  function RunService:SetClientMode()
+    RunService.IsServerBool = false
+  end
+
+  function RunService:IsClient()
+    return not RunService.IsServerBool
+  end
+
+  function RunService:IsServer()
+    return RunService.IsServerBool
+  end
+
+  RunService.__Lunar_Internal__Cycle__()
   return RunService
 end
 
