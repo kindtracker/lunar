@@ -97,4 +97,5 @@ return {
   LMathLibrary = LMathLibrary,
   LTableLibrary = LTableLibrary,
   LStringLibrary = LStringLibrary,
+  RandomModule = RandomModule,
 }

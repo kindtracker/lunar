@@ -223,6 +223,9 @@ void lunar_init() {
   lua_getfield(lunar_state, -1, "LStringLibrary");
   lua_setglobal(lunar_state, "lstring");
 
+  lua_getfield(lunar_state, -1, "RandomModule");
+  lua_setglobal(lunar_state, "Random");
+
   lua_newtable(lunar_state);
 
   lua_getfield(lunar_state, -2, "ServiceManager");

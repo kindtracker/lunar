@@ -213,6 +213,7 @@ Response:Close()
 -- RandomService
 
 RandomService.new(Seed) -- Returns a RNG, if seed is nil, seed will be current time
+-- Random.new(Seed) exists (Random is a global)
 
 RNG.StartSeed
 RNG.CurrentSeed
