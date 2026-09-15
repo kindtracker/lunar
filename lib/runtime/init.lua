@@ -29,6 +29,7 @@ local LStringModule = dofile(Base .. "/services/libraries/lstring.lua")
 local HttpClientModule = dofile(Base .. "/services/http-client.lua")
 local HttpServerModule = dofile(Base .. "/services/http-server.lua")
 local HttpSharedModule = dofile(Base .. "/services/http-shared.lua")
+local RandomModule = dofile(Base .. "/services/random.lua")
 
 Signal.__Lunar_Internal__Init__(Connection)
 CFrame.__Lunar_Internal__Init__(Vector3)
@@ -58,6 +59,7 @@ local JSONService = JSONModule.__Lunar_Internal__Init__(Instance)
 local HttpClientService = HttpClientModule.__Lunar_Internal__Init__(Instance)
 local HttpServerService = HttpServerModule.__Lunar_Internal__Init__(Instance)
 local HttpSharedService = HttpSharedModule.__Lunar_Internal__Init__(Instance, JSONService)
+local RandomService = RandomModule.__Lunar_Internal__Init__(Instance, TimeService)
 
 ServiceManager.__Lunar_Internal__Init__(
   Instance,
@@ -72,7 +74,8 @@ ServiceManager.__Lunar_Internal__Init__(
   LStringLibrary,
   HttpClientService,
   HttpServerService,
-  HttpSharedService
+  HttpSharedService,
+  RandomService
 )
 
 Instance.__Lunar_Internal__Init_Stage2__(ErrorModule, TaskModule)
