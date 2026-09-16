@@ -17,6 +17,10 @@ Contributions are welcome. Feel free to open an issue or submit a PR.
 ## Cheatsheet
 ```lua
 Lunar.Version
+
+Lunar.Platform
+-- Can be Linux, Web, Windows, Apple, or Android 
+
 Lunar:GetService(ServiceName)
 --[[
 Available services:
