@@ -2,25 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <lua.h>
 #include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
 
 #define LUNAR_IMPLEMENTATION
 #include "lunar.h"
 
 int main(int argc, char **argv) {
-  argc=argc;
-  char *pathname = argv[1];
-  if (pathname == NULL) {
-    pathname = "main.lua";
+  argc = argc;
+  char *FilePath = argv[1];
+  if (FilePath == NULL) {
+    FilePath = "main.lua";
   }
 
-  lunar_init();
-  const char *err_msg = lunar_run(pathname);
-  if (err_msg != NULL) {
-    fprintf(stderr, "[lunar] runtime error: %s\n", err_msg);
+  LunarInit();
+  const char *ErrorMessage = LunarRun(FilePath);
+  if (ErrorMessage != NULL) {
+    fprintf(stderr, "[Lunar] runtime error: %s\n", ErrorMessage);
   }
-  lunar_quit();
+  LunarQuit();
   return 0;
 }

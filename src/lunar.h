@@ -3,7 +3,7 @@
  * CHANGELOG:
  * v0.3.5:
  *  Added:
- *   More services (HttpServerService, HttpSharedService, RandomService)
+ *   More Services (HttpServerService, HttpSharedService, RandomService)
  *   More functions and signals to Instance
  *   More functions to RunService (
  *    .IsClient,
@@ -36,7 +36,7 @@
  *   String Library (LStringLibrary)
  *   Alias for load -> loadstring function
  *   Alias for LMathLibrary, LTableLibrary, LStringLibrary -> lmath, ltable,
- * lstring (globals) v0.2.5: Added: More services (LMathService, LTableService,
+ * lstring (globals) v0.2.5: Added: More Services (LMathService, LTableService,
  * JSONService, HttpClientService) More datatypes (CFrame, Color4, UDim, UDim2)
  *   Make instance better (
  *     Clone children in Instance:Clone()
@@ -50,7 +50,7 @@
  *   ClassNames
  *   Instance:Destroy/Clone()
  *   Fix Instances
- *   More services (TimeService, ErrorService, TaskService, RunService)
+ *   More Services (TimeService, ErrorService, TaskService, RunService)
  *   More datatypes (Vector2, Vector3, Color3)
  *   Change TaskService:Wait/Delay to TaskService.wait/delay
  *   Added DeltaTime to RunService
@@ -72,205 +72,205 @@
 
 typedef struct {
   char *name;
-  int service;
-} lunar_service;
+  int Service;
+} LunarService;
 
-typedef int (*lunar_registry_fire)(lua_State *L, ...);
+typedef int (*Lunar_registry_fire)(lua_State *L, ...);
 
-extern lua_State *lunar_state;
+extern lua_State *LunarState;
 
-extern void lunar_init();
-extern const char *lunar_run(const char *pathname);
-extern void lunar_free();
-extern void lunar_register_service(lunar_service service);
-extern void lunar_remove_service(const char *service_name);
-extern lunar_service lunar_search_service(const char *service_name);
+extern void LunarInit();
+extern const char *LunarRun(const char *FilePath);
+extern void LunarQuit();
+extern void LunarRegisterService(LunarService Service);
+extern void LunarRemoveService(const char *ServiceName);
+extern LunarService LunarSearchService(const char *ServiceName);
 
 #ifdef LUNAR_IMPLEMENTATION
 #include <stdbool.h>
 #include <stdint.h>
 
-lua_State *lunar_state;
+lua_State *LunarState;
 
-lunar_service lunar_services[256];
-int lunar_service_count = 0;
+LunarService LunarServices[256];
+int LunarServiceCount = 0;
 
-lunar_registry_fire lunar_registry_functions[256];
-int lunar_registry_function_count = 0;
+Lunar_registry_fire lunar_registry_functions[256];
+int Lunar_registry_function_count = 0;
 
-int l_instance_new(lua_State *L) {
+int LuaInstance_new(lua_State *L) {
   lua_newtable(L);
   return 1;
 }
 
-int l_instance(lua_State *L) {
+int LuaInstance(lua_State *L) {
   lua_newtable(L);
-  lua_pushcfunction(L, l_instance_new);
+  lua_pushcfunction(L, LuaInstance_new);
   lua_setfield(L, -2, "new");
   return 1;
 }
 
-void lunar_register_service(lunar_service service) {
-  lunar_services[lunar_service_count++] = service;
+void LunarRegisterService(LunarService service) {
+  LunarServices[LunarServiceCount++] = service;
 }
 
-void lunar_remove_service(const char *service_name) {
-  for (int i = 0; i < lunar_service_count; i++) {
-    if (strcmp(lunar_services[i].name, service_name) == 0) {
-      for (int j = i; j < lunar_service_count - 1; j++) {
-        lunar_services[j] = lunar_services[j + 1];
+void LunarRemoveService(const char *service_name) {
+  for (int i = 0; i < LunarServiceCount; i++) {
+    if (strcmp(LunarServices[i].name, service_name) == 0) {
+      for (int j = i; j < LunarServiceCount - 1; j++) {
+        LunarServices[j] = LunarServices[j + 1];
       }
-      lunar_service_count--;
+      LunarServiceCount--;
       return;
     }
   }
 }
 
-int l_servicemanager_getservices(lua_State *L) {
-  lua_newtable(lunar_state);
-  for (int i = 0; i < lunar_service_count; i++) {
-    lua_rawgeti(L, LUA_REGISTRYINDEX, lunar_services[i].service);
-    lua_setfield(lunar_state, -2, lunar_services[i].name);
+int LuaSereviceManagerGetServices(lua_State *L) {
+  lua_newtable(LunarState);
+  for (int i = 0; i < LunarServiceCount; i++) {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, LunarServices[i].Service);
+    lua_setfield(LunarState, -2, LunarServices[i].name);
   }
   return 1;
 }
 
-int l_servicemanager_registerservice(lua_State *L) {
+int LuaSereviceManagerRegisterService(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
   luaL_checktype(L, 3, LUA_TTABLE);
   int ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
-  lunar_register_service((lunar_service){strdup(name), ref});
+  LunarRegisterService((LunarService){strdup(name), ref});
   return 0;
 }
 
-int l_servicemanager_removeservice(lua_State *L) {
+int LuaSereviceManagerRemoveService(lua_State *L) {
   const char *name = luaL_checkstring(L, 2);
-  lunar_remove_service(name);
+  LunarRemoveService(name);
   return 0;
 }
 
-int l_servicemanager(lua_State *L) {
+int LuaSereviceManager(lua_State *L) {
   lua_newtable(L);
 
-  lua_pushcfunction(L, l_servicemanager_getservices);
+  lua_pushcfunction(L, LuaSereviceManagerGetServices);
   lua_setfield(L, -2, "GetServices");
 
-  lua_pushcfunction(L, l_servicemanager_registerservice);
+  lua_pushcfunction(L, LuaSereviceManagerRegisterService);
   lua_setfield(L, -2, "RegisterService");
 
-  lua_pushcfunction(L, l_servicemanager_removeservice);
+  lua_pushcfunction(L, LuaSereviceManagerRemoveService);
   lua_setfield(L, -2, "RemoveService");
   return 1;
 }
 
-void lunar_init() {
-  lunar_state = luaL_newstate();
-  luaL_openlibs(lunar_state);
+void LunarInit() {
+  LunarState = luaL_newstate();
+  luaL_openlibs(LunarState);
 
-  lua_getglobal(lunar_state, "load");
-  lua_setglobal(lunar_state, "loadstring");
+  lua_getglobal(LunarState, "load");
+  lua_setglobal(LunarState, "loadstring");
 
-  lua_newtable(lunar_state);
+  lua_newtable(LunarState);
 
-  l_instance(lunar_state);
-  lua_setglobal(lunar_state, "__Lunar_C__Instance__");
+  LuaInstance(LunarState);
+  lua_setglobal(LunarState, "__Lunar_C__Instance__");
 
-  l_servicemanager(lunar_state);
-  lua_setglobal(lunar_state, "__Lunar_C__ServiceManager__");
+  LuaSereviceManager(LunarState);
+  lua_setglobal(LunarState, "__Lunar_C__ServiceManager__");
 
-  const char *home = getenv("HOME");
+  const char *Home = getenv("HOME");
   char runtime_path[4096];
   snprintf(runtime_path, sizeof(runtime_path),
-           "%s/.local/share/lunare/lib/runtime/init.lua", home);
+           "%s/.local/share/lunare/lib/runtime/init.lua", Home);
 
-  if (luaL_dofile(lunar_state, runtime_path) != LUA_OK) {
-    fprintf(stderr, "[lunar] runtime error: %s\n",
-            lua_tostring(lunar_state, -1));
-    lua_pop(lunar_state, 1);
+  if (luaL_dofile(LunarState, runtime_path) != LUA_OK) {
+    fprintf(stderr, "[Lunar] runtime error: %s\n",
+            lua_tostring(LunarState, -1));
+    lua_pop(LunarState, 1);
     return;
   }
 
-  lua_getfield(lunar_state, -1, "Instance");
-  lua_setglobal(lunar_state, "Instance");
+  lua_getfield(LunarState, -1, "Instance");
+  lua_setglobal(LunarState, "Instance");
 
-  lua_getfield(lunar_state, -1, "Connection");
-  lua_setglobal(lunar_state, "Connection");
+  lua_getfield(LunarState, -1, "Connection");
+  lua_setglobal(LunarState, "Connection");
 
-  lua_getfield(lunar_state, -1, "Signal");
-  lua_setglobal(lunar_state, "Signal");
+  lua_getfield(LunarState, -1, "Signal");
+  lua_setglobal(LunarState, "Signal");
 
-  lua_getfield(lunar_state, -1, "Vector2");
-  lua_setglobal(lunar_state, "Vector2");
+  lua_getfield(LunarState, -1, "Vector2");
+  lua_setglobal(LunarState, "Vector2");
 
-  lua_getfield(lunar_state, -1, "Vector3");
-  lua_setglobal(lunar_state, "Vector3");
+  lua_getfield(LunarState, -1, "Vector3");
+  lua_setglobal(LunarState, "Vector3");
 
-  lua_getfield(lunar_state, -1, "Color3");
-  lua_setglobal(lunar_state, "Color3");
+  lua_getfield(LunarState, -1, "Color3");
+  lua_setglobal(LunarState, "Color3");
 
-  lua_getfield(lunar_state, -1, "Color4");
-  lua_setglobal(lunar_state, "Color4");
+  lua_getfield(LunarState, -1, "Color4");
+  lua_setglobal(LunarState, "Color4");
 
-  lua_getfield(lunar_state, -1, "CFrame");
-  lua_setglobal(lunar_state, "CFrame");
+  lua_getfield(LunarState, -1, "CFrame");
+  lua_setglobal(LunarState, "CFrame");
 
-  lua_getfield(lunar_state, -1, "UDim");
-  lua_setglobal(lunar_state, "UDim");
+  lua_getfield(LunarState, -1, "UDim");
+  lua_setglobal(LunarState, "UDim");
 
-  lua_getfield(lunar_state, -1, "UDim2");
-  lua_setglobal(lunar_state, "UDim2");
+  lua_getfield(LunarState, -1, "UDim2");
+  lua_setglobal(LunarState, "UDim2");
 
-  lua_getfield(lunar_state, -1, "LMathLibrary");
-  lua_setglobal(lunar_state, "lmath");
+  lua_getfield(LunarState, -1, "LMathLibrary");
+  lua_setglobal(LunarState, "lmath");
 
-  lua_getfield(lunar_state, -1, "LTableLibrary");
-  lua_setglobal(lunar_state, "ltable");
+  lua_getfield(LunarState, -1, "LTableLibrary");
+  lua_setglobal(LunarState, "ltable");
 
-  lua_getfield(lunar_state, -1, "LStringLibrary");
-  lua_setglobal(lunar_state, "lstring");
+  lua_getfield(LunarState, -1, "LStringLibrary");
+  lua_setglobal(LunarState, "lstring");
 
-  lua_getfield(lunar_state, -1, "RandomModule");
-  lua_setglobal(lunar_state, "Random");
+  lua_getfield(LunarState, -1, "RandomModule");
+  lua_setglobal(LunarState, "Random");
 
-  lua_newtable(lunar_state);
+  lua_newtable(LunarState);
 
-  lua_getfield(lunar_state, -2, "ServiceManager");
-  lua_getfield(lunar_state, -1, "GetService");
-  lua_setfield(lunar_state, -3, "GetService");
-  lua_pop(lunar_state, 1);
+  lua_getfield(LunarState, -2, "ServiceManager");
+  lua_getfield(LunarState, -1, "GetService");
+  lua_setfield(LunarState, -3, "GetService");
+  lua_pop(LunarState, 1);
 
-  lua_pushstring(lunar_state, "Lunar v" LUNAR_VERSION);
-  lua_setfield(lunar_state, -2, "Version");
+  lua_pushstring(LunarState, "Lunar v" LUNAR_VERSION);
+  lua_setfield(LunarState, -2, "Version");
 
 #if __ANDROID__
-  lua_pushstring(lunar_state, "Android");
+  lua_pushstring(LunarState, "Android");
 #elif __linux__
-  lua_pushstring(lunar_state, "Linux");
+  lua_pushstring(LunarState, "Linux");
 #elif _WIN32
-  lua_pushstring(lunar_state, "Windows");
+  lua_pushstring(LunarState, "Windows");
 #elif __APPLE__
-  lua_pushstring(lunar_state, "Apple");
+  lua_pushstring(LunarState, "Apple");
 #elif __EMSCRIPTEN__
-  lua_pushstring(lunar_state, "Web");
+  lua_pushstring(LunarState, "Web");
 #endif
 
-  lua_setfield(lunar_state, -2, "Platform");
+  lua_setfield(LunarState, -2, "Platform");
 
-  lua_setglobal(lunar_state, "Lunar");
+  lua_setglobal(LunarState, "Lunar");
 }
 
-void lunar_quit() { lua_close(lunar_state); }
+void LunarQuit() { lua_close(LunarState); }
 
-const char *lunar_run(const char *pathname) {
-  int status = luaL_loadfile(lunar_state, pathname);
-  if (status == LUA_OK) {
-    status = lua_pcall(lunar_state, 0, LUA_MULTRET, 0);
+const char *LunarRun(const char *FilePath) {
+  int Status = luaL_loadfile(LunarState, FilePath);
+  if (Status == LUA_OK) {
+    Status = lua_pcall(LunarState, 0, LUA_MULTRET, 0);
   }
-  if (status != LUA_OK) {
-    const char *err_msg = lua_tostring(lunar_state, -1);
-    lua_pop(lunar_state, 1);
-    return err_msg;
+  if (Status != LUA_OK) {
+    const char *ErrorMessage = lua_tostring(LunarState, -1);
+    lua_pop(LunarState, 1);
+    return ErrorMessage;
   }
   return NULL;
 }
