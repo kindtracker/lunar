@@ -16,7 +16,8 @@ function ServiceManager.__Lunar_Internal__Init__(
   HttpClientService,
   HttpServerService,
   HttpSharedService,
-  RandomService
+  RandomService,
+  PluginService
 )
   Instance = instance
 
@@ -36,6 +37,7 @@ function ServiceManager.__Lunar_Internal__Init__(
   CServiceManager:RegisterService("HttpServerService", HttpServerService)
   CServiceManager:RegisterService("HttpSharedService", HttpSharedService)
   CServiceManager:RegisterService("RandomService", RandomService)
+  CServiceManager:RegisterService("PluginService", PluginService)
 end
 
 function ServiceManager.__Lunar_Internal__Init_Stage2__(RunService)
