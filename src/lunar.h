@@ -243,6 +243,20 @@ void lunar_init() {
   lua_pushstring(lunar_state, "Lunar v" LUNAR_VERSION);
   lua_setfield(lunar_state, -2, "Version");
 
+#if __ANDROID__
+  lua_pushstring(lunar_state, "Android");
+#elif __linux__
+  lua_pushstring(lunar_state, "Linux");
+#elif _WIN32
+  lua_pushstring(lunar_state, "Windows");
+#elif __APPLE__
+  lua_pushstring(lunar_state, "Apple");
+#elif __EMSCRIPTEN__
+  lua_pushstring(lunar_state, "Web");
+#endif
+
+  lua_setfield(lunar_state, -2, "Platform");
+
   lua_setglobal(lunar_state, "Lunar");
 }
 
