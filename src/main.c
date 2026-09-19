@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
-
-#define LUNAR_IMPLEMENTATION
 #include "lunar.h"
 
 int main(int argc, char **argv) {
