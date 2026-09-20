@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local Console = Lunar:GetService("ConsoleService")
 
 Console:Log("ConsoleService.LogFormat = %s", Console.LogFormat)
