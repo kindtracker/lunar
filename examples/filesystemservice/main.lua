@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local FileSystemService = Lunar:GetService("FileSystemService")
 
 local LogsFile = FileSystemService:Open("Workspace/Logs", "a+")

@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local Task = Lunar:GetService("TaskService")
 
 Task:Spawn(function()

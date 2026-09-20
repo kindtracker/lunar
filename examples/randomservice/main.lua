@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local RandomService = Lunar:GetService("RandomService")
 local Task = Lunar:GetService("TaskService")
 local RNG = RandomService.new()

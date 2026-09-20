@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local Workspace = Lunar:GetService("Workspace")
 
 print("Creating instances")

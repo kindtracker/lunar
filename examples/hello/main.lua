@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local instance = Instance.new()
 instance.Name = "Hello"
 

@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local workspace = Lunar:GetService("Workspace")
 
 for key, value in pairs(workspace) do

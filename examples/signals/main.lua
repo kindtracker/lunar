@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local instance = Instance.new()
 
 print("Setuping on 'Name' property")

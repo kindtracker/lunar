@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local ErrorService = Lunar:GetService("ErrorService")
 
 -- Error is an instance created by ErrorService

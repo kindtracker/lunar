@@ -1,3 +1,4 @@
+local Lunar = require("lunar")
 local HttpClientService = Lunar:GetService("HttpClientService")
 local Console = Lunar:GetService("ConsoleService")
 
