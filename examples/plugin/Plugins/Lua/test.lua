@@ -6,4 +6,8 @@ function TestModule.new()
   }
 end
 
-Instance:RegisterClass("TestClass", TestModule, Instance)
+function TestModule:InitPlugin()
+  Instance:RegisterClass("TestClass", TestModule, Instance)
+end
+
+return TestModule
