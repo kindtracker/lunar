@@ -3,7 +3,6 @@ version = "0.4.0-0"
 
 source = {
   url = "git+https://github.com/kindtracker/lunar.git",
-  tag = "v0.4.0",
 }
 
 description = {
