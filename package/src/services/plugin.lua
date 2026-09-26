@@ -11,7 +11,8 @@ function PluginModule.__Lunar_Internal__Init__(instance)
 
   function PluginService:LoadLuaPlugin(PluginName, FilePath)
     local PluginTable = dofile(FilePath)
-    local Plugin = Instance.new("Plugin")
+    local Plugin = Instance.new()
+    Plugin.ClassName = "Plugin"
     Plugin.Name = PluginName
     Plugin.FilePath = FilePath
 
