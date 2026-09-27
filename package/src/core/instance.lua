@@ -110,27 +110,39 @@ function InstanceModule.new(ClassName, Parent)
 
   local self
   self = setmetatable({}, {
-    __index = function(_, key)
-      return Properties[key]
-    end,
-
-    __newindex = function(_, key, newValue)
-      local oldValue = self[key]
-      Properties[key] = newValue
-      if key == "Parent" then
-        if oldValue then
-          oldValue:GetChildren()[self.UniqueId] = nil
-          oldValue.ChildRemoved:Fire(self)
-          oldValue.DescendantRemoving:Fire(self)
-        end
-        if newValue then
-          newValue:AddChild(self)
-          self.AncestryChanged:Fire(self, newValue)
+    __index = function(_, Key)
+      if Properties[Key] ~= nil then
+        return Properties[Key]
+      else
+        if Properties.__index then
+          return Properties.__index(_, Key)
         end
       end
-      if PropertyChangedSignals[key] then
-        PropertyChangedSignals[key]:Fire(newValue, oldValue)
-        self.Changed:Fire(key, newValue, oldValue)
+
+      return nil
+    end,
+
+    __newindex = function(_, Key, NewValue)
+      local OldValue = self[Key]
+      Properties[Key] = NewValue
+      if Key == "Parent" then
+        if OldValue then
+          OldValue:GetChildren()[self.UniqueId] = nil
+          OldValue.ChildRemoved:Fire(self)
+          OldValue.DescendantRemoving:Fire(self)
+        end
+        if NewValue then
+          NewValue:AddChild(self)
+          self.AncestryChanged:Fire(self, NewValue)
+        end
+      end
+      if PropertyChangedSignals[Key] then
+        PropertyChangedSignals[Key]:Fire(NewValue, OldValue)
+        self.Changed:Fire(Key, NewValue, OldValue)
+      end
+
+      if Properties.__newindex then
+        return Properties.__newindex(_, Key, Value)
       end
     end,
 
