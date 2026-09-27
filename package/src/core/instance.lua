@@ -142,7 +142,7 @@ function InstanceModule.new(ClassName, Parent)
       end
 
       if Properties.__newindex then
-        return Properties.__newindex(_, Key, Value)
+        return Properties.__newindex(_, Key, NewValue)
       end
     end,
 
