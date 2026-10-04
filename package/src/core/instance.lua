@@ -423,11 +423,20 @@ function InstanceModule.new(ClassName, Parent)
   function self:SetAttribute(Attribute, Value)
     local oldValue = self.Attributes[Attribute]
     self.Attributes[Attribute] = Value
-    self.AttributeSignals[Attribute]:Fire(Value, oldValue)
+
+    local AttributeSignal = self.AttributeSignals[Attribute]
+    if AttributeSignal then
+      AttributeSignal:Fire(Value, oldValue)
+    end
   end
 
   function self:RemoveAttribute(Attribute)
     self.Attributes[Attribute] = nil
+
+    local AttributeSignal = self.AttributeSignals[Attribute]
+    if AttributeSignal then
+      AttributeSignal:Fire(Value, nil)
+    end
   end
 
   function self:GetAttributes()
